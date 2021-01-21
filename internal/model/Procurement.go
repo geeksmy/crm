@@ -5,8 +5,8 @@ type Procurement struct {
 	SupplierID    string `gorm:"type:varchar(36);"` // 供应商ID
 	Code          string `gorm:"type:varchar(32)"`
 	Note          string `gorm:"type:varchar(256);"`
-	Money         string `gorm:"type:varchar(36)"`
-	IsSalesReturn string `gorm:"type:boolean;default:false"`
+	Money         int    `gorm:"type:int"`
+	IsSalesReturn bool   `gorm:"type:boolean;default:false"`
 	HeadID        string `gorm:"type:varchar(36)"`
 	FounderID     string `gorm:"type:varchar(36)"`
 

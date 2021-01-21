@@ -10,6 +10,7 @@ package server
 import (
 	"context"
 	user "crm/gen/user"
+	userviews "crm/gen/user/views"
 	"io"
 	"net/http"
 	"strings"
@@ -18,46 +19,51 @@ import (
 	goa "goa.design/goa/v3/pkg"
 )
 
-// EncodeLoginByUsernameResponse returns an encoder for responses returned by
-// the User LoginByUsername endpoint.
-func EncodeLoginByUsernameResponse(encoder func(context.Context, http.ResponseWriter) goahttp.Encoder) func(context.Context, http.ResponseWriter, interface{}) error {
+// EncodeGetResponse returns an encoder for responses returned by the User Get
+// endpoint.
+func EncodeGetResponse(encoder func(context.Context, http.ResponseWriter) goahttp.Encoder) func(context.Context, http.ResponseWriter, interface{}) error {
 	return func(ctx context.Context, w http.ResponseWriter, v interface{}) error {
-		res := v.(*user.LoginByUsernameResult)
+		res := v.(*userviews.User)
 		enc := encoder(ctx, w)
-		body := NewLoginByUsernameResponseBody(res)
+		body := NewGetResponseBody(res.Projected)
 		w.WriteHeader(http.StatusOK)
 		return enc.Encode(body)
 	}
 }
 
-// DecodeLoginByUsernameRequest returns a decoder for requests sent to the User
-// LoginByUsername endpoint.
-func DecodeLoginByUsernameRequest(mux goahttp.Muxer, decoder func(*http.Request) goahttp.Decoder) func(*http.Request) (interface{}, error) {
+// DecodeGetRequest returns a decoder for requests sent to the User Get
+// endpoint.
+func DecodeGetRequest(mux goahttp.Muxer, decoder func(*http.Request) goahttp.Decoder) func(*http.Request) (interface{}, error) {
 	return func(r *http.Request) (interface{}, error) {
 		var (
-			body LoginByUsernameRequestBody
-			err  error
+			id    string
+			token string
+			err   error
+
+			params = mux.Vars(r)
 		)
-		err = decoder(r).Decode(&body)
-		if err != nil {
-			if err == io.EOF {
-				return nil, goa.MissingPayloadError()
-			}
-			return nil, goa.DecodePayloadError(err.Error())
+		id = params["id"]
+		token = r.Header.Get("Authorization")
+		if token == "" {
+			err = goa.MergeErrors(err, goa.MissingFieldError("Authorization", "header"))
 		}
-		err = ValidateLoginByUsernameRequestBody(&body)
 		if err != nil {
 			return nil, err
 		}
-		payload := NewLoginByUsernamePayload(&body)
+		payload := NewGetPayload(id, token)
+		if strings.Contains(payload.Token, " ") {
+			// Remove authorization scheme prefix (e.g. "Bearer")
+			cred := strings.SplitN(payload.Token, " ", 2)[1]
+			payload.Token = cred
+		}
 
 		return payload, nil
 	}
 }
 
-// EncodeLoginByUsernameError returns an encoder for errors returned by the
-// LoginByUsername User endpoint.
-func EncodeLoginByUsernameError(encoder func(context.Context, http.ResponseWriter) goahttp.Encoder, formatter func(err error) goahttp.Statuser) func(context.Context, http.ResponseWriter, error) error {
+// EncodeGetError returns an encoder for errors returned by the Get User
+// endpoint.
+func EncodeGetError(encoder func(context.Context, http.ResponseWriter) goahttp.Encoder, formatter func(err error) goahttp.Statuser) func(context.Context, http.ResponseWriter, error) error {
 	encodeError := goahttp.ErrorEncoder(encoder, formatter)
 	return func(ctx context.Context, w http.ResponseWriter, v error) error {
 		en, ok := v.(ErrorNamer)
@@ -72,7 +78,7 @@ func EncodeLoginByUsernameError(encoder func(context.Context, http.ResponseWrite
 			if formatter != nil {
 				body = formatter(res)
 			} else {
-				body = NewLoginByUsernameInternalServerErrorResponseBody(res)
+				body = NewGetInternalServerErrorResponseBody(res)
 			}
 			w.Header().Set("goa-error", "internal_server_error")
 			w.WriteHeader(http.StatusInternalServerError)
@@ -84,7 +90,7 @@ func EncodeLoginByUsernameError(encoder func(context.Context, http.ResponseWrite
 			if formatter != nil {
 				body = formatter(res)
 			} else {
-				body = NewLoginByUsernameBadRequestResponseBody(res)
+				body = NewGetBadRequestResponseBody(res)
 			}
 			w.Header().Set("goa-error", "bad_request")
 			w.WriteHeader(http.StatusBadRequest)
@@ -95,24 +101,102 @@ func EncodeLoginByUsernameError(encoder func(context.Context, http.ResponseWrite
 	}
 }
 
-// EncodeUpdatePasswordResponse returns an encoder for responses returned by
-// the User UpdatePassword endpoint.
-func EncodeUpdatePasswordResponse(encoder func(context.Context, http.ResponseWriter) goahttp.Encoder) func(context.Context, http.ResponseWriter, interface{}) error {
+// EncodeListResponse returns an encoder for responses returned by the User
+// List endpoint.
+func EncodeListResponse(encoder func(context.Context, http.ResponseWriter) goahttp.Encoder) func(context.Context, http.ResponseWriter, interface{}) error {
 	return func(ctx context.Context, w http.ResponseWriter, v interface{}) error {
-		res := v.(*user.UpdatePasswordResult)
+		res := v.(*user.ListResult)
 		enc := encoder(ctx, w)
-		body := NewUpdatePasswordResponseBody(res)
+		body := NewListResponseBody(res)
 		w.WriteHeader(http.StatusOK)
 		return enc.Encode(body)
 	}
 }
 
-// DecodeUpdatePasswordRequest returns a decoder for requests sent to the User
-// UpdatePassword endpoint.
-func DecodeUpdatePasswordRequest(mux goahttp.Muxer, decoder func(*http.Request) goahttp.Decoder) func(*http.Request) (interface{}, error) {
+// DecodeListRequest returns a decoder for requests sent to the User List
+// endpoint.
+func DecodeListRequest(mux goahttp.Muxer, decoder func(*http.Request) goahttp.Decoder) func(*http.Request) (interface{}, error) {
 	return func(r *http.Request) (interface{}, error) {
 		var (
-			body UpdatePasswordRequestBody
+			token string
+			err   error
+		)
+		token = r.Header.Get("Authorization")
+		if token == "" {
+			err = goa.MergeErrors(err, goa.MissingFieldError("Authorization", "header"))
+		}
+		if err != nil {
+			return nil, err
+		}
+		payload := NewListPayload(token)
+		if strings.Contains(payload.Token, " ") {
+			// Remove authorization scheme prefix (e.g. "Bearer")
+			cred := strings.SplitN(payload.Token, " ", 2)[1]
+			payload.Token = cred
+		}
+
+		return payload, nil
+	}
+}
+
+// EncodeListError returns an encoder for errors returned by the List User
+// endpoint.
+func EncodeListError(encoder func(context.Context, http.ResponseWriter) goahttp.Encoder, formatter func(err error) goahttp.Statuser) func(context.Context, http.ResponseWriter, error) error {
+	encodeError := goahttp.ErrorEncoder(encoder, formatter)
+	return func(ctx context.Context, w http.ResponseWriter, v error) error {
+		en, ok := v.(ErrorNamer)
+		if !ok {
+			return encodeError(ctx, w, v)
+		}
+		switch en.ErrorName() {
+		case "internal_server_error":
+			res := v.(*goa.ServiceError)
+			enc := encoder(ctx, w)
+			var body interface{}
+			if formatter != nil {
+				body = formatter(res)
+			} else {
+				body = NewListInternalServerErrorResponseBody(res)
+			}
+			w.Header().Set("goa-error", "internal_server_error")
+			w.WriteHeader(http.StatusInternalServerError)
+			return enc.Encode(body)
+		case "bad_request":
+			res := v.(*goa.ServiceError)
+			enc := encoder(ctx, w)
+			var body interface{}
+			if formatter != nil {
+				body = formatter(res)
+			} else {
+				body = NewListBadRequestResponseBody(res)
+			}
+			w.Header().Set("goa-error", "bad_request")
+			w.WriteHeader(http.StatusBadRequest)
+			return enc.Encode(body)
+		default:
+			return encodeError(ctx, w, v)
+		}
+	}
+}
+
+// EncodeUpdateResponse returns an encoder for responses returned by the User
+// Update endpoint.
+func EncodeUpdateResponse(encoder func(context.Context, http.ResponseWriter) goahttp.Encoder) func(context.Context, http.ResponseWriter, interface{}) error {
+	return func(ctx context.Context, w http.ResponseWriter, v interface{}) error {
+		res := v.(*userviews.User)
+		enc := encoder(ctx, w)
+		body := NewUpdateResponseBody(res.Projected)
+		w.WriteHeader(http.StatusOK)
+		return enc.Encode(body)
+	}
+}
+
+// DecodeUpdateRequest returns a decoder for requests sent to the User Update
+// endpoint.
+func DecodeUpdateRequest(mux goahttp.Muxer, decoder func(*http.Request) goahttp.Decoder) func(*http.Request) (interface{}, error) {
+	return func(r *http.Request) (interface{}, error) {
+		var (
+			body UpdateRequestBody
 			err  error
 		)
 		err = decoder(r).Decode(&body)
@@ -122,7 +206,7 @@ func DecodeUpdatePasswordRequest(mux goahttp.Muxer, decoder func(*http.Request) 
 			}
 			return nil, goa.DecodePayloadError(err.Error())
 		}
-		err = ValidateUpdatePasswordRequestBody(&body)
+		err = ValidateUpdateRequestBody(&body)
 		if err != nil {
 			return nil, err
 		}
@@ -137,7 +221,7 @@ func DecodeUpdatePasswordRequest(mux goahttp.Muxer, decoder func(*http.Request) 
 		if err != nil {
 			return nil, err
 		}
-		payload := NewUpdatePasswordPayload(&body, token)
+		payload := NewUpdatePayload(&body, token)
 		if strings.Contains(payload.Token, " ") {
 			// Remove authorization scheme prefix (e.g. "Bearer")
 			cred := strings.SplitN(payload.Token, " ", 2)[1]
@@ -148,9 +232,9 @@ func DecodeUpdatePasswordRequest(mux goahttp.Muxer, decoder func(*http.Request) 
 	}
 }
 
-// EncodeUpdatePasswordError returns an encoder for errors returned by the
-// UpdatePassword User endpoint.
-func EncodeUpdatePasswordError(encoder func(context.Context, http.ResponseWriter) goahttp.Encoder, formatter func(err error) goahttp.Statuser) func(context.Context, http.ResponseWriter, error) error {
+// EncodeUpdateError returns an encoder for errors returned by the Update User
+// endpoint.
+func EncodeUpdateError(encoder func(context.Context, http.ResponseWriter) goahttp.Encoder, formatter func(err error) goahttp.Statuser) func(context.Context, http.ResponseWriter, error) error {
 	encodeError := goahttp.ErrorEncoder(encoder, formatter)
 	return func(ctx context.Context, w http.ResponseWriter, v error) error {
 		en, ok := v.(ErrorNamer)
@@ -165,7 +249,7 @@ func EncodeUpdatePasswordError(encoder func(context.Context, http.ResponseWriter
 			if formatter != nil {
 				body = formatter(res)
 			} else {
-				body = NewUpdatePasswordInternalServerErrorResponseBody(res)
+				body = NewUpdateInternalServerErrorResponseBody(res)
 			}
 			w.Header().Set("goa-error", "internal_server_error")
 			w.WriteHeader(http.StatusInternalServerError)
@@ -177,7 +261,7 @@ func EncodeUpdatePasswordError(encoder func(context.Context, http.ResponseWriter
 			if formatter != nil {
 				body = formatter(res)
 			} else {
-				body = NewUpdatePasswordBadRequestResponseBody(res)
+				body = NewUpdateBadRequestResponseBody(res)
 			}
 			w.Header().Set("goa-error", "bad_request")
 			w.WriteHeader(http.StatusBadRequest)
@@ -188,21 +272,62 @@ func EncodeUpdatePasswordError(encoder func(context.Context, http.ResponseWriter
 	}
 }
 
-// EncodeGetCaptchaImageResponse returns an encoder for responses returned by
-// the User GetCaptchaImage endpoint.
-func EncodeGetCaptchaImageResponse(encoder func(context.Context, http.ResponseWriter) goahttp.Encoder) func(context.Context, http.ResponseWriter, interface{}) error {
+// EncodeCreateResponse returns an encoder for responses returned by the User
+// Create endpoint.
+func EncodeCreateResponse(encoder func(context.Context, http.ResponseWriter) goahttp.Encoder) func(context.Context, http.ResponseWriter, interface{}) error {
 	return func(ctx context.Context, w http.ResponseWriter, v interface{}) error {
-		res := v.(*user.GetCaptchaImageResult)
+		res := v.(*userviews.User)
 		enc := encoder(ctx, w)
-		body := NewGetCaptchaImageResponseBody(res)
+		body := NewCreateResponseBody(res.Projected)
 		w.WriteHeader(http.StatusOK)
 		return enc.Encode(body)
 	}
 }
 
-// EncodeGetCaptchaImageError returns an encoder for errors returned by the
-// GetCaptchaImage User endpoint.
-func EncodeGetCaptchaImageError(encoder func(context.Context, http.ResponseWriter) goahttp.Encoder, formatter func(err error) goahttp.Statuser) func(context.Context, http.ResponseWriter, error) error {
+// DecodeCreateRequest returns a decoder for requests sent to the User Create
+// endpoint.
+func DecodeCreateRequest(mux goahttp.Muxer, decoder func(*http.Request) goahttp.Decoder) func(*http.Request) (interface{}, error) {
+	return func(r *http.Request) (interface{}, error) {
+		var (
+			body CreateRequestBody
+			err  error
+		)
+		err = decoder(r).Decode(&body)
+		if err != nil {
+			if err == io.EOF {
+				return nil, goa.MissingPayloadError()
+			}
+			return nil, goa.DecodePayloadError(err.Error())
+		}
+		err = ValidateCreateRequestBody(&body)
+		if err != nil {
+			return nil, err
+		}
+
+		var (
+			token string
+		)
+		token = r.Header.Get("Authorization")
+		if token == "" {
+			err = goa.MergeErrors(err, goa.MissingFieldError("Authorization", "header"))
+		}
+		if err != nil {
+			return nil, err
+		}
+		payload := NewCreatePayload(&body, token)
+		if strings.Contains(payload.Token, " ") {
+			// Remove authorization scheme prefix (e.g. "Bearer")
+			cred := strings.SplitN(payload.Token, " ", 2)[1]
+			payload.Token = cred
+		}
+
+		return payload, nil
+	}
+}
+
+// EncodeCreateError returns an encoder for errors returned by the Create User
+// endpoint.
+func EncodeCreateError(encoder func(context.Context, http.ResponseWriter) goahttp.Encoder, formatter func(err error) goahttp.Statuser) func(context.Context, http.ResponseWriter, error) error {
 	encodeError := goahttp.ErrorEncoder(encoder, formatter)
 	return func(ctx context.Context, w http.ResponseWriter, v error) error {
 		en, ok := v.(ErrorNamer)
@@ -217,7 +342,7 @@ func EncodeGetCaptchaImageError(encoder func(context.Context, http.ResponseWrite
 			if formatter != nil {
 				body = formatter(res)
 			} else {
-				body = NewGetCaptchaImageInternalServerErrorResponseBody(res)
+				body = NewCreateInternalServerErrorResponseBody(res)
 			}
 			w.Header().Set("goa-error", "internal_server_error")
 			w.WriteHeader(http.StatusInternalServerError)
@@ -229,7 +354,7 @@ func EncodeGetCaptchaImageError(encoder func(context.Context, http.ResponseWrite
 			if formatter != nil {
 				body = formatter(res)
 			} else {
-				body = NewGetCaptchaImageBadRequestResponseBody(res)
+				body = NewCreateBadRequestResponseBody(res)
 			}
 			w.Header().Set("goa-error", "bad_request")
 			w.WriteHeader(http.StatusBadRequest)
@@ -240,18 +365,117 @@ func EncodeGetCaptchaImageError(encoder func(context.Context, http.ResponseWrite
 	}
 }
 
-// marshalUserSessionToSessionResponseBody builds a value of type
-// *SessionResponseBody from a value of type *user.Session.
-func marshalUserSessionToSessionResponseBody(v *user.Session) *SessionResponseBody {
-	if v == nil {
-		return nil
+// EncodeDeleteResponse returns an encoder for responses returned by the User
+// Delete endpoint.
+func EncodeDeleteResponse(encoder func(context.Context, http.ResponseWriter) goahttp.Encoder) func(context.Context, http.ResponseWriter, interface{}) error {
+	return func(ctx context.Context, w http.ResponseWriter, v interface{}) error {
+		res := v.(*userviews.SuccessResult)
+		ctx = context.WithValue(ctx, goahttp.ContentTypeKey, "application/json")
+		enc := encoder(ctx, w)
+		body := NewDeleteResponseBody(res.Projected)
+		w.WriteHeader(http.StatusOK)
+		return enc.Encode(body)
 	}
-	res := &SessionResponseBody{}
-	if v.User != nil {
-		res.User = marshalUserUserToUserResponseBody(v.User)
+}
+
+// DecodeDeleteRequest returns a decoder for requests sent to the User Delete
+// endpoint.
+func DecodeDeleteRequest(mux goahttp.Muxer, decoder func(*http.Request) goahttp.Decoder) func(*http.Request) (interface{}, error) {
+	return func(r *http.Request) (interface{}, error) {
+		var (
+			body DeleteRequestBody
+			err  error
+		)
+		err = decoder(r).Decode(&body)
+		if err != nil {
+			if err == io.EOF {
+				return nil, goa.MissingPayloadError()
+			}
+			return nil, goa.DecodePayloadError(err.Error())
+		}
+		err = ValidateDeleteRequestBody(&body)
+		if err != nil {
+			return nil, err
+		}
+
+		var (
+			token string
+		)
+		token = r.Header.Get("Authorization")
+		if token == "" {
+			err = goa.MergeErrors(err, goa.MissingFieldError("Authorization", "header"))
+		}
+		if err != nil {
+			return nil, err
+		}
+		payload := NewDeletePayload(&body, token)
+		if strings.Contains(payload.Token, " ") {
+			// Remove authorization scheme prefix (e.g. "Bearer")
+			cred := strings.SplitN(payload.Token, " ", 2)[1]
+			payload.Token = cred
+		}
+
+		return payload, nil
 	}
-	if v.Credentials != nil {
-		res.Credentials = marshalUserCredentialsToCredentialsResponseBody(v.Credentials)
+}
+
+// EncodeDeleteError returns an encoder for errors returned by the Delete User
+// endpoint.
+func EncodeDeleteError(encoder func(context.Context, http.ResponseWriter) goahttp.Encoder, formatter func(err error) goahttp.Statuser) func(context.Context, http.ResponseWriter, error) error {
+	encodeError := goahttp.ErrorEncoder(encoder, formatter)
+	return func(ctx context.Context, w http.ResponseWriter, v error) error {
+		en, ok := v.(ErrorNamer)
+		if !ok {
+			return encodeError(ctx, w, v)
+		}
+		switch en.ErrorName() {
+		case "internal_server_error":
+			res := v.(*goa.ServiceError)
+			enc := encoder(ctx, w)
+			var body interface{}
+			if formatter != nil {
+				body = formatter(res)
+			} else {
+				body = NewDeleteInternalServerErrorResponseBody(res)
+			}
+			w.Header().Set("goa-error", "internal_server_error")
+			w.WriteHeader(http.StatusInternalServerError)
+			return enc.Encode(body)
+		case "bad_request":
+			res := v.(*goa.ServiceError)
+			enc := encoder(ctx, w)
+			var body interface{}
+			if formatter != nil {
+				body = formatter(res)
+			} else {
+				body = NewDeleteBadRequestResponseBody(res)
+			}
+			w.Header().Set("goa-error", "bad_request")
+			w.WriteHeader(http.StatusBadRequest)
+			return enc.Encode(body)
+		default:
+			return encodeError(ctx, w, v)
+		}
+	}
+}
+
+// marshalUserviewsSuperiorViewToSuperiorResponseBody builds a value of type
+// *SuperiorResponseBody from a value of type *userviews.SuperiorView.
+func marshalUserviewsSuperiorViewToSuperiorResponseBody(v *userviews.SuperiorView) *SuperiorResponseBody {
+	res := &SuperiorResponseBody{
+		ID:   *v.ID,
+		Name: *v.Name,
+	}
+
+	return res
+}
+
+// marshalUserviewsGroupViewToGroupResponseBody builds a value of type
+// *GroupResponseBody from a value of type *userviews.GroupView.
+func marshalUserviewsGroupViewToGroupResponseBody(v *userviews.GroupView) *GroupResponseBody {
+	res := &GroupResponseBody{
+		ID:   *v.ID,
+		Name: *v.Name,
 	}
 
 	return res
@@ -263,45 +487,39 @@ func marshalUserUserToUserResponseBody(v *user.User) *UserResponseBody {
 	res := &UserResponseBody{
 		ID:       v.ID,
 		Username: v.Username,
+		Name:     v.Name,
 		Mobile:   v.Mobile,
+		Email:    v.Email,
+		Jobs:     v.Jobs,
+		IsAdmin:  v.IsAdmin,
+	}
+	if v.Superior != nil {
+		res.Superior = marshalUserSuperiorToSuperiorResponseBody(v.Superior)
+	}
+	if v.Group != nil {
+		res.Group = marshalUserGroupToGroupResponseBody(v.Group)
 	}
 
 	return res
 }
 
-// marshalUserCredentialsToCredentialsResponseBody builds a value of type
-// *CredentialsResponseBody from a value of type *user.Credentials.
-func marshalUserCredentialsToCredentialsResponseBody(v *user.Credentials) *CredentialsResponseBody {
-	res := &CredentialsResponseBody{
-		Token:     v.Token,
-		ExpiresIn: v.ExpiresIn,
+// marshalUserSuperiorToSuperiorResponseBody builds a value of type
+// *SuperiorResponseBody from a value of type *user.Superior.
+func marshalUserSuperiorToSuperiorResponseBody(v *user.Superior) *SuperiorResponseBody {
+	res := &SuperiorResponseBody{
+		ID:   v.ID,
+		Name: v.Name,
 	}
 
 	return res
 }
 
-// marshalUserSuccessResultToSuccessResultResponseBody builds a value of type
-// *SuccessResultResponseBody from a value of type *user.SuccessResult.
-func marshalUserSuccessResultToSuccessResultResponseBody(v *user.SuccessResult) *SuccessResultResponseBody {
-	if v == nil {
-		return nil
-	}
-	res := &SuccessResultResponseBody{
-		OK: v.OK,
-	}
-
-	return res
-}
-
-// marshalUserCaptchaToCaptchaResponseBody builds a value of type
-// *CaptchaResponseBody from a value of type *user.Captcha.
-func marshalUserCaptchaToCaptchaResponseBody(v *user.Captcha) *CaptchaResponseBody {
-	if v == nil {
-		return nil
-	}
-	res := &CaptchaResponseBody{
-		Image:     v.Image,
-		CaptchaID: v.CaptchaID,
+// marshalUserGroupToGroupResponseBody builds a value of type
+// *GroupResponseBody from a value of type *user.Group.
+func marshalUserGroupToGroupResponseBody(v *user.Group) *GroupResponseBody {
+	res := &GroupResponseBody{
+		ID:   v.ID,
+		Name: v.Name,
 	}
 
 	return res

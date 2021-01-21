@@ -11,6 +11,7 @@ import (
 	"bytes"
 	"context"
 	user "crm/gen/user"
+	userviews "crm/gen/user/views"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -19,13 +20,23 @@ import (
 	goahttp "goa.design/goa/v3/http"
 )
 
-// BuildLoginByUsernameRequest instantiates a HTTP request object with method
-// and path set to call the "User" service "LoginByUsername" endpoint
-func (c *Client) BuildLoginByUsernameRequest(ctx context.Context, v interface{}) (*http.Request, error) {
-	u := &url.URL{Scheme: c.scheme, Host: c.host, Path: LoginByUsernameUserPath()}
-	req, err := http.NewRequest("POST", u.String(), nil)
+// BuildGetRequest instantiates a HTTP request object with method and path set
+// to call the "User" service "Get" endpoint
+func (c *Client) BuildGetRequest(ctx context.Context, v interface{}) (*http.Request, error) {
+	var (
+		id string
+	)
+	{
+		p, ok := v.(*user.GetPayload)
+		if !ok {
+			return nil, goahttp.ErrInvalidType("User", "Get", "*user.GetPayload", v)
+		}
+		id = p.ID
+	}
+	u := &url.URL{Scheme: c.scheme, Host: c.host, Path: GetUserPath(id)}
+	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
-		return nil, goahttp.ErrInvalidURL("User", "LoginByUsername", u.String(), err)
+		return nil, goahttp.ErrInvalidURL("User", "Get", u.String(), err)
 	}
 	if ctx != nil {
 		req = req.WithContext(ctx)
@@ -34,116 +45,12 @@ func (c *Client) BuildLoginByUsernameRequest(ctx context.Context, v interface{})
 	return req, nil
 }
 
-// EncodeLoginByUsernameRequest returns an encoder for requests sent to the
-// User LoginByUsername server.
-func EncodeLoginByUsernameRequest(encoder func(*http.Request) goahttp.Encoder) func(*http.Request, interface{}) error {
+// EncodeGetRequest returns an encoder for requests sent to the User Get server.
+func EncodeGetRequest(encoder func(*http.Request) goahttp.Encoder) func(*http.Request, interface{}) error {
 	return func(req *http.Request, v interface{}) error {
-		p, ok := v.(*user.LoginByUsernamePayload)
+		p, ok := v.(*user.GetPayload)
 		if !ok {
-			return goahttp.ErrInvalidType("User", "LoginByUsername", "*user.LoginByUsernamePayload", v)
-		}
-		body := NewLoginByUsernameRequestBody(p)
-		if err := encoder(req).Encode(&body); err != nil {
-			return goahttp.ErrEncodingError("User", "LoginByUsername", err)
-		}
-		return nil
-	}
-}
-
-// DecodeLoginByUsernameResponse returns a decoder for responses returned by
-// the User LoginByUsername endpoint. restoreBody controls whether the response
-// body should be restored after having been read.
-// DecodeLoginByUsernameResponse may return the following errors:
-//	- "internal_server_error" (type *goa.ServiceError): http.StatusInternalServerError
-//	- "bad_request" (type *goa.ServiceError): http.StatusBadRequest
-//	- error: internal error
-func DecodeLoginByUsernameResponse(decoder func(*http.Response) goahttp.Decoder, restoreBody bool) func(*http.Response) (interface{}, error) {
-	return func(resp *http.Response) (interface{}, error) {
-		if restoreBody {
-			b, err := ioutil.ReadAll(resp.Body)
-			if err != nil {
-				return nil, err
-			}
-			resp.Body = ioutil.NopCloser(bytes.NewBuffer(b))
-			defer func() {
-				resp.Body = ioutil.NopCloser(bytes.NewBuffer(b))
-			}()
-		} else {
-			defer resp.Body.Close()
-		}
-		switch resp.StatusCode {
-		case http.StatusOK:
-			var (
-				body LoginByUsernameResponseBody
-				err  error
-			)
-			err = decoder(resp).Decode(&body)
-			if err != nil {
-				return nil, goahttp.ErrDecodingError("User", "LoginByUsername", err)
-			}
-			err = ValidateLoginByUsernameResponseBody(&body)
-			if err != nil {
-				return nil, goahttp.ErrValidationError("User", "LoginByUsername", err)
-			}
-			res := NewLoginByUsernameResultOK(&body)
-			return res, nil
-		case http.StatusInternalServerError:
-			var (
-				body LoginByUsernameInternalServerErrorResponseBody
-				err  error
-			)
-			err = decoder(resp).Decode(&body)
-			if err != nil {
-				return nil, goahttp.ErrDecodingError("User", "LoginByUsername", err)
-			}
-			err = ValidateLoginByUsernameInternalServerErrorResponseBody(&body)
-			if err != nil {
-				return nil, goahttp.ErrValidationError("User", "LoginByUsername", err)
-			}
-			return nil, NewLoginByUsernameInternalServerError(&body)
-		case http.StatusBadRequest:
-			var (
-				body LoginByUsernameBadRequestResponseBody
-				err  error
-			)
-			err = decoder(resp).Decode(&body)
-			if err != nil {
-				return nil, goahttp.ErrDecodingError("User", "LoginByUsername", err)
-			}
-			err = ValidateLoginByUsernameBadRequestResponseBody(&body)
-			if err != nil {
-				return nil, goahttp.ErrValidationError("User", "LoginByUsername", err)
-			}
-			return nil, NewLoginByUsernameBadRequest(&body)
-		default:
-			body, _ := ioutil.ReadAll(resp.Body)
-			return nil, goahttp.ErrInvalidResponse("User", "LoginByUsername", resp.StatusCode, string(body))
-		}
-	}
-}
-
-// BuildUpdatePasswordRequest instantiates a HTTP request object with method
-// and path set to call the "User" service "UpdatePassword" endpoint
-func (c *Client) BuildUpdatePasswordRequest(ctx context.Context, v interface{}) (*http.Request, error) {
-	u := &url.URL{Scheme: c.scheme, Host: c.host, Path: UpdatePasswordUserPath()}
-	req, err := http.NewRequest("POST", u.String(), nil)
-	if err != nil {
-		return nil, goahttp.ErrInvalidURL("User", "UpdatePassword", u.String(), err)
-	}
-	if ctx != nil {
-		req = req.WithContext(ctx)
-	}
-
-	return req, nil
-}
-
-// EncodeUpdatePasswordRequest returns an encoder for requests sent to the User
-// UpdatePassword server.
-func EncodeUpdatePasswordRequest(encoder func(*http.Request) goahttp.Encoder) func(*http.Request, interface{}) error {
-	return func(req *http.Request, v interface{}) error {
-		p, ok := v.(*user.UpdatePasswordPayload)
-		if !ok {
-			return goahttp.ErrInvalidType("User", "UpdatePassword", "*user.UpdatePasswordPayload", v)
+			return goahttp.ErrInvalidType("User", "Get", "*user.GetPayload", v)
 		}
 		{
 			head := p.Token
@@ -153,22 +60,18 @@ func EncodeUpdatePasswordRequest(encoder func(*http.Request) goahttp.Encoder) fu
 				req.Header.Set("Authorization", head)
 			}
 		}
-		body := NewUpdatePasswordRequestBody(p)
-		if err := encoder(req).Encode(&body); err != nil {
-			return goahttp.ErrEncodingError("User", "UpdatePassword", err)
-		}
 		return nil
 	}
 }
 
-// DecodeUpdatePasswordResponse returns a decoder for responses returned by the
-// User UpdatePassword endpoint. restoreBody controls whether the response body
-// should be restored after having been read.
-// DecodeUpdatePasswordResponse may return the following errors:
+// DecodeGetResponse returns a decoder for responses returned by the User Get
+// endpoint. restoreBody controls whether the response body should be restored
+// after having been read.
+// DecodeGetResponse may return the following errors:
 //	- "internal_server_error" (type *goa.ServiceError): http.StatusInternalServerError
 //	- "bad_request" (type *goa.ServiceError): http.StatusBadRequest
 //	- error: internal error
-func DecodeUpdatePasswordResponse(decoder func(*http.Response) goahttp.Decoder, restoreBody bool) func(*http.Response) (interface{}, error) {
+func DecodeGetResponse(decoder func(*http.Response) goahttp.Decoder, restoreBody bool) func(*http.Response) (interface{}, error) {
 	return func(resp *http.Response) (interface{}, error) {
 		if restoreBody {
 			b, err := ioutil.ReadAll(resp.Body)
@@ -185,61 +88,63 @@ func DecodeUpdatePasswordResponse(decoder func(*http.Response) goahttp.Decoder, 
 		switch resp.StatusCode {
 		case http.StatusOK:
 			var (
-				body UpdatePasswordResponseBody
+				body GetResponseBody
 				err  error
 			)
 			err = decoder(resp).Decode(&body)
 			if err != nil {
-				return nil, goahttp.ErrDecodingError("User", "UpdatePassword", err)
+				return nil, goahttp.ErrDecodingError("User", "Get", err)
 			}
-			err = ValidateUpdatePasswordResponseBody(&body)
-			if err != nil {
-				return nil, goahttp.ErrValidationError("User", "UpdatePassword", err)
+			p := NewGetUserOK(&body)
+			view := "default"
+			vres := &userviews.User{Projected: p, View: view}
+			if err = userviews.ValidateUser(vres); err != nil {
+				return nil, goahttp.ErrValidationError("User", "Get", err)
 			}
-			res := NewUpdatePasswordResultOK(&body)
+			res := user.NewUser(vres)
 			return res, nil
 		case http.StatusInternalServerError:
 			var (
-				body UpdatePasswordInternalServerErrorResponseBody
+				body GetInternalServerErrorResponseBody
 				err  error
 			)
 			err = decoder(resp).Decode(&body)
 			if err != nil {
-				return nil, goahttp.ErrDecodingError("User", "UpdatePassword", err)
+				return nil, goahttp.ErrDecodingError("User", "Get", err)
 			}
-			err = ValidateUpdatePasswordInternalServerErrorResponseBody(&body)
+			err = ValidateGetInternalServerErrorResponseBody(&body)
 			if err != nil {
-				return nil, goahttp.ErrValidationError("User", "UpdatePassword", err)
+				return nil, goahttp.ErrValidationError("User", "Get", err)
 			}
-			return nil, NewUpdatePasswordInternalServerError(&body)
+			return nil, NewGetInternalServerError(&body)
 		case http.StatusBadRequest:
 			var (
-				body UpdatePasswordBadRequestResponseBody
+				body GetBadRequestResponseBody
 				err  error
 			)
 			err = decoder(resp).Decode(&body)
 			if err != nil {
-				return nil, goahttp.ErrDecodingError("User", "UpdatePassword", err)
+				return nil, goahttp.ErrDecodingError("User", "Get", err)
 			}
-			err = ValidateUpdatePasswordBadRequestResponseBody(&body)
+			err = ValidateGetBadRequestResponseBody(&body)
 			if err != nil {
-				return nil, goahttp.ErrValidationError("User", "UpdatePassword", err)
+				return nil, goahttp.ErrValidationError("User", "Get", err)
 			}
-			return nil, NewUpdatePasswordBadRequest(&body)
+			return nil, NewGetBadRequest(&body)
 		default:
 			body, _ := ioutil.ReadAll(resp.Body)
-			return nil, goahttp.ErrInvalidResponse("User", "UpdatePassword", resp.StatusCode, string(body))
+			return nil, goahttp.ErrInvalidResponse("User", "Get", resp.StatusCode, string(body))
 		}
 	}
 }
 
-// BuildGetCaptchaImageRequest instantiates a HTTP request object with method
-// and path set to call the "User" service "GetCaptchaImage" endpoint
-func (c *Client) BuildGetCaptchaImageRequest(ctx context.Context, v interface{}) (*http.Request, error) {
-	u := &url.URL{Scheme: c.scheme, Host: c.host, Path: GetCaptchaImageUserPath()}
-	req, err := http.NewRequest("POST", u.String(), nil)
+// BuildListRequest instantiates a HTTP request object with method and path set
+// to call the "User" service "List" endpoint
+func (c *Client) BuildListRequest(ctx context.Context, v interface{}) (*http.Request, error) {
+	u := &url.URL{Scheme: c.scheme, Host: c.host, Path: ListUserPath()}
+	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
-		return nil, goahttp.ErrInvalidURL("User", "GetCaptchaImage", u.String(), err)
+		return nil, goahttp.ErrInvalidURL("User", "List", u.String(), err)
 	}
 	if ctx != nil {
 		req = req.WithContext(ctx)
@@ -248,14 +153,34 @@ func (c *Client) BuildGetCaptchaImageRequest(ctx context.Context, v interface{})
 	return req, nil
 }
 
-// DecodeGetCaptchaImageResponse returns a decoder for responses returned by
-// the User GetCaptchaImage endpoint. restoreBody controls whether the response
-// body should be restored after having been read.
-// DecodeGetCaptchaImageResponse may return the following errors:
+// EncodeListRequest returns an encoder for requests sent to the User List
+// server.
+func EncodeListRequest(encoder func(*http.Request) goahttp.Encoder) func(*http.Request, interface{}) error {
+	return func(req *http.Request, v interface{}) error {
+		p, ok := v.(*user.ListPayload)
+		if !ok {
+			return goahttp.ErrInvalidType("User", "List", "*user.ListPayload", v)
+		}
+		{
+			head := p.Token
+			if !strings.Contains(head, " ") {
+				req.Header.Set("Authorization", "Bearer "+head)
+			} else {
+				req.Header.Set("Authorization", head)
+			}
+		}
+		return nil
+	}
+}
+
+// DecodeListResponse returns a decoder for responses returned by the User List
+// endpoint. restoreBody controls whether the response body should be restored
+// after having been read.
+// DecodeListResponse may return the following errors:
 //	- "internal_server_error" (type *goa.ServiceError): http.StatusInternalServerError
 //	- "bad_request" (type *goa.ServiceError): http.StatusBadRequest
 //	- error: internal error
-func DecodeGetCaptchaImageResponse(decoder func(*http.Response) goahttp.Decoder, restoreBody bool) func(*http.Response) (interface{}, error) {
+func DecodeListResponse(decoder func(*http.Response) goahttp.Decoder, restoreBody bool) func(*http.Response) (interface{}, error) {
 	return func(resp *http.Response) (interface{}, error) {
 		if restoreBody {
 			b, err := ioutil.ReadAll(resp.Body)
@@ -272,63 +197,411 @@ func DecodeGetCaptchaImageResponse(decoder func(*http.Response) goahttp.Decoder,
 		switch resp.StatusCode {
 		case http.StatusOK:
 			var (
-				body GetCaptchaImageResponseBody
+				body ListResponseBody
 				err  error
 			)
 			err = decoder(resp).Decode(&body)
 			if err != nil {
-				return nil, goahttp.ErrDecodingError("User", "GetCaptchaImage", err)
+				return nil, goahttp.ErrDecodingError("User", "List", err)
 			}
-			err = ValidateGetCaptchaImageResponseBody(&body)
+			err = ValidateListResponseBody(&body)
 			if err != nil {
-				return nil, goahttp.ErrValidationError("User", "GetCaptchaImage", err)
+				return nil, goahttp.ErrValidationError("User", "List", err)
 			}
-			res := NewGetCaptchaImageResultOK(&body)
+			res := NewListResultOK(&body)
 			return res, nil
 		case http.StatusInternalServerError:
 			var (
-				body GetCaptchaImageInternalServerErrorResponseBody
+				body ListInternalServerErrorResponseBody
 				err  error
 			)
 			err = decoder(resp).Decode(&body)
 			if err != nil {
-				return nil, goahttp.ErrDecodingError("User", "GetCaptchaImage", err)
+				return nil, goahttp.ErrDecodingError("User", "List", err)
 			}
-			err = ValidateGetCaptchaImageInternalServerErrorResponseBody(&body)
+			err = ValidateListInternalServerErrorResponseBody(&body)
 			if err != nil {
-				return nil, goahttp.ErrValidationError("User", "GetCaptchaImage", err)
+				return nil, goahttp.ErrValidationError("User", "List", err)
 			}
-			return nil, NewGetCaptchaImageInternalServerError(&body)
+			return nil, NewListInternalServerError(&body)
 		case http.StatusBadRequest:
 			var (
-				body GetCaptchaImageBadRequestResponseBody
+				body ListBadRequestResponseBody
 				err  error
 			)
 			err = decoder(resp).Decode(&body)
 			if err != nil {
-				return nil, goahttp.ErrDecodingError("User", "GetCaptchaImage", err)
+				return nil, goahttp.ErrDecodingError("User", "List", err)
 			}
-			err = ValidateGetCaptchaImageBadRequestResponseBody(&body)
+			err = ValidateListBadRequestResponseBody(&body)
 			if err != nil {
-				return nil, goahttp.ErrValidationError("User", "GetCaptchaImage", err)
+				return nil, goahttp.ErrValidationError("User", "List", err)
 			}
-			return nil, NewGetCaptchaImageBadRequest(&body)
+			return nil, NewListBadRequest(&body)
 		default:
 			body, _ := ioutil.ReadAll(resp.Body)
-			return nil, goahttp.ErrInvalidResponse("User", "GetCaptchaImage", resp.StatusCode, string(body))
+			return nil, goahttp.ErrInvalidResponse("User", "List", resp.StatusCode, string(body))
 		}
 	}
 }
 
-// unmarshalSessionResponseBodyToUserSession builds a value of type
-// *user.Session from a value of type *SessionResponseBody.
-func unmarshalSessionResponseBodyToUserSession(v *SessionResponseBody) *user.Session {
-	if v == nil {
+// BuildUpdateRequest instantiates a HTTP request object with method and path
+// set to call the "User" service "Update" endpoint
+func (c *Client) BuildUpdateRequest(ctx context.Context, v interface{}) (*http.Request, error) {
+	u := &url.URL{Scheme: c.scheme, Host: c.host, Path: UpdateUserPath()}
+	req, err := http.NewRequest("PUT", u.String(), nil)
+	if err != nil {
+		return nil, goahttp.ErrInvalidURL("User", "Update", u.String(), err)
+	}
+	if ctx != nil {
+		req = req.WithContext(ctx)
+	}
+
+	return req, nil
+}
+
+// EncodeUpdateRequest returns an encoder for requests sent to the User Update
+// server.
+func EncodeUpdateRequest(encoder func(*http.Request) goahttp.Encoder) func(*http.Request, interface{}) error {
+	return func(req *http.Request, v interface{}) error {
+		p, ok := v.(*user.UpdatePayload)
+		if !ok {
+			return goahttp.ErrInvalidType("User", "Update", "*user.UpdatePayload", v)
+		}
+		{
+			head := p.Token
+			if !strings.Contains(head, " ") {
+				req.Header.Set("Authorization", "Bearer "+head)
+			} else {
+				req.Header.Set("Authorization", head)
+			}
+		}
+		body := NewUpdateRequestBody(p)
+		if err := encoder(req).Encode(&body); err != nil {
+			return goahttp.ErrEncodingError("User", "Update", err)
+		}
 		return nil
 	}
-	res := &user.Session{}
-	res.User = unmarshalUserResponseBodyToUserUser(v.User)
-	res.Credentials = unmarshalCredentialsResponseBodyToUserCredentials(v.Credentials)
+}
+
+// DecodeUpdateResponse returns a decoder for responses returned by the User
+// Update endpoint. restoreBody controls whether the response body should be
+// restored after having been read.
+// DecodeUpdateResponse may return the following errors:
+//	- "internal_server_error" (type *goa.ServiceError): http.StatusInternalServerError
+//	- "bad_request" (type *goa.ServiceError): http.StatusBadRequest
+//	- error: internal error
+func DecodeUpdateResponse(decoder func(*http.Response) goahttp.Decoder, restoreBody bool) func(*http.Response) (interface{}, error) {
+	return func(resp *http.Response) (interface{}, error) {
+		if restoreBody {
+			b, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				return nil, err
+			}
+			resp.Body = ioutil.NopCloser(bytes.NewBuffer(b))
+			defer func() {
+				resp.Body = ioutil.NopCloser(bytes.NewBuffer(b))
+			}()
+		} else {
+			defer resp.Body.Close()
+		}
+		switch resp.StatusCode {
+		case http.StatusOK:
+			var (
+				body UpdateResponseBody
+				err  error
+			)
+			err = decoder(resp).Decode(&body)
+			if err != nil {
+				return nil, goahttp.ErrDecodingError("User", "Update", err)
+			}
+			p := NewUpdateUserOK(&body)
+			view := "default"
+			vres := &userviews.User{Projected: p, View: view}
+			if err = userviews.ValidateUser(vres); err != nil {
+				return nil, goahttp.ErrValidationError("User", "Update", err)
+			}
+			res := user.NewUser(vres)
+			return res, nil
+		case http.StatusInternalServerError:
+			var (
+				body UpdateInternalServerErrorResponseBody
+				err  error
+			)
+			err = decoder(resp).Decode(&body)
+			if err != nil {
+				return nil, goahttp.ErrDecodingError("User", "Update", err)
+			}
+			err = ValidateUpdateInternalServerErrorResponseBody(&body)
+			if err != nil {
+				return nil, goahttp.ErrValidationError("User", "Update", err)
+			}
+			return nil, NewUpdateInternalServerError(&body)
+		case http.StatusBadRequest:
+			var (
+				body UpdateBadRequestResponseBody
+				err  error
+			)
+			err = decoder(resp).Decode(&body)
+			if err != nil {
+				return nil, goahttp.ErrDecodingError("User", "Update", err)
+			}
+			err = ValidateUpdateBadRequestResponseBody(&body)
+			if err != nil {
+				return nil, goahttp.ErrValidationError("User", "Update", err)
+			}
+			return nil, NewUpdateBadRequest(&body)
+		default:
+			body, _ := ioutil.ReadAll(resp.Body)
+			return nil, goahttp.ErrInvalidResponse("User", "Update", resp.StatusCode, string(body))
+		}
+	}
+}
+
+// BuildCreateRequest instantiates a HTTP request object with method and path
+// set to call the "User" service "Create" endpoint
+func (c *Client) BuildCreateRequest(ctx context.Context, v interface{}) (*http.Request, error) {
+	u := &url.URL{Scheme: c.scheme, Host: c.host, Path: CreateUserPath()}
+	req, err := http.NewRequest("POST", u.String(), nil)
+	if err != nil {
+		return nil, goahttp.ErrInvalidURL("User", "Create", u.String(), err)
+	}
+	if ctx != nil {
+		req = req.WithContext(ctx)
+	}
+
+	return req, nil
+}
+
+// EncodeCreateRequest returns an encoder for requests sent to the User Create
+// server.
+func EncodeCreateRequest(encoder func(*http.Request) goahttp.Encoder) func(*http.Request, interface{}) error {
+	return func(req *http.Request, v interface{}) error {
+		p, ok := v.(*user.CreatePayload)
+		if !ok {
+			return goahttp.ErrInvalidType("User", "Create", "*user.CreatePayload", v)
+		}
+		{
+			head := p.Token
+			if !strings.Contains(head, " ") {
+				req.Header.Set("Authorization", "Bearer "+head)
+			} else {
+				req.Header.Set("Authorization", head)
+			}
+		}
+		body := NewCreateRequestBody(p)
+		if err := encoder(req).Encode(&body); err != nil {
+			return goahttp.ErrEncodingError("User", "Create", err)
+		}
+		return nil
+	}
+}
+
+// DecodeCreateResponse returns a decoder for responses returned by the User
+// Create endpoint. restoreBody controls whether the response body should be
+// restored after having been read.
+// DecodeCreateResponse may return the following errors:
+//	- "internal_server_error" (type *goa.ServiceError): http.StatusInternalServerError
+//	- "bad_request" (type *goa.ServiceError): http.StatusBadRequest
+//	- error: internal error
+func DecodeCreateResponse(decoder func(*http.Response) goahttp.Decoder, restoreBody bool) func(*http.Response) (interface{}, error) {
+	return func(resp *http.Response) (interface{}, error) {
+		if restoreBody {
+			b, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				return nil, err
+			}
+			resp.Body = ioutil.NopCloser(bytes.NewBuffer(b))
+			defer func() {
+				resp.Body = ioutil.NopCloser(bytes.NewBuffer(b))
+			}()
+		} else {
+			defer resp.Body.Close()
+		}
+		switch resp.StatusCode {
+		case http.StatusOK:
+			var (
+				body CreateResponseBody
+				err  error
+			)
+			err = decoder(resp).Decode(&body)
+			if err != nil {
+				return nil, goahttp.ErrDecodingError("User", "Create", err)
+			}
+			p := NewCreateUserOK(&body)
+			view := "default"
+			vres := &userviews.User{Projected: p, View: view}
+			if err = userviews.ValidateUser(vres); err != nil {
+				return nil, goahttp.ErrValidationError("User", "Create", err)
+			}
+			res := user.NewUser(vres)
+			return res, nil
+		case http.StatusInternalServerError:
+			var (
+				body CreateInternalServerErrorResponseBody
+				err  error
+			)
+			err = decoder(resp).Decode(&body)
+			if err != nil {
+				return nil, goahttp.ErrDecodingError("User", "Create", err)
+			}
+			err = ValidateCreateInternalServerErrorResponseBody(&body)
+			if err != nil {
+				return nil, goahttp.ErrValidationError("User", "Create", err)
+			}
+			return nil, NewCreateInternalServerError(&body)
+		case http.StatusBadRequest:
+			var (
+				body CreateBadRequestResponseBody
+				err  error
+			)
+			err = decoder(resp).Decode(&body)
+			if err != nil {
+				return nil, goahttp.ErrDecodingError("User", "Create", err)
+			}
+			err = ValidateCreateBadRequestResponseBody(&body)
+			if err != nil {
+				return nil, goahttp.ErrValidationError("User", "Create", err)
+			}
+			return nil, NewCreateBadRequest(&body)
+		default:
+			body, _ := ioutil.ReadAll(resp.Body)
+			return nil, goahttp.ErrInvalidResponse("User", "Create", resp.StatusCode, string(body))
+		}
+	}
+}
+
+// BuildDeleteRequest instantiates a HTTP request object with method and path
+// set to call the "User" service "Delete" endpoint
+func (c *Client) BuildDeleteRequest(ctx context.Context, v interface{}) (*http.Request, error) {
+	u := &url.URL{Scheme: c.scheme, Host: c.host, Path: DeleteUserPath()}
+	req, err := http.NewRequest("DELETE", u.String(), nil)
+	if err != nil {
+		return nil, goahttp.ErrInvalidURL("User", "Delete", u.String(), err)
+	}
+	if ctx != nil {
+		req = req.WithContext(ctx)
+	}
+
+	return req, nil
+}
+
+// EncodeDeleteRequest returns an encoder for requests sent to the User Delete
+// server.
+func EncodeDeleteRequest(encoder func(*http.Request) goahttp.Encoder) func(*http.Request, interface{}) error {
+	return func(req *http.Request, v interface{}) error {
+		p, ok := v.(*user.DeletePayload)
+		if !ok {
+			return goahttp.ErrInvalidType("User", "Delete", "*user.DeletePayload", v)
+		}
+		{
+			head := p.Token
+			if !strings.Contains(head, " ") {
+				req.Header.Set("Authorization", "Bearer "+head)
+			} else {
+				req.Header.Set("Authorization", head)
+			}
+		}
+		body := NewDeleteRequestBody(p)
+		if err := encoder(req).Encode(&body); err != nil {
+			return goahttp.ErrEncodingError("User", "Delete", err)
+		}
+		return nil
+	}
+}
+
+// DecodeDeleteResponse returns a decoder for responses returned by the User
+// Delete endpoint. restoreBody controls whether the response body should be
+// restored after having been read.
+// DecodeDeleteResponse may return the following errors:
+//	- "internal_server_error" (type *goa.ServiceError): http.StatusInternalServerError
+//	- "bad_request" (type *goa.ServiceError): http.StatusBadRequest
+//	- error: internal error
+func DecodeDeleteResponse(decoder func(*http.Response) goahttp.Decoder, restoreBody bool) func(*http.Response) (interface{}, error) {
+	return func(resp *http.Response) (interface{}, error) {
+		if restoreBody {
+			b, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				return nil, err
+			}
+			resp.Body = ioutil.NopCloser(bytes.NewBuffer(b))
+			defer func() {
+				resp.Body = ioutil.NopCloser(bytes.NewBuffer(b))
+			}()
+		} else {
+			defer resp.Body.Close()
+		}
+		switch resp.StatusCode {
+		case http.StatusOK:
+			var (
+				body DeleteResponseBody
+				err  error
+			)
+			err = decoder(resp).Decode(&body)
+			if err != nil {
+				return nil, goahttp.ErrDecodingError("User", "Delete", err)
+			}
+			p := NewDeleteSuccessResultOK(&body)
+			view := "default"
+			vres := &userviews.SuccessResult{Projected: p, View: view}
+			if err = userviews.ValidateSuccessResult(vres); err != nil {
+				return nil, goahttp.ErrValidationError("User", "Delete", err)
+			}
+			res := user.NewSuccessResult(vres)
+			return res, nil
+		case http.StatusInternalServerError:
+			var (
+				body DeleteInternalServerErrorResponseBody
+				err  error
+			)
+			err = decoder(resp).Decode(&body)
+			if err != nil {
+				return nil, goahttp.ErrDecodingError("User", "Delete", err)
+			}
+			err = ValidateDeleteInternalServerErrorResponseBody(&body)
+			if err != nil {
+				return nil, goahttp.ErrValidationError("User", "Delete", err)
+			}
+			return nil, NewDeleteInternalServerError(&body)
+		case http.StatusBadRequest:
+			var (
+				body DeleteBadRequestResponseBody
+				err  error
+			)
+			err = decoder(resp).Decode(&body)
+			if err != nil {
+				return nil, goahttp.ErrDecodingError("User", "Delete", err)
+			}
+			err = ValidateDeleteBadRequestResponseBody(&body)
+			if err != nil {
+				return nil, goahttp.ErrValidationError("User", "Delete", err)
+			}
+			return nil, NewDeleteBadRequest(&body)
+		default:
+			body, _ := ioutil.ReadAll(resp.Body)
+			return nil, goahttp.ErrInvalidResponse("User", "Delete", resp.StatusCode, string(body))
+		}
+	}
+}
+
+// unmarshalSuperiorResponseBodyToUserviewsSuperiorView builds a value of type
+// *userviews.SuperiorView from a value of type *SuperiorResponseBody.
+func unmarshalSuperiorResponseBodyToUserviewsSuperiorView(v *SuperiorResponseBody) *userviews.SuperiorView {
+	res := &userviews.SuperiorView{
+		ID:   v.ID,
+		Name: v.Name,
+	}
+
+	return res
+}
+
+// unmarshalGroupResponseBodyToUserviewsGroupView builds a value of type
+// *userviews.GroupView from a value of type *GroupResponseBody.
+func unmarshalGroupResponseBodyToUserviewsGroupView(v *GroupResponseBody) *userviews.GroupView {
+	res := &userviews.GroupView{
+		ID:   v.ID,
+		Name: v.Name,
+	}
 
 	return res
 }
@@ -339,45 +612,35 @@ func unmarshalUserResponseBodyToUserUser(v *UserResponseBody) *user.User {
 	res := &user.User{
 		ID:       *v.ID,
 		Username: *v.Username,
+		Name:     *v.Name,
 		Mobile:   *v.Mobile,
+		Email:    *v.Email,
+		Jobs:     *v.Jobs,
+		IsAdmin:  *v.IsAdmin,
+	}
+	res.Superior = unmarshalSuperiorResponseBodyToUserSuperior(v.Superior)
+	res.Group = unmarshalGroupResponseBodyToUserGroup(v.Group)
+
+	return res
+}
+
+// unmarshalSuperiorResponseBodyToUserSuperior builds a value of type
+// *user.Superior from a value of type *SuperiorResponseBody.
+func unmarshalSuperiorResponseBodyToUserSuperior(v *SuperiorResponseBody) *user.Superior {
+	res := &user.Superior{
+		ID:   *v.ID,
+		Name: *v.Name,
 	}
 
 	return res
 }
 
-// unmarshalCredentialsResponseBodyToUserCredentials builds a value of type
-// *user.Credentials from a value of type *CredentialsResponseBody.
-func unmarshalCredentialsResponseBodyToUserCredentials(v *CredentialsResponseBody) *user.Credentials {
-	res := &user.Credentials{
-		Token:     *v.Token,
-		ExpiresIn: *v.ExpiresIn,
-	}
-
-	return res
-}
-
-// unmarshalSuccessResultResponseBodyToUserSuccessResult builds a value of type
-// *user.SuccessResult from a value of type *SuccessResultResponseBody.
-func unmarshalSuccessResultResponseBodyToUserSuccessResult(v *SuccessResultResponseBody) *user.SuccessResult {
-	if v == nil {
-		return nil
-	}
-	res := &user.SuccessResult{
-		OK: *v.OK,
-	}
-
-	return res
-}
-
-// unmarshalCaptchaResponseBodyToUserCaptcha builds a value of type
-// *user.Captcha from a value of type *CaptchaResponseBody.
-func unmarshalCaptchaResponseBodyToUserCaptcha(v *CaptchaResponseBody) *user.Captcha {
-	if v == nil {
-		return nil
-	}
-	res := &user.Captcha{
-		Image:     *v.Image,
-		CaptchaID: *v.CaptchaID,
+// unmarshalGroupResponseBodyToUserGroup builds a value of type *user.Group
+// from a value of type *GroupResponseBody.
+func unmarshalGroupResponseBodyToUserGroup(v *GroupResponseBody) *user.Group {
+	res := &user.Group{
+		ID:   *v.ID,
+		Name: *v.Name,
 	}
 
 	return res

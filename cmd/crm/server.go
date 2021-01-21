@@ -12,8 +12,17 @@ import (
 
 	"crm/config"
 	handler "crm/controller"
+	"crm/gen/auth"
+	"crm/gen/customer"
+	"crm/gen/group"
+	"crm/gen/inventory"
 	"crm/gen/log"
+	"crm/gen/procurement"
+	"crm/gen/product"
+	"crm/gen/sales"
+	"crm/gen/supplier"
 	"crm/gen/user"
+	"crm/gen/warehouse"
 
 	metricsMlwr "github.com/geeksmy/go-libs/goa-libs/middleware/metrics"
 	"github.com/geeksmy/go-libs/panichandler"
@@ -32,19 +41,55 @@ func RunServer(cfg *config.Config, metrics *metricsMlwr.Prometheus) {
 
 	// Initialize the services.
 	var (
-		userSvc user.Service
+		authSvc        auth.Service
+		userSvc        user.Service
+		groupSvc       group.Service
+		productSvc     product.Service
+		supplierSvc    supplier.Service
+		procurementSvc procurement.Service
+		salesSvc       sales.Service
+		customerSvc    customer.Service
+		warehouseSvc   warehouse.Service
+		inventorySvc   inventory.Service
 	)
 	{
+		authSvc = handler.NewAuth(logger)
 		userSvc = handler.NewUser(logger)
+		groupSvc = handler.NewGroup(logger)
+		productSvc = handler.NewProduct(logger)
+		supplierSvc = handler.NewSupplier(logger)
+		procurementSvc = handler.NewProcurement(logger)
+		salesSvc = handler.NewSales(logger)
+		customerSvc = handler.NewCustomer(logger)
+		warehouseSvc = handler.NewWarehouse(logger)
+		inventorySvc = handler.NewInventory(logger)
 	}
 
 	// Wrap the services in endpoints that can be invoked from other services
 	// potentially running in different processes.
 	var (
-		userEndpoints *user.Endpoints
+		authEndpoints        *auth.Endpoints
+		userEndpoints        *user.Endpoints
+		groupEndpoints       *group.Endpoints
+		productEndpoints     *product.Endpoints
+		supplierEndpoints    *supplier.Endpoints
+		procurementEndpoints *procurement.Endpoints
+		salesEndpoints       *sales.Endpoints
+		customerEndpoints    *customer.Endpoints
+		warehouseEndpoints   *warehouse.Endpoints
+		inventoryEndpoints   *inventory.Endpoints
 	)
 	{
+		authEndpoints = auth.NewEndpoints(authSvc)
 		userEndpoints = user.NewEndpoints(userSvc)
+		groupEndpoints = group.NewEndpoints(groupSvc)
+		productEndpoints = product.NewEndpoints(productSvc)
+		supplierEndpoints = supplier.NewEndpoints(supplierSvc)
+		procurementEndpoints = procurement.NewEndpoints(procurementSvc)
+		salesEndpoints = sales.NewEndpoints(salesSvc)
+		customerEndpoints = customer.NewEndpoints(customerSvc)
+		warehouseEndpoints = warehouse.NewEndpoints(warehouseSvc)
+		inventoryEndpoints = inventory.NewEndpoints(inventorySvc)
 	}
 
 	// Create channel used by both the signal handler and server goroutines
@@ -64,7 +109,9 @@ func RunServer(cfg *config.Config, metrics *metricsMlwr.Prometheus) {
 
 	addr := fmt.Sprintf("http://%s:%s", cfg.Server.Host, cfg.Server.HTTPPort)
 	u, _ := url.Parse(addr)
-	handleHTTPServer(ctx, u.Host, userEndpoints, &wg, errc, logger, metrics, cfg.Debug)
+	handleHTTPServer(ctx, u.Host, userEndpoints, authEndpoints, groupEndpoints, productEndpoints, supplierEndpoints,
+		procurementEndpoints, salesEndpoints, customerEndpoints, warehouseEndpoints, inventoryEndpoints,
+		&wg, errc, logger, metrics, cfg.Debug)
 
 	// Wait for signal.
 	logger.Infof("exiting (%v)", <-errc)

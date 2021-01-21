@@ -16,9 +16,11 @@ import (
 
 // Endpoints wraps the "User" service endpoints.
 type Endpoints struct {
-	LoginByUsername goa.Endpoint
-	UpdatePassword  goa.Endpoint
-	GetCaptchaImage goa.Endpoint
+	Get    goa.Endpoint
+	List   goa.Endpoint
+	Update goa.Endpoint
+	Create goa.Endpoint
+	Delete goa.Endpoint
 }
 
 // NewEndpoints wraps the methods of the "User" service with endpoints.
@@ -26,33 +28,28 @@ func NewEndpoints(s Service) *Endpoints {
 	// Casting service to Auther interface
 	a := s.(Auther)
 	return &Endpoints{
-		LoginByUsername: NewLoginByUsernameEndpoint(s),
-		UpdatePassword:  NewUpdatePasswordEndpoint(s, a.JWTAuth),
-		GetCaptchaImage: NewGetCaptchaImageEndpoint(s),
+		Get:    NewGetEndpoint(s, a.JWTAuth),
+		List:   NewListEndpoint(s, a.JWTAuth),
+		Update: NewUpdateEndpoint(s, a.JWTAuth),
+		Create: NewCreateEndpoint(s, a.JWTAuth),
+		Delete: NewDeleteEndpoint(s, a.JWTAuth),
 	}
 }
 
 // Use applies the given middleware to all the "User" service endpoints.
 func (e *Endpoints) Use(m func(goa.Endpoint) goa.Endpoint) {
-	e.LoginByUsername = m(e.LoginByUsername)
-	e.UpdatePassword = m(e.UpdatePassword)
-	e.GetCaptchaImage = m(e.GetCaptchaImage)
+	e.Get = m(e.Get)
+	e.List = m(e.List)
+	e.Update = m(e.Update)
+	e.Create = m(e.Create)
+	e.Delete = m(e.Delete)
 }
 
-// NewLoginByUsernameEndpoint returns an endpoint function that calls the
-// method "LoginByUsername" of service "User".
-func NewLoginByUsernameEndpoint(s Service) goa.Endpoint {
+// NewGetEndpoint returns an endpoint function that calls the method "Get" of
+// service "User".
+func NewGetEndpoint(s Service, authJWTFn security.AuthJWTFunc) goa.Endpoint {
 	return func(ctx context.Context, req interface{}) (interface{}, error) {
-		p := req.(*LoginByUsernamePayload)
-		return s.LoginByUsername(ctx, p)
-	}
-}
-
-// NewUpdatePasswordEndpoint returns an endpoint function that calls the method
-// "UpdatePassword" of service "User".
-func NewUpdatePasswordEndpoint(s Service, authJWTFn security.AuthJWTFunc) goa.Endpoint {
-	return func(ctx context.Context, req interface{}) (interface{}, error) {
-		p := req.(*UpdatePasswordPayload)
+		p := req.(*GetPayload)
 		var err error
 		sc := security.JWTScheme{
 			Name:           "jwt",
@@ -63,14 +60,102 @@ func NewUpdatePasswordEndpoint(s Service, authJWTFn security.AuthJWTFunc) goa.En
 		if err != nil {
 			return nil, err
 		}
-		return s.UpdatePassword(ctx, p)
+		res, err := s.Get(ctx, p)
+		if err != nil {
+			return nil, err
+		}
+		vres := NewViewedUser(res, "default")
+		return vres, nil
 	}
 }
 
-// NewGetCaptchaImageEndpoint returns an endpoint function that calls the
-// method "GetCaptchaImage" of service "User".
-func NewGetCaptchaImageEndpoint(s Service) goa.Endpoint {
+// NewListEndpoint returns an endpoint function that calls the method "List" of
+// service "User".
+func NewListEndpoint(s Service, authJWTFn security.AuthJWTFunc) goa.Endpoint {
 	return func(ctx context.Context, req interface{}) (interface{}, error) {
-		return s.GetCaptchaImage(ctx)
+		p := req.(*ListPayload)
+		var err error
+		sc := security.JWTScheme{
+			Name:           "jwt",
+			Scopes:         []string{"role:user", "role:admin"},
+			RequiredScopes: []string{"role:user"},
+		}
+		ctx, err = authJWTFn(ctx, p.Token, &sc)
+		if err != nil {
+			return nil, err
+		}
+		return s.List(ctx, p)
+	}
+}
+
+// NewUpdateEndpoint returns an endpoint function that calls the method
+// "Update" of service "User".
+func NewUpdateEndpoint(s Service, authJWTFn security.AuthJWTFunc) goa.Endpoint {
+	return func(ctx context.Context, req interface{}) (interface{}, error) {
+		p := req.(*UpdatePayload)
+		var err error
+		sc := security.JWTScheme{
+			Name:           "jwt",
+			Scopes:         []string{"role:user", "role:admin"},
+			RequiredScopes: []string{"role:user"},
+		}
+		ctx, err = authJWTFn(ctx, p.Token, &sc)
+		if err != nil {
+			return nil, err
+		}
+		res, err := s.Update(ctx, p)
+		if err != nil {
+			return nil, err
+		}
+		vres := NewViewedUser(res, "default")
+		return vres, nil
+	}
+}
+
+// NewCreateEndpoint returns an endpoint function that calls the method
+// "Create" of service "User".
+func NewCreateEndpoint(s Service, authJWTFn security.AuthJWTFunc) goa.Endpoint {
+	return func(ctx context.Context, req interface{}) (interface{}, error) {
+		p := req.(*CreatePayload)
+		var err error
+		sc := security.JWTScheme{
+			Name:           "jwt",
+			Scopes:         []string{"role:user", "role:admin"},
+			RequiredScopes: []string{"role:user"},
+		}
+		ctx, err = authJWTFn(ctx, p.Token, &sc)
+		if err != nil {
+			return nil, err
+		}
+		res, err := s.Create(ctx, p)
+		if err != nil {
+			return nil, err
+		}
+		vres := NewViewedUser(res, "default")
+		return vres, nil
+	}
+}
+
+// NewDeleteEndpoint returns an endpoint function that calls the method
+// "Delete" of service "User".
+func NewDeleteEndpoint(s Service, authJWTFn security.AuthJWTFunc) goa.Endpoint {
+	return func(ctx context.Context, req interface{}) (interface{}, error) {
+		p := req.(*DeletePayload)
+		var err error
+		sc := security.JWTScheme{
+			Name:           "jwt",
+			Scopes:         []string{"role:user", "role:admin"},
+			RequiredScopes: []string{"role:user"},
+		}
+		ctx, err = authJWTFn(ctx, p.Token, &sc)
+		if err != nil {
+			return nil, err
+		}
+		res, err := s.Delete(ctx, p)
+		if err != nil {
+			return nil, err
+		}
+		vres := NewViewedSuccessResult(res, "default")
+		return vres, nil
 	}
 }

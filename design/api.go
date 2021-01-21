@@ -13,12 +13,12 @@ var _ = API("crm", func() {
 
 	Server("crm", func() {
 		Description("微服务")
-		Services("User")
+		Services("User", "Auth", "Group", "Product", "Supplier", "Procurement", "Sales", "Customer", "Warehouse", "Inventory")
 
 		Host("localhost", func() {
 			Description("default host")
-			URI("http://localhost:8000/starter")
-			URI("grpc://localhost:8080/starter")
+			URI("http://localhost:8080/starter")
+			URI("grpc://localhost:8081/starter")
 		})
 	})
 })

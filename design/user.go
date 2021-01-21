@@ -1,9 +1,11 @@
 package design
 
-import . "goa.design/goa/v3/dsl"
+import (
+	. "goa.design/goa/v3/dsl"
+)
 
 var _ = Service("User", func() {
-	Description("微服务")
+	Description("用户服务")
 
 	Error("internal_server_error", ErrorResult)
 	Error("bad_request", ErrorResult)
@@ -14,56 +16,9 @@ var _ = Service("User", func() {
 		Response("bad_request", StatusBadRequest)
 	})
 
-	Method("LoginByUsername", func() {
-		Description("使用账号密码登录")
-		Meta("swagger:summary", "使用账号密码登录")
-
-		Payload(func() {
-			Attribute("username", String, "用户名", func() {
-				Example("user")
-				MinLength(1)
-				MaxLength(128)
-			})
-			Attribute("password", String, "密码", func() {
-				Example("password")
-				MinLength(1)
-				MaxLength(128)
-			})
-			Attribute("humanCode", String, "图形验证码", func() {
-				Default("")
-				MinLength(4)
-				MaxLength(8)
-			})
-			Attribute("captchaId", String, "图形验证码ID", func() {
-				Default("")
-				MinLength(1)
-				MaxLength(128)
-			})
-			Required("username", "password")
-		})
-
-		Result(func() {
-			Attribute("errcode", Int, "错误码", func() {
-				Minimum(0)
-				Maximum(999999)
-				Example(0)
-			})
-			Attribute("errmsg", String, "错误消息", func() {
-				Example("")
-			})
-			Attribute("data", Session)
-			Required("errcode", "errmsg")
-		})
-
-		HTTP(func() {
-			POST("/login_by_username")
-			Response(StatusOK)
-		})
-	})
-
-	Method("UpdatePassword", func() {
-		Description("修改登录密码")
-		Meta("swagger:summary", "修改登录密码")
+	Method("Get", func() {
+		Description("获取单个用户")
+		Meta("swagger:summary", "获取单个用户")
 
 		Security(JWTAuth, func() {
 			Scope("role:user")
@@ -74,58 +29,198 @@ var _ = Service("User", func() {
 				Description("JWT used for authentication")
 				Example(ExampleJwt)
 			})
-			Attribute("old_password", String, func() {
-				MinLength(1)
-				Example("123abc")
-				MaxLength(128)
+			Attribute("id", String, func() {
+				Example(ExampleUUID)
 			})
-			Attribute("new_password", String, func() {
-				MinLength(6)
-				Example("abc123")
-				MaxLength(128)
-			})
-			Required("token", "old_password", "new_password")
+
+			Required("token", "id")
 		})
 
-		Result(func() {
-			Attribute("errcode", Int, "错误码", func() {
-				Minimum(0)
-				Maximum(999999)
-				Example(0)
-			})
-			Attribute("errmsg", String, "错误消息", func() {
-				Example("")
-			})
-			Attribute("data", SuccessResult)
-			Required("errcode", "errmsg")
+		Result(User, func() {
+			View("default")
 		})
 
 		HTTP(func() {
-			POST("/update_password")
+			GET("/{id}")
 			Response(StatusOK)
 		})
 	})
 
-	Method("GetCaptchaImage", func() {
-		Description("获取图形验证码")
-		Meta("swagger:summary", "获取图形验证码")
+	Method("List", func() {
+		Description("获取用户列表")
+		Meta("swagger:summary", "获取用户列表")
+
+		Security(JWTAuth, func() {
+			Scope("role:user")
+		})
+
+		Payload(func() {
+			Token("token", String, func() {
+				Description("JWT used for authentication")
+				Example(ExampleJwt)
+			})
+
+			Required("token")
+		})
 
 		Result(func() {
-			Attribute("errcode", Int, "错误码", func() {
-				Minimum(0)
-				Maximum(999999)
-				Example(0)
+			Field(1, "items", ArrayOf(User, func() {
+				View("default")
+			}))
+			Field(2, "nextCursor", Int, "下一页游标", func() {
+				Example(100)
 			})
-			Attribute("errmsg", String, "错误消息", func() {
-				Example("")
-			})
-			Attribute("data", Captcha)
-			Required("errcode", "errmsg")
+			Field(3, "total", Int, "总记录数")
+			Required("items", "nextCursor", "total")
 		})
+
 		HTTP(func() {
-			POST("/get_captcha_image")
+			GET("")
 			Response(StatusOK)
 		})
 	})
 
+	Method("Update", func() {
+		Description("更新用户")
+		Meta("swagger:summary", "更新用户")
+
+		Security(JWTAuth, func() {
+			Scope("role:user")
+		})
+
+		Payload(func() {
+			Token("token", String, func() {
+				Description("JWT used for authentication")
+				Example(ExampleJwt)
+			})
+			Attribute("id", String, "用户ID", func() {
+				Example("519151ca-6250-4eec-8016-1e14a68dc448")
+			})
+			Attribute("name", String, "姓名", func() {
+				Example("张三")
+			})
+			Attribute("mobile", String, "手机号", func() {
+				Format(FormatRegexp)
+				Pattern(`^1(?:3\d|4[4-9]|5[0-35-9]|6[67]|7[013-8]|8\d|9\d)\d{8}$`)
+				MaxLength(11)
+				MinLength(11)
+				Example("1808001010")
+			})
+			Attribute("email", String, "邮箱", func() {
+				Format(FormatEmail)
+				Example("adb@adb.com")
+			})
+			Attribute("jobs", Int, "职位", func() {
+				Example(1)
+				Enum(1, 2, 3)
+				Description("1 - 推销员，2 - 经理，3 - 管理员")
+			})
+			Attribute("superior_id", String, "直属上级ID", func() {
+				Example("519151ca-6250-4eec-8016-1e14a68dc448")
+			})
+			Attribute("group_id", String, "所属组", func() {
+				Example("519151ca-6250-4eec-8016-1e14a68dc448")
+			})
+
+			Required("token", "id", "name", "mobile", "email", "jobs", "superior_id", "group_id")
+		})
+
+		Result(User, func() {
+			View("default")
+		})
+
+		HTTP(func() {
+			PUT("/update")
+			Response(StatusOK)
+		})
+	})
+
+	Method("Create", func() {
+		Description("创建用户")
+		Meta("swagger:summary", "创建用户")
+
+		Security(JWTAuth, func() {
+			Scope("role:user")
+		})
+
+		Payload(func() {
+			Token("token", String, func() {
+				Description("JWT used for authentication")
+				Example(ExampleJwt)
+			})
+			Attribute("username", String, "用户名", func() {
+				Pattern(`(\d+.*[a-zA-Z]+)|([a-zA-Z]+.*\d+)`)
+				Example("abc")
+			})
+			Attribute("password", String, "用户密码", func() {
+				Example("abc")
+			})
+			Attribute("name", String, "姓名", func() {
+				Example("张三")
+			})
+			Attribute("mobile", String, "手机号", func() {
+				Format(FormatRegexp)
+				Pattern(`^1(?:3\d|4[4-9]|5[0-35-9]|6[67]|7[013-8]|8\d|9\d)\d{8}$`)
+				MaxLength(11)
+				MinLength(11)
+				Example("1808001010")
+			})
+			Attribute("email", String, "邮箱", func() {
+				Format(FormatEmail)
+				Example("adb@adb.com")
+			})
+			Attribute("jobs", Int, "职位", func() {
+				Example(1)
+				Enum(1, 2, 3)
+				Description("1 - 推销员，2 - 经理，3 - 管理员")
+			})
+			Attribute("superior_id", String, "直属上级ID", func() {
+				Example("519151ca-6250-4eec-8016-1e14a68dc448")
+			})
+			Attribute("group_id", String, "所属组", func() {
+				Example("519151ca-6250-4eec-8016-1e14a68dc448")
+			})
+
+			Required("token", "username", "password", "name", "mobile", "email", "jobs", "superior_id", "group_id")
+		})
+
+		Result(User, func() {
+			View("default")
+		})
+
+		HTTP(func() {
+			POST("/create")
+			Response(StatusOK)
+		})
+	})
+
+	Method("Delete", func() {
+		Description("删除用户")
+		Meta("swagger:summary", "删除用户")
+
+		Security(JWTAuth, func() {
+			Scope("role:user")
+		})
+
+		Payload(func() {
+			Token("token", String, func() {
+				Description("JWT used for authentication")
+				Example(ExampleJwt)
+			})
+			Attribute("ids", ArrayOf(String, func() {
+				Example(ExampleUUID)
+			}), func() {
+				MaxLength(100)
+			})
+
+			Required("token", "ids")
+		})
+
+		Result(SuccessResult)
+
+		HTTP(func() {
+			DELETE("/delete")
+			Response(StatusOK)
+		})
+	})
 })

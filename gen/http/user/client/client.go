@@ -17,17 +17,20 @@ import (
 
 // Client lists the User service endpoint HTTP clients.
 type Client struct {
-	// LoginByUsername Doer is the HTTP client used to make requests to the
-	// LoginByUsername endpoint.
-	LoginByUsernameDoer goahttp.Doer
+	// Get Doer is the HTTP client used to make requests to the Get endpoint.
+	GetDoer goahttp.Doer
 
-	// UpdatePassword Doer is the HTTP client used to make requests to the
-	// UpdatePassword endpoint.
-	UpdatePasswordDoer goahttp.Doer
+	// List Doer is the HTTP client used to make requests to the List endpoint.
+	ListDoer goahttp.Doer
 
-	// GetCaptchaImage Doer is the HTTP client used to make requests to the
-	// GetCaptchaImage endpoint.
-	GetCaptchaImageDoer goahttp.Doer
+	// Update Doer is the HTTP client used to make requests to the Update endpoint.
+	UpdateDoer goahttp.Doer
+
+	// Create Doer is the HTTP client used to make requests to the Create endpoint.
+	CreateDoer goahttp.Doer
+
+	// Delete Doer is the HTTP client used to make requests to the Delete endpoint.
+	DeleteDoer goahttp.Doer
 
 	// RestoreResponseBody controls whether the response bodies are reset after
 	// decoding so they can be read again.
@@ -49,9 +52,11 @@ func NewClient(
 	restoreBody bool,
 ) *Client {
 	return &Client{
-		LoginByUsernameDoer: doer,
-		UpdatePasswordDoer:  doer,
-		GetCaptchaImageDoer: doer,
+		GetDoer:             doer,
+		ListDoer:            doer,
+		UpdateDoer:          doer,
+		CreateDoer:          doer,
+		DeleteDoer:          doer,
 		RestoreResponseBody: restoreBody,
 		scheme:              scheme,
 		host:                host,
@@ -60,15 +65,15 @@ func NewClient(
 	}
 }
 
-// LoginByUsername returns an endpoint that makes HTTP requests to the User
-// service LoginByUsername server.
-func (c *Client) LoginByUsername() goa.Endpoint {
+// Get returns an endpoint that makes HTTP requests to the User service Get
+// server.
+func (c *Client) Get() goa.Endpoint {
 	var (
-		encodeRequest  = EncodeLoginByUsernameRequest(c.encoder)
-		decodeResponse = DecodeLoginByUsernameResponse(c.decoder, c.RestoreResponseBody)
+		encodeRequest  = EncodeGetRequest(c.encoder)
+		decodeResponse = DecodeGetResponse(c.decoder, c.RestoreResponseBody)
 	)
 	return func(ctx context.Context, v interface{}) (interface{}, error) {
-		req, err := c.BuildLoginByUsernameRequest(ctx, v)
+		req, err := c.BuildGetRequest(ctx, v)
 		if err != nil {
 			return nil, err
 		}
@@ -76,23 +81,23 @@ func (c *Client) LoginByUsername() goa.Endpoint {
 		if err != nil {
 			return nil, err
 		}
-		resp, err := c.LoginByUsernameDoer.Do(req)
+		resp, err := c.GetDoer.Do(req)
 		if err != nil {
-			return nil, goahttp.ErrRequestError("User", "LoginByUsername", err)
+			return nil, goahttp.ErrRequestError("User", "Get", err)
 		}
 		return decodeResponse(resp)
 	}
 }
 
-// UpdatePassword returns an endpoint that makes HTTP requests to the User
-// service UpdatePassword server.
-func (c *Client) UpdatePassword() goa.Endpoint {
+// List returns an endpoint that makes HTTP requests to the User service List
+// server.
+func (c *Client) List() goa.Endpoint {
 	var (
-		encodeRequest  = EncodeUpdatePasswordRequest(c.encoder)
-		decodeResponse = DecodeUpdatePasswordResponse(c.decoder, c.RestoreResponseBody)
+		encodeRequest  = EncodeListRequest(c.encoder)
+		decodeResponse = DecodeListResponse(c.decoder, c.RestoreResponseBody)
 	)
 	return func(ctx context.Context, v interface{}) (interface{}, error) {
-		req, err := c.BuildUpdatePasswordRequest(ctx, v)
+		req, err := c.BuildListRequest(ctx, v)
 		if err != nil {
 			return nil, err
 		}
@@ -100,28 +105,81 @@ func (c *Client) UpdatePassword() goa.Endpoint {
 		if err != nil {
 			return nil, err
 		}
-		resp, err := c.UpdatePasswordDoer.Do(req)
+		resp, err := c.ListDoer.Do(req)
 		if err != nil {
-			return nil, goahttp.ErrRequestError("User", "UpdatePassword", err)
+			return nil, goahttp.ErrRequestError("User", "List", err)
 		}
 		return decodeResponse(resp)
 	}
 }
 
-// GetCaptchaImage returns an endpoint that makes HTTP requests to the User
-// service GetCaptchaImage server.
-func (c *Client) GetCaptchaImage() goa.Endpoint {
+// Update returns an endpoint that makes HTTP requests to the User service
+// Update server.
+func (c *Client) Update() goa.Endpoint {
 	var (
-		decodeResponse = DecodeGetCaptchaImageResponse(c.decoder, c.RestoreResponseBody)
+		encodeRequest  = EncodeUpdateRequest(c.encoder)
+		decodeResponse = DecodeUpdateResponse(c.decoder, c.RestoreResponseBody)
 	)
 	return func(ctx context.Context, v interface{}) (interface{}, error) {
-		req, err := c.BuildGetCaptchaImageRequest(ctx, v)
+		req, err := c.BuildUpdateRequest(ctx, v)
 		if err != nil {
 			return nil, err
 		}
-		resp, err := c.GetCaptchaImageDoer.Do(req)
+		err = encodeRequest(req, v)
 		if err != nil {
-			return nil, goahttp.ErrRequestError("User", "GetCaptchaImage", err)
+			return nil, err
+		}
+		resp, err := c.UpdateDoer.Do(req)
+		if err != nil {
+			return nil, goahttp.ErrRequestError("User", "Update", err)
+		}
+		return decodeResponse(resp)
+	}
+}
+
+// Create returns an endpoint that makes HTTP requests to the User service
+// Create server.
+func (c *Client) Create() goa.Endpoint {
+	var (
+		encodeRequest  = EncodeCreateRequest(c.encoder)
+		decodeResponse = DecodeCreateResponse(c.decoder, c.RestoreResponseBody)
+	)
+	return func(ctx context.Context, v interface{}) (interface{}, error) {
+		req, err := c.BuildCreateRequest(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+		err = encodeRequest(req, v)
+		if err != nil {
+			return nil, err
+		}
+		resp, err := c.CreateDoer.Do(req)
+		if err != nil {
+			return nil, goahttp.ErrRequestError("User", "Create", err)
+		}
+		return decodeResponse(resp)
+	}
+}
+
+// Delete returns an endpoint that makes HTTP requests to the User service
+// Delete server.
+func (c *Client) Delete() goa.Endpoint {
+	var (
+		encodeRequest  = EncodeDeleteRequest(c.encoder)
+		decodeResponse = DecodeDeleteResponse(c.decoder, c.RestoreResponseBody)
+	)
+	return func(ctx context.Context, v interface{}) (interface{}, error) {
+		req, err := c.BuildDeleteRequest(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+		err = encodeRequest(req, v)
+		if err != nil {
+			return nil, err
+		}
+		resp, err := c.DeleteDoer.Do(req)
+		if err != nil {
+			return nil, goahttp.ErrRequestError("User", "Delete", err)
 		}
 		return decodeResponse(resp)
 	}

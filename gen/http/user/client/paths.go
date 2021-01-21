@@ -7,17 +7,31 @@
 
 package client
 
-// LoginByUsernameUserPath returns the URL path to the User service LoginByUsername HTTP endpoint.
-func LoginByUsernameUserPath() string {
-	return "/api/user/login_by_username"
+import (
+	"fmt"
+)
+
+// GetUserPath returns the URL path to the User service Get HTTP endpoint.
+func GetUserPath(id string) string {
+	return fmt.Sprintf("/api/user/%v", id)
 }
 
-// UpdatePasswordUserPath returns the URL path to the User service UpdatePassword HTTP endpoint.
-func UpdatePasswordUserPath() string {
-	return "/api/user/update_password"
+// ListUserPath returns the URL path to the User service List HTTP endpoint.
+func ListUserPath() string {
+	return "/api/user"
 }
 
-// GetCaptchaImageUserPath returns the URL path to the User service GetCaptchaImage HTTP endpoint.
-func GetCaptchaImageUserPath() string {
-	return "/api/user/get_captcha_image"
+// UpdateUserPath returns the URL path to the User service Update HTTP endpoint.
+func UpdateUserPath() string {
+	return "/api/user/update"
+}
+
+// CreateUserPath returns the URL path to the User service Create HTTP endpoint.
+func CreateUserPath() string {
+	return "/api/user/create"
+}
+
+// DeleteUserPath returns the URL path to the User service Delete HTTP endpoint.
+func DeleteUserPath() string {
+	return "/api/user/delete"
 }

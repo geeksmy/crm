@@ -28,11 +28,6 @@ func PopulateRequestContext() func(http.Handler) http.Handler {
 				RequestXRequestIDKey:      r.Header.Get("X-Request-Id"),
 				RequestXCSRFTokenKey:      r.Header.Get("X-Csrf-Token"),
 				RequestAcceptKey:          r.Header.Get("Accept"),
-				RequestTifNonceKey:        r.Header.Get("X-Tif-Nonce"),
-				RequestTifTimestampKey:    r.Header.Get("X-Tif-Timestamp"),
-				RequestTifPaasIDKey:       r.Header.Get("X-Tif-Paasid"),
-				RequestTifSignatureKey:    r.Header.Get("X-Tif-Signature"),
-				RequestTifUidKey:          r.Header.Get("X-Tif-Uid"),
 			} {
 				ctx = context.WithValue(ctx, k, v)
 			}

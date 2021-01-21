@@ -15,46 +15,70 @@ import (
 
 // Client is the "User" service client.
 type Client struct {
-	LoginByUsernameEndpoint goa.Endpoint
-	UpdatePasswordEndpoint  goa.Endpoint
-	GetCaptchaImageEndpoint goa.Endpoint
+	GetEndpoint    goa.Endpoint
+	ListEndpoint   goa.Endpoint
+	UpdateEndpoint goa.Endpoint
+	CreateEndpoint goa.Endpoint
+	DeleteEndpoint goa.Endpoint
 }
 
 // NewClient initializes a "User" service client given the endpoints.
-func NewClient(loginByUsername, updatePassword, getCaptchaImage goa.Endpoint) *Client {
+func NewClient(get, list, update, create, delete_ goa.Endpoint) *Client {
 	return &Client{
-		LoginByUsernameEndpoint: loginByUsername,
-		UpdatePasswordEndpoint:  updatePassword,
-		GetCaptchaImageEndpoint: getCaptchaImage,
+		GetEndpoint:    get,
+		ListEndpoint:   list,
+		UpdateEndpoint: update,
+		CreateEndpoint: create,
+		DeleteEndpoint: delete_,
 	}
 }
 
-// LoginByUsername calls the "LoginByUsername" endpoint of the "User" service.
-func (c *Client) LoginByUsername(ctx context.Context, p *LoginByUsernamePayload) (res *LoginByUsernameResult, err error) {
+// Get calls the "Get" endpoint of the "User" service.
+func (c *Client) Get(ctx context.Context, p *GetPayload) (res *User, err error) {
 	var ires interface{}
-	ires, err = c.LoginByUsernameEndpoint(ctx, p)
+	ires, err = c.GetEndpoint(ctx, p)
 	if err != nil {
 		return
 	}
-	return ires.(*LoginByUsernameResult), nil
+	return ires.(*User), nil
 }
 
-// UpdatePassword calls the "UpdatePassword" endpoint of the "User" service.
-func (c *Client) UpdatePassword(ctx context.Context, p *UpdatePasswordPayload) (res *UpdatePasswordResult, err error) {
+// List calls the "List" endpoint of the "User" service.
+func (c *Client) List(ctx context.Context, p *ListPayload) (res *ListResult, err error) {
 	var ires interface{}
-	ires, err = c.UpdatePasswordEndpoint(ctx, p)
+	ires, err = c.ListEndpoint(ctx, p)
 	if err != nil {
 		return
 	}
-	return ires.(*UpdatePasswordResult), nil
+	return ires.(*ListResult), nil
 }
 
-// GetCaptchaImage calls the "GetCaptchaImage" endpoint of the "User" service.
-func (c *Client) GetCaptchaImage(ctx context.Context) (res *GetCaptchaImageResult, err error) {
+// Update calls the "Update" endpoint of the "User" service.
+func (c *Client) Update(ctx context.Context, p *UpdatePayload) (res *User, err error) {
 	var ires interface{}
-	ires, err = c.GetCaptchaImageEndpoint(ctx, nil)
+	ires, err = c.UpdateEndpoint(ctx, p)
 	if err != nil {
 		return
 	}
-	return ires.(*GetCaptchaImageResult), nil
+	return ires.(*User), nil
+}
+
+// Create calls the "Create" endpoint of the "User" service.
+func (c *Client) Create(ctx context.Context, p *CreatePayload) (res *User, err error) {
+	var ires interface{}
+	ires, err = c.CreateEndpoint(ctx, p)
+	if err != nil {
+		return
+	}
+	return ires.(*User), nil
+}
+
+// Delete calls the "Delete" endpoint of the "User" service.
+func (c *Client) Delete(ctx context.Context, p *DeletePayload) (res *SuccessResult, err error) {
+	var ires interface{}
+	ires, err = c.DeleteEndpoint(ctx, p)
+	if err != nil {
+		return
+	}
+	return ires.(*SuccessResult), nil
 }

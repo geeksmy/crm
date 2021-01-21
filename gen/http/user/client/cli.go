@@ -16,87 +16,59 @@ import (
 	goa "goa.design/goa/v3/pkg"
 )
 
-// BuildLoginByUsernamePayload builds the payload for the User LoginByUsername
-// endpoint from CLI flags.
-func BuildLoginByUsernamePayload(userLoginByUsernameBody string) (*user.LoginByUsernamePayload, error) {
-	var err error
-	var body LoginByUsernameRequestBody
+// BuildGetPayload builds the payload for the User Get endpoint from CLI flags.
+func BuildGetPayload(userGetID string, userGetToken string) (*user.GetPayload, error) {
+	var id string
 	{
-		err = json.Unmarshal([]byte(userLoginByUsernameBody), &body)
-		if err != nil {
-			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"captchaId\": \"ge\",\n      \"humanCode\": \"j8t\",\n      \"password\": \"password\",\n      \"username\": \"user\"\n   }'")
-		}
-		if utf8.RuneCountInString(body.Username) < 1 {
-			err = goa.MergeErrors(err, goa.InvalidLengthError("body.username", body.Username, utf8.RuneCountInString(body.Username), 1, true))
-		}
-		if utf8.RuneCountInString(body.Username) > 128 {
-			err = goa.MergeErrors(err, goa.InvalidLengthError("body.username", body.Username, utf8.RuneCountInString(body.Username), 128, false))
-		}
-		if utf8.RuneCountInString(body.Password) < 1 {
-			err = goa.MergeErrors(err, goa.InvalidLengthError("body.password", body.Password, utf8.RuneCountInString(body.Password), 1, true))
-		}
-		if utf8.RuneCountInString(body.Password) > 128 {
-			err = goa.MergeErrors(err, goa.InvalidLengthError("body.password", body.Password, utf8.RuneCountInString(body.Password), 128, false))
-		}
-		if utf8.RuneCountInString(body.HumanCode) < 4 {
-			err = goa.MergeErrors(err, goa.InvalidLengthError("body.humanCode", body.HumanCode, utf8.RuneCountInString(body.HumanCode), 4, true))
-		}
-		if utf8.RuneCountInString(body.HumanCode) > 8 {
-			err = goa.MergeErrors(err, goa.InvalidLengthError("body.humanCode", body.HumanCode, utf8.RuneCountInString(body.HumanCode), 8, false))
-		}
-		if utf8.RuneCountInString(body.CaptchaID) < 1 {
-			err = goa.MergeErrors(err, goa.InvalidLengthError("body.captchaId", body.CaptchaID, utf8.RuneCountInString(body.CaptchaID), 1, true))
-		}
-		if utf8.RuneCountInString(body.CaptchaID) > 128 {
-			err = goa.MergeErrors(err, goa.InvalidLengthError("body.captchaId", body.CaptchaID, utf8.RuneCountInString(body.CaptchaID), 128, false))
-		}
-		if err != nil {
-			return nil, err
-		}
+		id = userGetID
 	}
-	v := &user.LoginByUsernamePayload{
-		Username:  body.Username,
-		Password:  body.Password,
-		HumanCode: body.HumanCode,
-		CaptchaID: body.CaptchaID,
-	}
+	var token string
 	{
-		var zero string
-		if v.HumanCode == zero {
-			v.HumanCode = ""
-		}
+		token = userGetToken
 	}
-	{
-		var zero string
-		if v.CaptchaID == zero {
-			v.CaptchaID = ""
-		}
-	}
+	v := &user.GetPayload{}
+	v.ID = id
+	v.Token = token
 
 	return v, nil
 }
 
-// BuildUpdatePasswordPayload builds the payload for the User UpdatePassword
-// endpoint from CLI flags.
-func BuildUpdatePasswordPayload(userUpdatePasswordBody string, userUpdatePasswordToken string) (*user.UpdatePasswordPayload, error) {
-	var err error
-	var body UpdatePasswordRequestBody
+// BuildListPayload builds the payload for the User List endpoint from CLI
+// flags.
+func BuildListPayload(userListToken string) (*user.ListPayload, error) {
+	var token string
 	{
-		err = json.Unmarshal([]byte(userUpdatePasswordBody), &body)
+		token = userListToken
+	}
+	v := &user.ListPayload{}
+	v.Token = token
+
+	return v, nil
+}
+
+// BuildUpdatePayload builds the payload for the User Update endpoint from CLI
+// flags.
+func BuildUpdatePayload(userUpdateBody string, userUpdateToken string) (*user.UpdatePayload, error) {
+	var err error
+	var body UpdateRequestBody
+	{
+		err = json.Unmarshal([]byte(userUpdateBody), &body)
 		if err != nil {
-			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"new_password\": \"abc123\",\n      \"old_password\": \"123abc\"\n   }'")
+			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"email\": \"adb@adb.com\",\n      \"group_id\": \"519151ca-6250-4eec-8016-1e14a68dc448\",\n      \"id\": \"519151ca-6250-4eec-8016-1e14a68dc448\",\n      \"jobs\": 1,\n      \"mobile\": \"1808001010\",\n      \"name\": \"张三\",\n      \"superior_id\": \"519151ca-6250-4eec-8016-1e14a68dc448\"\n   }'")
 		}
-		if utf8.RuneCountInString(body.OldPassword) < 1 {
-			err = goa.MergeErrors(err, goa.InvalidLengthError("body.old_password", body.OldPassword, utf8.RuneCountInString(body.OldPassword), 1, true))
+		err = goa.MergeErrors(err, goa.ValidateFormat("body.mobile", body.Mobile, goa.FormatRegexp))
+
+		err = goa.MergeErrors(err, goa.ValidatePattern("body.mobile", body.Mobile, "^1(?:3\\d|4[4-9]|5[0-35-9]|6[67]|7[013-8]|8\\d|9\\d)\\d{8}$"))
+		if utf8.RuneCountInString(body.Mobile) < 11 {
+			err = goa.MergeErrors(err, goa.InvalidLengthError("body.mobile", body.Mobile, utf8.RuneCountInString(body.Mobile), 11, true))
 		}
-		if utf8.RuneCountInString(body.OldPassword) > 128 {
-			err = goa.MergeErrors(err, goa.InvalidLengthError("body.old_password", body.OldPassword, utf8.RuneCountInString(body.OldPassword), 128, false))
+		if utf8.RuneCountInString(body.Mobile) > 11 {
+			err = goa.MergeErrors(err, goa.InvalidLengthError("body.mobile", body.Mobile, utf8.RuneCountInString(body.Mobile), 11, false))
 		}
-		if utf8.RuneCountInString(body.NewPassword) < 6 {
-			err = goa.MergeErrors(err, goa.InvalidLengthError("body.new_password", body.NewPassword, utf8.RuneCountInString(body.NewPassword), 6, true))
-		}
-		if utf8.RuneCountInString(body.NewPassword) > 128 {
-			err = goa.MergeErrors(err, goa.InvalidLengthError("body.new_password", body.NewPassword, utf8.RuneCountInString(body.NewPassword), 128, false))
+		err = goa.MergeErrors(err, goa.ValidateFormat("body.email", body.Email, goa.FormatEmail))
+
+		if !(body.Jobs == 1 || body.Jobs == 2 || body.Jobs == 3) {
+			err = goa.MergeErrors(err, goa.InvalidEnumValueError("body.jobs", body.Jobs, []interface{}{1, 2, 3}))
 		}
 		if err != nil {
 			return nil, err
@@ -104,11 +76,100 @@ func BuildUpdatePasswordPayload(userUpdatePasswordBody string, userUpdatePasswor
 	}
 	var token string
 	{
-		token = userUpdatePasswordToken
+		token = userUpdateToken
 	}
-	v := &user.UpdatePasswordPayload{
-		OldPassword: body.OldPassword,
-		NewPassword: body.NewPassword,
+	v := &user.UpdatePayload{
+		ID:         body.ID,
+		Name:       body.Name,
+		Mobile:     body.Mobile,
+		Email:      body.Email,
+		Jobs:       body.Jobs,
+		SuperiorID: body.SuperiorID,
+		GroupID:    body.GroupID,
+	}
+	v.Token = token
+
+	return v, nil
+}
+
+// BuildCreatePayload builds the payload for the User Create endpoint from CLI
+// flags.
+func BuildCreatePayload(userCreateBody string, userCreateToken string) (*user.CreatePayload, error) {
+	var err error
+	var body CreateRequestBody
+	{
+		err = json.Unmarshal([]byte(userCreateBody), &body)
+		if err != nil {
+			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"email\": \"adb@adb.com\",\n      \"group_id\": \"519151ca-6250-4eec-8016-1e14a68dc448\",\n      \"jobs\": 1,\n      \"mobile\": \"1808001010\",\n      \"name\": \"张三\",\n      \"password\": \"abc\",\n      \"superior_id\": \"519151ca-6250-4eec-8016-1e14a68dc448\",\n      \"username\": \"abc\"\n   }'")
+		}
+		err = goa.MergeErrors(err, goa.ValidatePattern("body.username", body.Username, "(\\d+.*[a-zA-Z]+)|([a-zA-Z]+.*\\d+)"))
+		err = goa.MergeErrors(err, goa.ValidateFormat("body.mobile", body.Mobile, goa.FormatRegexp))
+
+		err = goa.MergeErrors(err, goa.ValidatePattern("body.mobile", body.Mobile, "^1(?:3\\d|4[4-9]|5[0-35-9]|6[67]|7[013-8]|8\\d|9\\d)\\d{8}$"))
+		if utf8.RuneCountInString(body.Mobile) < 11 {
+			err = goa.MergeErrors(err, goa.InvalidLengthError("body.mobile", body.Mobile, utf8.RuneCountInString(body.Mobile), 11, true))
+		}
+		if utf8.RuneCountInString(body.Mobile) > 11 {
+			err = goa.MergeErrors(err, goa.InvalidLengthError("body.mobile", body.Mobile, utf8.RuneCountInString(body.Mobile), 11, false))
+		}
+		err = goa.MergeErrors(err, goa.ValidateFormat("body.email", body.Email, goa.FormatEmail))
+
+		if !(body.Jobs == 1 || body.Jobs == 2 || body.Jobs == 3) {
+			err = goa.MergeErrors(err, goa.InvalidEnumValueError("body.jobs", body.Jobs, []interface{}{1, 2, 3}))
+		}
+		if err != nil {
+			return nil, err
+		}
+	}
+	var token string
+	{
+		token = userCreateToken
+	}
+	v := &user.CreatePayload{
+		Username:   body.Username,
+		Password:   body.Password,
+		Name:       body.Name,
+		Mobile:     body.Mobile,
+		Email:      body.Email,
+		Jobs:       body.Jobs,
+		SuperiorID: body.SuperiorID,
+		GroupID:    body.GroupID,
+	}
+	v.Token = token
+
+	return v, nil
+}
+
+// BuildDeletePayload builds the payload for the User Delete endpoint from CLI
+// flags.
+func BuildDeletePayload(userDeleteBody string, userDeleteToken string) (*user.DeletePayload, error) {
+	var err error
+	var body DeleteRequestBody
+	{
+		err = json.Unmarshal([]byte(userDeleteBody), &body)
+		if err != nil {
+			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"ids\": [\n         \"91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f\",\n         \"91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f\",\n         \"91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f\"\n      ]\n   }'")
+		}
+		if body.Ids == nil {
+			err = goa.MergeErrors(err, goa.MissingFieldError("ids", "body"))
+		}
+		if len(body.Ids) > 100 {
+			err = goa.MergeErrors(err, goa.InvalidLengthError("body.ids", body.Ids, len(body.Ids), 100, false))
+		}
+		if err != nil {
+			return nil, err
+		}
+	}
+	var token string
+	{
+		token = userDeleteToken
+	}
+	v := &user.DeletePayload{}
+	if body.Ids != nil {
+		v.Ids = make([]string, len(body.Ids))
+		for i, val := range body.Ids {
+			v.Ids[i] = val
+		}
 	}
 	v.Token = token
 

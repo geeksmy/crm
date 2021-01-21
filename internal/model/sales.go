@@ -11,6 +11,7 @@ type Sales struct {
 	CustomerID      string    `gorm:"type:varchar(36)"`
 	Money           string    `gorm:"type:varchar(36)"`
 	ConsignmentDate time.Time `msgpack:"-"`
+	IsSalesReturn   bool      `gorm:"type:boolean;default:false"`
 	Note            string    `gorm:"type:varchar(256);"`
 	HeadID          string    `gorm:"type:varchar(36)"`
 	FounderID       string    `gorm:"type:varchar(36)"`

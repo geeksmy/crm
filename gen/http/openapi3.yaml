@@ -3,29 +3,26 @@ info:
   title: 微服务
   version: "1.0"
 servers:
-- url: http://localhost:8000/starter
+- url: http://localhost:8080/starter
   description: 微服务
 paths:
-  /api/user/get_captcha_image:
-    post:
+  /api/auth/captcha_image:
+    get:
       tags:
-      - User
+      - Auth
       summary: 获取图形验证码
       description: 获取图形验证码
-      operationId: User#GetCaptchaImage
+      operationId: Auth#CaptchaImage
       responses:
         "200":
           description: OK response.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetCaptchaImageResponseBody'
+                $ref: '#/components/schemas/CaptchaImageResponseBody'
               example:
-                data:
-                  captchaId: Sequi ad recusandae harum sunt culpa aliquid.
-                  image: Eos quae rerum provident.
-                errcode: 0
-                errmsg: ""
+                captchaId: Quo laboriosam quas doloremque animi.
+                image: Et modi odit deleniti et.
         "400":
           description: Bad Request response.
           content:
@@ -46,22 +43,22 @@ paths:
                 id: 3F1FKVRR
                 message: Value of ID must be an integer
                 name: bad_request
-  /api/user/login_by_username:
+  /api/auth/login:
     post:
       tags:
-      - User
+      - Auth
       summary: 使用账号密码登录
       description: 使用账号密码登录
-      operationId: User#LoginByUsername
+      operationId: Auth#Login
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LoginByUsernameRequestBody'
+              $ref: '#/components/schemas/LoginRequestBody'
             example:
-              captchaId: ge
-              humanCode: j8t
+              captchaId: t
+              humanCode: ncr
               password: password
               username: user
       responses:
@@ -70,18 +67,25 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LoginByUsernameResponseBody'
+                $ref: '#/components/schemas/LoginResponseBody'
               example:
-                data:
-                  credentials:
-                    expires_in: 25200
-                    token: eyJhbGciOiJIUz...
-                  user:
-                    id: Sit praesentium beatae dignissimos blanditiis voluptas ut.
-                    mobile: Repellat ea.
-                    username: Sed fugit sint ex nulla.
-                errcode: 0
-                errmsg: ""
+                credentials:
+                  expires_in: 25200
+                  token: eyJhbGciOiJIUz...
+                user:
+                  email: adb@adb.com
+                  group:
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    name: 普通用户
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  is_admin: false
+                  jobs: 1
+                  mobile: "1808001010"
+                  name: 张三
+                  superior:
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    name: 张三
+                  username: 用户名
         "400":
           description: Bad Request response.
           content:
@@ -102,13 +106,13 @@ paths:
                 id: 3F1FKVRR
                 message: Value of ID must be an integer
                 name: bad_request
-  /api/user/update_password:
+  /api/auth/update_password:
     post:
       tags:
-      - User
+      - Auth
       summary: 修改登录密码
       description: 修改登录密码
-      operationId: User#UpdatePassword
+      operationId: Auth#UpdatePassword
       requestBody:
         required: true
         content:
@@ -126,10 +130,3069 @@ paths:
               schema:
                 $ref: '#/components/schemas/UpdatePasswordResponseBody'
               example:
-                data:
-                  ok: true
-                errcode: 0
-                errmsg: ""
+                ok: true
+        "400":
+          description: Bad Request response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+        "500":
+          description: Internal Server Error response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+      security:
+      - jwt_header_Authorization:
+        - role:user
+        - role:admin
+  /api/customer:
+    get:
+      tags:
+      - Customer
+      summary: 获取客户列表
+      description: 获取客户列表
+      operationId: Customer#List
+      responses:
+        "200":
+          description: OK response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListResponseBody'
+              example:
+                items:
+                - address: 咸阳
+                  email: adb@adb.com
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  industry: 1
+                  level: 1
+                  mobile: "18000001234"
+                  name: 张三
+                  note: 备注
+                  src: 1
+                  url: http://www.baidu.com
+                - address: 咸阳
+                  email: adb@adb.com
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  industry: 1
+                  level: 1
+                  mobile: "18000001234"
+                  name: 张三
+                  note: 备注
+                  src: 1
+                  url: http://www.baidu.com
+                - address: 咸阳
+                  email: adb@adb.com
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  industry: 1
+                  level: 1
+                  mobile: "18000001234"
+                  name: 张三
+                  note: 备注
+                  src: 1
+                  url: http://www.baidu.com
+                - address: 咸阳
+                  email: adb@adb.com
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  industry: 1
+                  level: 1
+                  mobile: "18000001234"
+                  name: 张三
+                  note: 备注
+                  src: 1
+                  url: http://www.baidu.com
+                nextCursor: 100
+                total: 5891716462788159972
+        "400":
+          description: Bad Request response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+        "500":
+          description: Internal Server Error response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+      security:
+      - jwt_header_Authorization:
+        - role:user
+        - role:admin
+  /api/customer/{id}:
+    get:
+      tags:
+      - Customer
+      summary: 获取单个客户
+      description: 获取单个客户
+      operationId: Customer#Get
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          example: 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+        example: 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+      responses:
+        "200":
+          description: OK response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetResponseBody'
+              example:
+                address: 咸阳
+                email: adb@adb.com
+                id: 519151ca-6250-4eec-8016-1e14a68dc448
+                industry: 1
+                level: 1
+                mobile: "18000001234"
+                name: 张三
+                note: 备注
+                src: 1
+                url: http://www.baidu.com
+        "400":
+          description: Bad Request response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+        "500":
+          description: Internal Server Error response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+      security:
+      - jwt_header_Authorization:
+        - role:user
+        - role:admin
+  /api/customer/create:
+    post:
+      tags:
+      - Customer
+      summary: 创建客户
+      description: 创建客户
+      operationId: Customer#Create
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRequestBody'
+            example:
+              address: 咸阳
+              email: adb@adb.com
+              industry: 1
+              level: 1
+              mobile: "18000001234"
+              name: 张三
+              note: 备注
+              src: 1
+              url: http://www.baidu.com
+      responses:
+        "200":
+          description: OK response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetResponseBody'
+              example:
+                address: 咸阳
+                email: adb@adb.com
+                id: 519151ca-6250-4eec-8016-1e14a68dc448
+                industry: 1
+                level: 1
+                mobile: "18000001234"
+                name: 张三
+                note: 备注
+                src: 1
+                url: http://www.baidu.com
+        "400":
+          description: Bad Request response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+        "500":
+          description: Internal Server Error response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+      security:
+      - jwt_header_Authorization:
+        - role:user
+        - role:admin
+  /api/customer/delete:
+    delete:
+      tags:
+      - Customer
+      summary: 删除客户
+      description: 删除客户
+      operationId: Customer#Delete
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteRequestBody'
+            example:
+              ids:
+              - 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+              - 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+              - 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+      responses:
+        "200":
+          description: OK response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResult'
+              example:
+                ok: true
+        "400":
+          description: Bad Request response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+        "500":
+          description: Internal Server Error response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+      security:
+      - jwt_header_Authorization:
+        - role:user
+        - role:admin
+  /api/customer/update:
+    put:
+      tags:
+      - Customer
+      summary: 更新客户
+      description: 更新客户
+      operationId: Customer#Update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateRequestBody'
+            example:
+              address: 咸阳
+              email: adb@adb.com
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              industry: 1
+              level: 1
+              mobile: "18000001234"
+              name: 张三
+              note: 备注
+              src: 1
+              url: http://www.baidu.com
+      responses:
+        "200":
+          description: OK response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetResponseBody'
+              example:
+                address: 咸阳
+                email: adb@adb.com
+                id: 519151ca-6250-4eec-8016-1e14a68dc448
+                industry: 1
+                level: 1
+                mobile: "18000001234"
+                name: 张三
+                note: 备注
+                src: 1
+                url: http://www.baidu.com
+        "400":
+          description: Bad Request response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+        "500":
+          description: Internal Server Error response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+      security:
+      - jwt_header_Authorization:
+        - role:user
+        - role:admin
+  /api/group:
+    get:
+      tags:
+      - Group
+      summary: 获取组列表
+      description: 获取组列表
+      operationId: Group#List
+      responses:
+        "200":
+          description: OK response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListResponseBody2'
+              example:
+                items:
+                - id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  name: 普通用户
+                - id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  name: 普通用户
+                nextCursor: 100
+                total: 4839114076039238709
+        "400":
+          description: Bad Request response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+        "500":
+          description: Internal Server Error response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+      security:
+      - jwt_header_Authorization:
+        - role:user
+        - role:admin
+  /api/group/{id}:
+    get:
+      tags:
+      - Group
+      summary: 获取单个组
+      description: 获取单个组
+      operationId: Group#Get
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          example: 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+        example: 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+      responses:
+        "200":
+          description: OK response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetResponseBody2'
+              example:
+                id: 519151ca-6250-4eec-8016-1e14a68dc448
+                name: 普通用户
+        "400":
+          description: Bad Request response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+        "500":
+          description: Internal Server Error response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+      security:
+      - jwt_header_Authorization:
+        - role:user
+        - role:admin
+  /api/group/create:
+    post:
+      tags:
+      - Group
+      summary: 创建组
+      description: 创建组
+      operationId: Group#Create
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRequestBody2'
+            example:
+              name: 张三
+      responses:
+        "200":
+          description: OK response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetResponseBody2'
+              example:
+                id: 519151ca-6250-4eec-8016-1e14a68dc448
+                name: 普通用户
+        "400":
+          description: Bad Request response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+        "500":
+          description: Internal Server Error response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+      security:
+      - jwt_header_Authorization:
+        - role:user
+        - role:admin
+  /api/group/delete:
+    delete:
+      tags:
+      - Group
+      summary: 删除组
+      description: 删除组
+      operationId: Group#Delete
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteRequestBody'
+            example:
+              ids:
+              - 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+              - 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+              - 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+      responses:
+        "200":
+          description: OK response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResult'
+              example:
+                ok: true
+        "400":
+          description: Bad Request response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+        "500":
+          description: Internal Server Error response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+      security:
+      - jwt_header_Authorization:
+        - role:user
+        - role:admin
+  /api/group/update:
+    put:
+      tags:
+      - Group
+      summary: 更新组
+      description: 更新组
+      operationId: Group#Update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateRequestBody2'
+            example:
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              name: 管理员
+      responses:
+        "200":
+          description: OK response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetResponseBody2'
+              example:
+                id: 519151ca-6250-4eec-8016-1e14a68dc448
+                name: 普通用户
+        "400":
+          description: Bad Request response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+        "500":
+          description: Internal Server Error response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+      security:
+      - jwt_header_Authorization:
+        - role:user
+        - role:admin
+  /api/inventory:
+    get:
+      tags:
+      - Inventory
+      summary: 获取库存列表
+      description: 获取库存列表
+      operationId: Inventory#List
+      responses:
+        "200":
+          description: OK response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListResponseBody8'
+              example:
+                items:
+                - code: 123qwe123qwe
+                  founder:
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    name: 张三
+                  head:
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    name: 张三
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  in_and_out: 1
+                  inventory_date: "20210101"
+                  note: 备注
+                  number: 123
+                  product:
+                    code: 123asd123123asd
+                    cost_price: 123
+                    founder:
+                      id: 519151ca-6250-4eec-8016-1e14a68dc448
+                      name: 张三
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    image: /images/123.jpg
+                    is_shelves: false
+                    market_price: 123
+                    name: 灌装辣椒
+                    note: 备注
+                    size: 瓶
+                    type: 1
+                    unit: 1
+                  type: 1
+                  warehouse:
+                    address: 地址
+                    code: 123awe12qwe
+                    founder:
+                      id: 519151ca-6250-4eec-8016-1e14a68dc448
+                      name: 张三
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    name: 1号仓库
+                    type: 1
+                - code: 123qwe123qwe
+                  founder:
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    name: 张三
+                  head:
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    name: 张三
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  in_and_out: 1
+                  inventory_date: "20210101"
+                  note: 备注
+                  number: 123
+                  product:
+                    code: 123asd123123asd
+                    cost_price: 123
+                    founder:
+                      id: 519151ca-6250-4eec-8016-1e14a68dc448
+                      name: 张三
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    image: /images/123.jpg
+                    is_shelves: false
+                    market_price: 123
+                    name: 灌装辣椒
+                    note: 备注
+                    size: 瓶
+                    type: 1
+                    unit: 1
+                  type: 1
+                  warehouse:
+                    address: 地址
+                    code: 123awe12qwe
+                    founder:
+                      id: 519151ca-6250-4eec-8016-1e14a68dc448
+                      name: 张三
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    name: 1号仓库
+                    type: 1
+                nextCursor: 100
+                total: 4933581639400749054
+        "400":
+          description: Bad Request response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+        "500":
+          description: Internal Server Error response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+      security:
+      - jwt_header_Authorization:
+        - role:user
+        - role:admin
+  /api/inventory/{id}:
+    get:
+      tags:
+      - Inventory
+      summary: 获取单个库存
+      description: 获取单个库存
+      operationId: Inventory#Get
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          example: 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+        example: 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+      responses:
+        "200":
+          description: OK response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetResponseBody7'
+              example:
+                code: 123qwe123qwe
+                founder:
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  name: 张三
+                head:
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  name: 张三
+                id: 519151ca-6250-4eec-8016-1e14a68dc448
+                in_and_out: 1
+                inventory_date: "20210101"
+                note: 备注
+                number: 123
+                product:
+                  code: 123asd123123asd
+                  cost_price: 123
+                  founder:
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    name: 张三
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  image: /images/123.jpg
+                  is_shelves: false
+                  market_price: 123
+                  name: 灌装辣椒
+                  note: 备注
+                  size: 瓶
+                  type: 1
+                  unit: 1
+                type: 1
+                warehouse:
+                  address: 地址
+                  code: 123awe12qwe
+                  founder:
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    name: 张三
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  name: 1号仓库
+                  type: 1
+        "400":
+          description: Bad Request response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+        "500":
+          description: Internal Server Error response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+      security:
+      - jwt_header_Authorization:
+        - role:user
+        - role:admin
+  /api/inventory/create:
+    post:
+      tags:
+      - Inventory
+      summary: 创建库存
+      description: 创建库存
+      operationId: Inventory#Create
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRequestBody8'
+            example:
+              code: 123qwe123qwe
+              founder_id: 519151ca-6250-4eec-8016-1e14a68dc448
+              head_id: 519151ca-6250-4eec-8016-1e14a68dc448
+              in_and_out: 1
+              inventory_date: "20210101"
+              note: 备注
+              number: 123
+              product_id: 519151ca-6250-4eec-8016-1e14a68dc448
+              type: 1
+              warehouse_id: 519151ca-6250-4eec-8016-1e14a68dc448
+      responses:
+        "200":
+          description: OK response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetResponseBody7'
+              example:
+                code: 123qwe123qwe
+                founder:
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  name: 张三
+                head:
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  name: 张三
+                id: 519151ca-6250-4eec-8016-1e14a68dc448
+                in_and_out: 1
+                inventory_date: "20210101"
+                note: 备注
+                number: 123
+                product:
+                  code: 123asd123123asd
+                  cost_price: 123
+                  founder:
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    name: 张三
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  image: /images/123.jpg
+                  is_shelves: false
+                  market_price: 123
+                  name: 灌装辣椒
+                  note: 备注
+                  size: 瓶
+                  type: 1
+                  unit: 1
+                type: 1
+                warehouse:
+                  address: 地址
+                  code: 123awe12qwe
+                  founder:
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    name: 张三
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  name: 1号仓库
+                  type: 1
+        "400":
+          description: Bad Request response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+        "500":
+          description: Internal Server Error response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+      security:
+      - jwt_header_Authorization:
+        - role:user
+        - role:admin
+  /api/inventory/delete:
+    delete:
+      tags:
+      - Inventory
+      summary: 删除库存
+      description: 删除库存
+      operationId: Inventory#Delete
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteRequestBody'
+            example:
+              ids:
+              - 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+              - 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+              - 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+      responses:
+        "200":
+          description: OK response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResult'
+              example:
+                ok: true
+        "400":
+          description: Bad Request response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+        "500":
+          description: Internal Server Error response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+      security:
+      - jwt_header_Authorization:
+        - role:user
+        - role:admin
+  /api/inventory/update:
+    put:
+      tags:
+      - Inventory
+      summary: 更新库存
+      description: 更新库存
+      operationId: Inventory#Update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateRequestBody8'
+            example:
+              code: 123qwe123qwe
+              head_id: 519151ca-6250-4eec-8016-1e14a68dc448
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              in_and_out: 1
+              inventory_date: "20210101"
+              note: 备注
+              number: 123
+              product_id: 519151ca-6250-4eec-8016-1e14a68dc448
+              type: 1
+              warehouse_id: 519151ca-6250-4eec-8016-1e14a68dc448
+      responses:
+        "200":
+          description: OK response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetResponseBody7'
+              example:
+                code: 123qwe123qwe
+                founder:
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  name: 张三
+                head:
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  name: 张三
+                id: 519151ca-6250-4eec-8016-1e14a68dc448
+                in_and_out: 1
+                inventory_date: "20210101"
+                note: 备注
+                number: 123
+                product:
+                  code: 123asd123123asd
+                  cost_price: 123
+                  founder:
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    name: 张三
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  image: /images/123.jpg
+                  is_shelves: false
+                  market_price: 123
+                  name: 灌装辣椒
+                  note: 备注
+                  size: 瓶
+                  type: 1
+                  unit: 1
+                type: 1
+                warehouse:
+                  address: 地址
+                  code: 123awe12qwe
+                  founder:
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    name: 张三
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  name: 1号仓库
+                  type: 1
+        "400":
+          description: Bad Request response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+        "500":
+          description: Internal Server Error response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+      security:
+      - jwt_header_Authorization:
+        - role:user
+        - role:admin
+  /api/procurement:
+    get:
+      tags:
+      - Procurement
+      summary: 获取采购列表
+      description: 获取采购列表
+      operationId: Procurement#List
+      responses:
+        "200":
+          description: OK response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListResponseBody5'
+              example:
+                items:
+                - code: 123asd123123asd
+                  founder:
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    name: 张三
+                  head:
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    name: 张三
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  is_sales_return: false
+                  money: 123
+                  note: 备注
+                  supplier:
+                    contact_address: 咸阳
+                    contact_name: 张三
+                    contact_phone: "1808001010"
+                    founder:
+                      id: 519151ca-6250-4eec-8016-1e14a68dc448
+                      name: 张三
+                    head:
+                      id: 519151ca-6250-4eec-8016-1e14a68dc448
+                      name: 张三
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    level: 1
+                    name: xx公司
+                    note: 备注
+                - code: 123asd123123asd
+                  founder:
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    name: 张三
+                  head:
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    name: 张三
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  is_sales_return: false
+                  money: 123
+                  note: 备注
+                  supplier:
+                    contact_address: 咸阳
+                    contact_name: 张三
+                    contact_phone: "1808001010"
+                    founder:
+                      id: 519151ca-6250-4eec-8016-1e14a68dc448
+                      name: 张三
+                    head:
+                      id: 519151ca-6250-4eec-8016-1e14a68dc448
+                      name: 张三
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    level: 1
+                    name: xx公司
+                    note: 备注
+                - code: 123asd123123asd
+                  founder:
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    name: 张三
+                  head:
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    name: 张三
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  is_sales_return: false
+                  money: 123
+                  note: 备注
+                  supplier:
+                    contact_address: 咸阳
+                    contact_name: 张三
+                    contact_phone: "1808001010"
+                    founder:
+                      id: 519151ca-6250-4eec-8016-1e14a68dc448
+                      name: 张三
+                    head:
+                      id: 519151ca-6250-4eec-8016-1e14a68dc448
+                      name: 张三
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    level: 1
+                    name: xx公司
+                    note: 备注
+                nextCursor: 100
+                total: 4237416349118416127
+        "400":
+          description: Bad Request response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+        "500":
+          description: Internal Server Error response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+      security:
+      - jwt_header_Authorization:
+        - role:user
+        - role:admin
+  /api/procurement/{id}:
+    get:
+      tags:
+      - Procurement
+      summary: 获取单个采购
+      description: 获取单个采购
+      operationId: Procurement#Get
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          example: 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+        example: 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+      responses:
+        "200":
+          description: OK response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetResponseBody5'
+              example:
+                code: 123asd123123asd
+                founder:
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  name: 张三
+                head:
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  name: 张三
+                id: 519151ca-6250-4eec-8016-1e14a68dc448
+                is_sales_return: false
+                money: 123
+                note: 备注
+                supplier:
+                  contact_address: 咸阳
+                  contact_name: 张三
+                  contact_phone: "1808001010"
+                  founder:
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    name: 张三
+                  head:
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    name: 张三
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  level: 1
+                  name: xx公司
+                  note: 备注
+        "400":
+          description: Bad Request response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+        "500":
+          description: Internal Server Error response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+      security:
+      - jwt_header_Authorization:
+        - role:user
+        - role:admin
+  /api/procurement/create:
+    post:
+      tags:
+      - Procurement
+      summary: 创建采购
+      description: 创建采购
+      operationId: Procurement#Create
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRequestBody5'
+            example:
+              code: 123asd123123asd
+              founder_id: 519151ca-6250-4eec-8016-1e14a68dc448
+              head_id: 519151ca-6250-4eec-8016-1e14a68dc448
+              is_sales_return: false
+              money: 123
+              note: 备注
+              supplier_id: 519151ca-6250-4eec-8016-1e14a68dc448
+      responses:
+        "200":
+          description: OK response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetResponseBody5'
+              example:
+                code: 123asd123123asd
+                founder:
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  name: 张三
+                head:
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  name: 张三
+                id: 519151ca-6250-4eec-8016-1e14a68dc448
+                is_sales_return: false
+                money: 123
+                note: 备注
+                supplier:
+                  contact_address: 咸阳
+                  contact_name: 张三
+                  contact_phone: "1808001010"
+                  founder:
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    name: 张三
+                  head:
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    name: 张三
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  level: 1
+                  name: xx公司
+                  note: 备注
+        "400":
+          description: Bad Request response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+        "500":
+          description: Internal Server Error response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+      security:
+      - jwt_header_Authorization:
+        - role:user
+        - role:admin
+  /api/procurement/delete:
+    delete:
+      tags:
+      - Procurement
+      summary: 删除采购
+      description: 删除采购
+      operationId: Procurement#Delete
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteRequestBody'
+            example:
+              ids:
+              - 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+              - 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+              - 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+      responses:
+        "200":
+          description: OK response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResult'
+              example:
+                ok: true
+        "400":
+          description: Bad Request response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+        "500":
+          description: Internal Server Error response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+      security:
+      - jwt_header_Authorization:
+        - role:user
+        - role:admin
+  /api/procurement/update:
+    put:
+      tags:
+      - Procurement
+      summary: 更新采购
+      description: 更新采购
+      operationId: Procurement#Update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateRequestBody5'
+            example:
+              code: 123asd123123asd
+              head_id: 519151ca-6250-4eec-8016-1e14a68dc448
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              is_sales_return: false
+              money: 123
+              note: 备注
+      responses:
+        "200":
+          description: OK response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetResponseBody5'
+              example:
+                code: 123asd123123asd
+                founder:
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  name: 张三
+                head:
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  name: 张三
+                id: 519151ca-6250-4eec-8016-1e14a68dc448
+                is_sales_return: false
+                money: 123
+                note: 备注
+                supplier:
+                  contact_address: 咸阳
+                  contact_name: 张三
+                  contact_phone: "1808001010"
+                  founder:
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    name: 张三
+                  head:
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    name: 张三
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  level: 1
+                  name: xx公司
+                  note: 备注
+        "400":
+          description: Bad Request response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+        "500":
+          description: Internal Server Error response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+      security:
+      - jwt_header_Authorization:
+        - role:user
+        - role:admin
+  /api/product:
+    get:
+      tags:
+      - Product
+      summary: 获取产品列表
+      description: 获取产品列表
+      operationId: Product#List
+      responses:
+        "200":
+          description: OK response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListResponseBody3'
+              example:
+                items:
+                - code: 123asd123123asd
+                  cost_price: 123
+                  founder:
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    name: 张三
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  image: /images/123.jpg
+                  is_shelves: false
+                  market_price: 123
+                  name: 灌装辣椒
+                  note: 备注
+                  size: 瓶
+                  type: 1
+                  unit: 1
+                - code: 123asd123123asd
+                  cost_price: 123
+                  founder:
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    name: 张三
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  image: /images/123.jpg
+                  is_shelves: false
+                  market_price: 123
+                  name: 灌装辣椒
+                  note: 备注
+                  size: 瓶
+                  type: 1
+                  unit: 1
+                - code: 123asd123123asd
+                  cost_price: 123
+                  founder:
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    name: 张三
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  image: /images/123.jpg
+                  is_shelves: false
+                  market_price: 123
+                  name: 灌装辣椒
+                  note: 备注
+                  size: 瓶
+                  type: 1
+                  unit: 1
+                - code: 123asd123123asd
+                  cost_price: 123
+                  founder:
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    name: 张三
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  image: /images/123.jpg
+                  is_shelves: false
+                  market_price: 123
+                  name: 灌装辣椒
+                  note: 备注
+                  size: 瓶
+                  type: 1
+                  unit: 1
+                nextCursor: 100
+                total: 771068974299379445
+        "400":
+          description: Bad Request response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+        "500":
+          description: Internal Server Error response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+      security:
+      - jwt_header_Authorization:
+        - role:user
+        - role:admin
+  /api/product/{id}:
+    get:
+      tags:
+      - Product
+      summary: 获取单个产品
+      description: 获取单个产品
+      operationId: Product#Get
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          example: 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+        example: 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+      responses:
+        "200":
+          description: OK response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetResponseBody3'
+              example:
+                code: 123asd123123asd
+                cost_price: 123
+                founder:
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  name: 张三
+                id: 519151ca-6250-4eec-8016-1e14a68dc448
+                image: /images/123.jpg
+                is_shelves: false
+                market_price: 123
+                name: 灌装辣椒
+                note: 备注
+                size: 瓶
+                type: 1
+                unit: 1
+        "400":
+          description: Bad Request response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+        "500":
+          description: Internal Server Error response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+      security:
+      - jwt_header_Authorization:
+        - role:user
+        - role:admin
+  /api/product/create:
+    post:
+      tags:
+      - Product
+      summary: 创建产品
+      description: 创建产品
+      operationId: Product#Create
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRequestBody3'
+            example:
+              code: 123asd123123asd
+              cost_price: 123
+              founder_id: 519151ca-6250-4eec-8016-1e14a68dc448
+              image: /images/123.jpg
+              is_shelves: false
+              market_price: 123
+              name: 灌装辣椒
+              note: 备注
+              size: 瓶
+              type: 1
+              unit: 1
+      responses:
+        "200":
+          description: OK response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetResponseBody3'
+              example:
+                code: 123asd123123asd
+                cost_price: 123
+                founder:
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  name: 张三
+                id: 519151ca-6250-4eec-8016-1e14a68dc448
+                image: /images/123.jpg
+                is_shelves: false
+                market_price: 123
+                name: 灌装辣椒
+                note: 备注
+                size: 瓶
+                type: 1
+                unit: 1
+        "400":
+          description: Bad Request response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+        "500":
+          description: Internal Server Error response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+      security:
+      - jwt_header_Authorization:
+        - role:user
+        - role:admin
+  /api/product/delete:
+    delete:
+      tags:
+      - Product
+      summary: 删除产品
+      description: 删除产品
+      operationId: Product#Delete
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteRequestBody'
+            example:
+              ids:
+              - 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+              - 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+              - 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+      responses:
+        "200":
+          description: OK response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResult'
+              example:
+                ok: true
+        "400":
+          description: Bad Request response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+        "500":
+          description: Internal Server Error response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+      security:
+      - jwt_header_Authorization:
+        - role:user
+        - role:admin
+  /api/product/update:
+    put:
+      tags:
+      - Product
+      summary: 更新产品
+      description: 更新产品
+      operationId: Product#Update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateRequestBody3'
+            example:
+              cost_price: 123
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              image: /images/123.jpg
+              is_shelves: false
+              market_price: 123
+              name: 灌装辣椒
+              note: 备注
+              size: 瓶
+              type: 1
+              unit: 1
+      responses:
+        "200":
+          description: OK response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetResponseBody3'
+              example:
+                code: 123asd123123asd
+                cost_price: 123
+                founder:
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  name: 张三
+                id: 519151ca-6250-4eec-8016-1e14a68dc448
+                image: /images/123.jpg
+                is_shelves: false
+                market_price: 123
+                name: 灌装辣椒
+                note: 备注
+                size: 瓶
+                type: 1
+                unit: 1
+        "400":
+          description: Bad Request response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+        "500":
+          description: Internal Server Error response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+      security:
+      - jwt_header_Authorization:
+        - role:user
+        - role:admin
+  /api/sales:
+    get:
+      tags:
+      - Sales
+      summary: 获取销售列表
+      description: 获取销售列表
+      operationId: Sales#List
+      responses:
+        "200":
+          description: OK response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListResponseBody4'
+              example:
+                items:
+                - code: 123asd123123asd
+                  consignment_date: "2021-01-01"
+                  customer:
+                    address: 咸阳
+                    email: adb@adb.com
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    industry: 1
+                    level: 1
+                    mobile: "18000001234"
+                    name: 张三
+                    note: 备注
+                    src: 1
+                    url: http://www.baidu.com
+                  founder:
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    name: 张三
+                  head:
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    name: 张三
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  is_sales_return: false
+                  money: 123
+                  name: xx销售
+                  note: 备注
+                - code: 123asd123123asd
+                  consignment_date: "2021-01-01"
+                  customer:
+                    address: 咸阳
+                    email: adb@adb.com
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    industry: 1
+                    level: 1
+                    mobile: "18000001234"
+                    name: 张三
+                    note: 备注
+                    src: 1
+                    url: http://www.baidu.com
+                  founder:
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    name: 张三
+                  head:
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    name: 张三
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  is_sales_return: false
+                  money: 123
+                  name: xx销售
+                  note: 备注
+                - code: 123asd123123asd
+                  consignment_date: "2021-01-01"
+                  customer:
+                    address: 咸阳
+                    email: adb@adb.com
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    industry: 1
+                    level: 1
+                    mobile: "18000001234"
+                    name: 张三
+                    note: 备注
+                    src: 1
+                    url: http://www.baidu.com
+                  founder:
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    name: 张三
+                  head:
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    name: 张三
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  is_sales_return: false
+                  money: 123
+                  name: xx销售
+                  note: 备注
+                nextCursor: 100
+                total: 5092342939533220010
+        "400":
+          description: Bad Request response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+        "500":
+          description: Internal Server Error response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+      security:
+      - jwt_header_Authorization:
+        - role:user
+        - role:admin
+  /api/sales/{id}:
+    get:
+      tags:
+      - Sales
+      summary: 获取单个销售
+      description: 获取单个销售
+      operationId: Sales#Get
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          example: 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+        example: 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+      responses:
+        "200":
+          description: OK response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetResponseBody4'
+              example:
+                code: 123asd123123asd
+                consignment_date: "2021-01-01"
+                customer:
+                  address: 咸阳
+                  email: adb@adb.com
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  industry: 1
+                  level: 1
+                  mobile: "18000001234"
+                  name: 张三
+                  note: 备注
+                  src: 1
+                  url: http://www.baidu.com
+                founder:
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  name: 张三
+                head:
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  name: 张三
+                id: 519151ca-6250-4eec-8016-1e14a68dc448
+                is_sales_return: false
+                money: 123
+                name: xx销售
+                note: 备注
+        "400":
+          description: Bad Request response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+        "500":
+          description: Internal Server Error response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+      security:
+      - jwt_header_Authorization:
+        - role:user
+        - role:admin
+  /api/sales/create:
+    post:
+      tags:
+      - Sales
+      summary: 创建销售
+      description: 创建销售
+      operationId: Sales#Create
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRequestBody4'
+            example:
+              code: 123asd123123asd
+              consignment_date: "2021-01-01"
+              customer_id: 519151ca-6250-4eec-8016-1e14a68dc448
+              founder_id: 519151ca-6250-4eec-8016-1e14a68dc448
+              head_id: 519151ca-6250-4eec-8016-1e14a68dc448
+              is_sales_return: false
+              money: 123
+              name: xx销售
+              note: 备注
+      responses:
+        "200":
+          description: OK response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetResponseBody4'
+              example:
+                code: 123asd123123asd
+                consignment_date: "2021-01-01"
+                customer:
+                  address: 咸阳
+                  email: adb@adb.com
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  industry: 1
+                  level: 1
+                  mobile: "18000001234"
+                  name: 张三
+                  note: 备注
+                  src: 1
+                  url: http://www.baidu.com
+                founder:
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  name: 张三
+                head:
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  name: 张三
+                id: 519151ca-6250-4eec-8016-1e14a68dc448
+                is_sales_return: false
+                money: 123
+                name: xx销售
+                note: 备注
+        "400":
+          description: Bad Request response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+        "500":
+          description: Internal Server Error response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+      security:
+      - jwt_header_Authorization:
+        - role:user
+        - role:admin
+  /api/sales/delete:
+    delete:
+      tags:
+      - Sales
+      summary: 删除销售
+      description: 删除销售
+      operationId: Sales#Delete
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteRequestBody'
+            example:
+              ids:
+              - 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+              - 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+              - 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+      responses:
+        "200":
+          description: OK response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResult'
+              example:
+                ok: true
+        "400":
+          description: Bad Request response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+        "500":
+          description: Internal Server Error response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+      security:
+      - jwt_header_Authorization:
+        - role:user
+        - role:admin
+  /api/sales/update:
+    put:
+      tags:
+      - Sales
+      summary: 更新销售
+      description: 更新销售
+      operationId: Sales#Update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateRequestBody4'
+            example:
+              consignment_date: "2021-01-01"
+              customer_id: 519151ca-6250-4eec-8016-1e14a68dc448
+              head_id: 519151ca-6250-4eec-8016-1e14a68dc448
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              is_sales_return: false
+              money: 123
+              name: xx销售
+              note: 备注
+      responses:
+        "200":
+          description: OK response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetResponseBody4'
+              example:
+                code: 123asd123123asd
+                consignment_date: "2021-01-01"
+                customer:
+                  address: 咸阳
+                  email: adb@adb.com
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  industry: 1
+                  level: 1
+                  mobile: "18000001234"
+                  name: 张三
+                  note: 备注
+                  src: 1
+                  url: http://www.baidu.com
+                founder:
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  name: 张三
+                head:
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  name: 张三
+                id: 519151ca-6250-4eec-8016-1e14a68dc448
+                is_sales_return: false
+                money: 123
+                name: xx销售
+                note: 备注
+        "400":
+          description: Bad Request response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+        "500":
+          description: Internal Server Error response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+      security:
+      - jwt_header_Authorization:
+        - role:user
+        - role:admin
+  /api/supplier:
+    get:
+      tags:
+      - Supplier
+      summary: 获取供应商列表
+      description: 获取供应商列表
+      operationId: Supplier#List
+      responses:
+        "200":
+          description: OK response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListResponseBody6'
+              example:
+                items:
+                - contact_address: 咸阳
+                  contact_name: 张三
+                  contact_phone: "1808001010"
+                  founder:
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    name: 张三
+                  head:
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    name: 张三
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  level: 1
+                  name: xx公司
+                  note: 备注
+                - contact_address: 咸阳
+                  contact_name: 张三
+                  contact_phone: "1808001010"
+                  founder:
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    name: 张三
+                  head:
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    name: 张三
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  level: 1
+                  name: xx公司
+                  note: 备注
+                nextCursor: 100
+                total: 1625144952428090153
+        "400":
+          description: Bad Request response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+        "500":
+          description: Internal Server Error response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+      security:
+      - jwt_header_Authorization:
+        - role:user
+        - role:admin
+  /api/supplier/{id}:
+    get:
+      tags:
+      - Supplier
+      summary: 获取单个供应商
+      description: 获取单个供应商
+      operationId: Supplier#Get
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          example: 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+        example: 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+      responses:
+        "200":
+          description: OK response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Supplier'
+              example:
+                contact_address: 咸阳
+                contact_name: 张三
+                contact_phone: "1808001010"
+                founder:
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  name: 张三
+                head:
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  name: 张三
+                id: 519151ca-6250-4eec-8016-1e14a68dc448
+                level: 1
+                name: xx公司
+                note: 备注
+        "400":
+          description: Bad Request response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+        "500":
+          description: Internal Server Error response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+      security:
+      - jwt_header_Authorization:
+        - role:user
+        - role:admin
+  /api/supplier/create:
+    post:
+      tags:
+      - Supplier
+      summary: 创建供应商
+      description: 创建供应商
+      operationId: Supplier#Create
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRequestBody6'
+            example:
+              contact_address: 咸阳
+              contact_name: 张三
+              contact_phone: "1808001010"
+              founder_id: 519151ca-6250-4eec-8016-1e14a68dc448
+              head_id: 519151ca-6250-4eec-8016-1e14a68dc448
+              level: 1
+              name: xx公司
+              note: 备注
+      responses:
+        "200":
+          description: OK response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Supplier'
+              example:
+                contact_address: 咸阳
+                contact_name: 张三
+                contact_phone: "1808001010"
+                founder:
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  name: 张三
+                head:
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  name: 张三
+                id: 519151ca-6250-4eec-8016-1e14a68dc448
+                level: 1
+                name: xx公司
+                note: 备注
+        "400":
+          description: Bad Request response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+        "500":
+          description: Internal Server Error response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+      security:
+      - jwt_header_Authorization:
+        - role:user
+        - role:admin
+  /api/supplier/delete:
+    delete:
+      tags:
+      - Supplier
+      summary: 删除供应商
+      description: 删除供应商
+      operationId: Supplier#Delete
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteRequestBody'
+            example:
+              ids:
+              - 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+              - 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+              - 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+      responses:
+        "200":
+          description: OK response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResult'
+              example:
+                ok: true
+        "400":
+          description: Bad Request response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+        "500":
+          description: Internal Server Error response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+      security:
+      - jwt_header_Authorization:
+        - role:user
+        - role:admin
+  /api/supplier/update:
+    put:
+      tags:
+      - Supplier
+      summary: 更新供应商
+      description: 更新供应商
+      operationId: Supplier#Update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateRequestBody6'
+            example:
+              contact_address: 咸阳
+              contact_name: 张三
+              contact_phone: "1808001010"
+              head_id: 519151ca-6250-4eec-8016-1e14a68dc448
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              level: 1
+              name: xx公司
+              note: 备注
+      responses:
+        "200":
+          description: OK response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Supplier'
+              example:
+                contact_address: 咸阳
+                contact_name: 张三
+                contact_phone: "1808001010"
+                founder:
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  name: 张三
+                head:
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  name: 张三
+                id: 519151ca-6250-4eec-8016-1e14a68dc448
+                level: 1
+                name: xx公司
+                note: 备注
+        "400":
+          description: Bad Request response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+        "500":
+          description: Internal Server Error response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+      security:
+      - jwt_header_Authorization:
+        - role:user
+        - role:admin
+  /api/user:
+    get:
+      tags:
+      - User
+      summary: 获取用户列表
+      description: 获取用户列表
+      operationId: User#List
+      responses:
+        "200":
+          description: OK response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListResponseBody7'
+              example:
+                items:
+                - email: adb@adb.com
+                  group:
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    name: 普通用户
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  is_admin: false
+                  jobs: 1
+                  mobile: "1808001010"
+                  name: 张三
+                  superior:
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    name: 张三
+                  username: 用户名
+                - email: adb@adb.com
+                  group:
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    name: 普通用户
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  is_admin: false
+                  jobs: 1
+                  mobile: "1808001010"
+                  name: 张三
+                  superior:
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    name: 张三
+                  username: 用户名
+                - email: adb@adb.com
+                  group:
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    name: 普通用户
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  is_admin: false
+                  jobs: 1
+                  mobile: "1808001010"
+                  name: 张三
+                  superior:
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    name: 张三
+                  username: 用户名
+                nextCursor: 100
+                total: 5687895796646863925
+        "400":
+          description: Bad Request response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+        "500":
+          description: Internal Server Error response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+      security:
+      - jwt_header_Authorization:
+        - role:user
+        - role:admin
+  /api/user/{id}:
+    get:
+      tags:
+      - User
+      summary: 获取单个用户
+      description: 获取单个用户
+      operationId: User#Get
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          example: 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+        example: 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+      responses:
+        "200":
+          description: OK response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetResponseBody6'
+              example:
+                email: adb@adb.com
+                group:
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  name: 普通用户
+                id: 519151ca-6250-4eec-8016-1e14a68dc448
+                is_admin: false
+                jobs: 1
+                mobile: "1808001010"
+                name: 张三
+                superior:
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  name: 张三
+                username: 用户名
+        "400":
+          description: Bad Request response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+        "500":
+          description: Internal Server Error response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+      security:
+      - jwt_header_Authorization:
+        - role:user
+        - role:admin
+  /api/user/create:
+    post:
+      tags:
+      - User
+      summary: 创建用户
+      description: 创建用户
+      operationId: User#Create
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRequestBody7'
+            example:
+              email: adb@adb.com
+              group_id: 519151ca-6250-4eec-8016-1e14a68dc448
+              jobs: 1
+              mobile: "1808001010"
+              name: 张三
+              password: abc
+              superior_id: 519151ca-6250-4eec-8016-1e14a68dc448
+              username: abc
+      responses:
+        "200":
+          description: OK response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetResponseBody6'
+              example:
+                email: adb@adb.com
+                group:
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  name: 普通用户
+                id: 519151ca-6250-4eec-8016-1e14a68dc448
+                is_admin: false
+                jobs: 1
+                mobile: "1808001010"
+                name: 张三
+                superior:
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  name: 张三
+                username: 用户名
+        "400":
+          description: Bad Request response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+        "500":
+          description: Internal Server Error response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+      security:
+      - jwt_header_Authorization:
+        - role:user
+        - role:admin
+  /api/user/delete:
+    delete:
+      tags:
+      - User
+      summary: 删除用户
+      description: 删除用户
+      operationId: User#Delete
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteRequestBody'
+            example:
+              ids:
+              - 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+              - 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+              - 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+      responses:
+        "200":
+          description: OK response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResult'
+              example:
+                ok: true
+        "400":
+          description: Bad Request response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+        "500":
+          description: Internal Server Error response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+      security:
+      - jwt_header_Authorization:
+        - role:user
+        - role:admin
+  /api/user/update:
+    put:
+      tags:
+      - User
+      summary: 更新用户
+      description: 更新用户
+      operationId: User#Update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateRequestBody7'
+            example:
+              email: adb@adb.com
+              group_id: 519151ca-6250-4eec-8016-1e14a68dc448
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              jobs: 1
+              mobile: "1808001010"
+              name: 张三
+              superior_id: 519151ca-6250-4eec-8016-1e14a68dc448
+      responses:
+        "200":
+          description: OK response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetResponseBody6'
+              example:
+                email: adb@adb.com
+                group:
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  name: 普通用户
+                id: 519151ca-6250-4eec-8016-1e14a68dc448
+                is_admin: false
+                jobs: 1
+                mobile: "1808001010"
+                name: 张三
+                superior:
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  name: 张三
+                username: 用户名
+        "400":
+          description: Bad Request response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+        "500":
+          description: Internal Server Error response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+      security:
+      - jwt_header_Authorization:
+        - role:user
+        - role:admin
+  /api/warehouse:
+    get:
+      tags:
+      - Warehouse
+      summary: 获取仓库列表
+      description: 获取仓库列表
+      operationId: Warehouse#List
+      responses:
+        "200":
+          description: OK response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListResponseBody9'
+              example:
+                items:
+                - address: 地址
+                  code: 123awe12qwe
+                  founder:
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    name: 张三
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  name: 1号仓库
+                  type: 1
+                - address: 地址
+                  code: 123awe12qwe
+                  founder:
+                    id: 519151ca-6250-4eec-8016-1e14a68dc448
+                    name: 张三
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  name: 1号仓库
+                  type: 1
+                nextCursor: 100
+                total: 617361940095125077
+        "400":
+          description: Bad Request response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+        "500":
+          description: Internal Server Error response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+      security:
+      - jwt_header_Authorization:
+        - role:user
+        - role:admin
+  /api/warehouse/{id}:
+    get:
+      tags:
+      - Warehouse
+      summary: 获取单个仓库
+      description: 获取单个仓库
+      operationId: Warehouse#Get
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          example: 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+        example: 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+      responses:
+        "200":
+          description: OK response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Warehouse'
+              example:
+                address: 地址
+                code: 123awe12qwe
+                founder:
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  name: 张三
+                id: 519151ca-6250-4eec-8016-1e14a68dc448
+                name: 1号仓库
+                type: 1
+        "400":
+          description: Bad Request response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+        "500":
+          description: Internal Server Error response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+      security:
+      - jwt_header_Authorization:
+        - role:user
+        - role:admin
+  /api/warehouse/create:
+    post:
+      tags:
+      - Warehouse
+      summary: 创建仓库
+      description: 创建仓库
+      operationId: Warehouse#Create
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRequestBody9'
+            example:
+              address: 地址
+              code: 123awe12qwe
+              founder_id: 519151ca-6250-4eec-8016-1e14a68dc448
+              name: 1号仓库
+              type: 1
+      responses:
+        "200":
+          description: OK response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Warehouse'
+              example:
+                address: 地址
+                code: 123awe12qwe
+                founder:
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  name: 张三
+                id: 519151ca-6250-4eec-8016-1e14a68dc448
+                name: 1号仓库
+                type: 1
+        "400":
+          description: Bad Request response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+        "500":
+          description: Internal Server Error response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+      security:
+      - jwt_header_Authorization:
+        - role:user
+        - role:admin
+  /api/warehouse/delete:
+    delete:
+      tags:
+      - Warehouse
+      summary: 删除仓库
+      description: 删除仓库
+      operationId: Warehouse#Delete
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteRequestBody'
+            example:
+              ids:
+              - 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+              - 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+              - 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+      responses:
+        "200":
+          description: OK response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResult'
+              example:
+                ok: true
+        "400":
+          description: Bad Request response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+        "500":
+          description: Internal Server Error response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+      security:
+      - jwt_header_Authorization:
+        - role:user
+        - role:admin
+  /api/warehouse/update:
+    put:
+      tags:
+      - Warehouse
+      summary: 更新仓库
+      description: 更新仓库
+      operationId: Warehouse#Update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateRequestBody9'
+            example:
+              address: 地址
+              code: 123awe12qwe
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              name: 1号仓库
+              type: 1
+      responses:
+        "200":
+          description: OK response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Warehouse'
+              example:
+                address: 地址
+                code: 123awe12qwe
+                founder:
+                  id: 519151ca-6250-4eec-8016-1e14a68dc448
+                  name: 张三
+                id: 519151ca-6250-4eec-8016-1e14a68dc448
+                name: 1号仓库
+                type: 1
         "400":
           description: Bad Request response.
           content:
@@ -156,23 +3219,545 @@ paths:
         - role:admin
 components:
   schemas:
-    Captcha:
+    CaptchaImageResponseBody:
       type: object
       properties:
         captchaId:
           type: string
           description: 验证码ID
-          example: Dolorum veniam voluptatem accusamus.
+          example: Voluptatem eius amet nobis sed nostrum quae.
         image:
           type: string
           description: 图片base64
-          example: Unde ea est eos iusto nemo.
+          example: Odit hic repellat.
+      description: CaptchaImageResponseBody result type (default view)
       example:
-        captchaId: Atque dolorum optio.
-        image: Vitae tempore a dicta nihil animi.
+        captchaId: Eius voluptas esse dolorum eum sit minima.
+        image: Illo debitis quia neque labore.
       required:
       - image
       - captchaId
+    CreateRequestBody:
+      type: object
+      properties:
+        address:
+          type: string
+          description: 客户地址
+          example: 咸阳
+        email:
+          type: string
+          description: 客户邮箱
+          example: adb@adb.com
+          format: email
+        industry:
+          type: integer
+          description: 客户行业
+          example: 1
+          format: int64
+        level:
+          type: integer
+          description: 客户等级
+          example: 1
+          format: int64
+        mobile:
+          type: string
+          description: 客户手机
+          example: "18000001234"
+          format: regexp
+          pattern: ^1(?:3\d|4[4-9]|5[0-35-9]|6[67]|7[013-8]|8\d|9\d)\d{8}$
+          minLength: 11
+          maxLength: 11
+        name:
+          type: string
+          description: 客户姓名
+          example: 张三
+        note:
+          type: string
+          description: 备注
+          example: 备注
+        src:
+          type: integer
+          description: 客户来源
+          example: 1
+          format: int64
+        url:
+          type: string
+          description: 客户网址
+          example: http://www.baidu.com
+          format: uri
+      example:
+        address: 咸阳
+        email: adb@adb.com
+        industry: 1
+        level: 1
+        mobile: "18000001234"
+        name: 张三
+        note: 备注
+        src: 1
+        url: http://www.baidu.com
+      required:
+      - name
+      - src
+      - mobile
+      - url
+      - email
+      - industry
+      - level
+      - note
+      - address
+    CreateRequestBody2:
+      type: object
+      properties:
+        name:
+          type: string
+          description: 姓名
+          example: 张三
+      example:
+        name: 张三
+      required:
+      - name
+    CreateRequestBody3:
+      type: object
+      properties:
+        code:
+          type: string
+          description: 产品编码
+          example: 123asd123123asd
+        cost_price:
+          type: integer
+          description: 成本价
+          example: 123
+          format: int64
+        founder_id:
+          type: string
+          description: 创建人ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        image:
+          type: string
+          description: 产品图片
+          example: /images/123.jpg
+        is_shelves:
+          type: boolean
+          description: 是否上架
+          example: false
+        market_price:
+          type: integer
+          description: 市场价
+          example: 123
+          format: int64
+        name:
+          type: string
+          description: 产品名
+          example: 灌装辣椒
+        note:
+          type: string
+          description: 产品备注
+          example: 备注
+        size:
+          type: string
+          description: 产品规格
+          example: 瓶
+        type:
+          type: integer
+          description: 产品类型
+          example: 1
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          - 6
+          - 7
+          - 8
+        unit:
+          type: integer
+          description: 产品单位
+          example: 1
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          - 6
+          - 7
+          - 8
+      example:
+        code: 123asd123123asd
+        cost_price: 123
+        founder_id: 519151ca-6250-4eec-8016-1e14a68dc448
+        image: /images/123.jpg
+        is_shelves: false
+        market_price: 123
+        name: 灌装辣椒
+        note: 备注
+        size: 瓶
+        type: 1
+        unit: 1
+      required:
+      - name
+      - unit
+      - cost_price
+      - market_price
+      - note
+      - image
+      - code
+      - size
+      - type
+      - is_shelves
+      - founder_id
+    CreateRequestBody4:
+      type: object
+      properties:
+        code:
+          type: string
+          description: 销售编码
+          example: 123asd123123asd
+        consignment_date:
+          type: string
+          description: 销售日期
+          example: "2021-01-01"
+        customer_id:
+          type: string
+          description: 客户ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        founder_id:
+          type: string
+          description: 创建人
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        head_id:
+          type: string
+          description: 负责人
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        is_sales_return:
+          type: boolean
+          description: 销售还是退货
+          example: false
+          enum:
+          - false
+          - true
+        money:
+          type: integer
+          description: 销售金额
+          example: 123
+          format: int64
+        name:
+          type: string
+          description: 销售单名
+          example: xx销售
+        note:
+          type: string
+          description: 备注
+          example: 备注
+      example:
+        code: 123asd123123asd
+        consignment_date: "2021-01-01"
+        customer_id: 519151ca-6250-4eec-8016-1e14a68dc448
+        founder_id: 519151ca-6250-4eec-8016-1e14a68dc448
+        head_id: 519151ca-6250-4eec-8016-1e14a68dc448
+        is_sales_return: false
+        money: 123
+        name: xx销售
+        note: 备注
+      required:
+      - name
+      - code
+      - customer_id
+      - money
+      - consignment_date
+      - is_sales_return
+      - note
+      - head_id
+      - founder_id
+    CreateRequestBody5:
+      type: object
+      properties:
+        code:
+          type: string
+          description: 采购编码
+          example: 123asd123123asd
+        founder_id:
+          type: string
+          description: 创建人ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        head_id:
+          type: string
+          description: 负责人ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        is_sales_return:
+          type: boolean
+          description: 采购还是退货
+          example: false
+          enum:
+          - false
+          - true
+        money:
+          type: integer
+          description: 采购金额
+          example: 123
+          format: int64
+        note:
+          type: string
+          description: 备注
+          example: 备注
+        supplier_id:
+          type: string
+          description: 供应商ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+      example:
+        code: 123asd123123asd
+        founder_id: 519151ca-6250-4eec-8016-1e14a68dc448
+        head_id: 519151ca-6250-4eec-8016-1e14a68dc448
+        is_sales_return: false
+        money: 123
+        note: 备注
+        supplier_id: 519151ca-6250-4eec-8016-1e14a68dc448
+      required:
+      - supplier_id
+      - code
+      - money
+      - is_sales_return
+      - note
+      - head_id
+      - founder_id
+    CreateRequestBody6:
+      type: object
+      properties:
+        contact_address:
+          type: string
+          description: 联系人地址
+          example: 咸阳
+        contact_name:
+          type: string
+          description: 联系人姓名
+          example: 张三
+        contact_phone:
+          type: string
+          description: 联系人手机
+          example: "1808001010"
+          format: regexp
+          pattern: ^1(?:3\d|4[4-9]|5[0-35-9]|6[67]|7[013-8]|8\d|9\d)\d{8}$
+          minLength: 11
+          maxLength: 11
+        founder_id:
+          type: string
+          description: 创建人ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        head_id:
+          type: string
+          description: 负责人ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        level:
+          type: integer
+          description: 级别
+          example: 1
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+        name:
+          type: string
+          description: 供应商名
+          example: xx公司
+        note:
+          type: string
+          description: 产品备注
+          example: 备注
+      example:
+        contact_address: 咸阳
+        contact_name: 张三
+        contact_phone: "1808001010"
+        founder_id: 519151ca-6250-4eec-8016-1e14a68dc448
+        head_id: 519151ca-6250-4eec-8016-1e14a68dc448
+        level: 1
+        name: xx公司
+        note: 备注
+      required:
+      - name
+      - level
+      - contact_name
+      - contact_phone
+      - contact_address
+      - note
+      - head_id
+      - founder_id
+    CreateRequestBody7:
+      type: object
+      properties:
+        email:
+          type: string
+          description: 邮箱
+          example: adb@adb.com
+          format: email
+        group_id:
+          type: string
+          description: 所属组
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        jobs:
+          type: integer
+          description: 1 - 推销员，2 - 经理，3 - 管理员
+          example: 1
+          enum:
+          - 1
+          - 2
+          - 3
+        mobile:
+          type: string
+          description: 手机号
+          example: "1808001010"
+          format: regexp
+          pattern: ^1(?:3\d|4[4-9]|5[0-35-9]|6[67]|7[013-8]|8\d|9\d)\d{8}$
+          minLength: 11
+          maxLength: 11
+        name:
+          type: string
+          description: 姓名
+          example: 张三
+        password:
+          type: string
+          description: 用户密码
+          example: abc
+        superior_id:
+          type: string
+          description: 直属上级ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        username:
+          type: string
+          description: 用户名
+          example: abc
+          pattern: (\d+.*[a-zA-Z]+)|([a-zA-Z]+.*\d+)
+      example:
+        email: adb@adb.com
+        group_id: 519151ca-6250-4eec-8016-1e14a68dc448
+        jobs: 1
+        mobile: "1808001010"
+        name: 张三
+        password: abc
+        superior_id: 519151ca-6250-4eec-8016-1e14a68dc448
+        username: abc
+      required:
+      - username
+      - password
+      - name
+      - mobile
+      - email
+      - jobs
+      - superior_id
+      - group_id
+    CreateRequestBody8:
+      type: object
+      properties:
+        code:
+          type: string
+          description: 库存单号
+          example: 123qwe123qwe
+        founder_id:
+          type: string
+          description: 创建人ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        head_id:
+          type: string
+          description: 负责人ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        in_and_out:
+          type: integer
+          description: 入库还是出库
+          example: 1
+          enum:
+          - 1
+          - 2
+        inventory_date:
+          type: string
+          description: 库存时间
+          example: "20210101"
+        note:
+          type: string
+          description: 备注
+          example: 备注
+        number:
+          type: integer
+          description: 产品数量
+          example: 123
+          format: int64
+        product_id:
+          type: string
+          description: 产品ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        type:
+          type: integer
+          description: 库存类型
+          example: 1
+          enum:
+          - 1
+          - 2
+          - 3
+        warehouse_id:
+          type: string
+          description: 仓库ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+      example:
+        code: 123qwe123qwe
+        founder_id: 519151ca-6250-4eec-8016-1e14a68dc448
+        head_id: 519151ca-6250-4eec-8016-1e14a68dc448
+        in_and_out: 1
+        inventory_date: "20210101"
+        note: 备注
+        number: 123
+        product_id: 519151ca-6250-4eec-8016-1e14a68dc448
+        type: 1
+        warehouse_id: 519151ca-6250-4eec-8016-1e14a68dc448
+      required:
+      - product_id
+      - number
+      - code
+      - warehouse_id
+      - type
+      - inventory_date
+      - in_and_out
+      - note
+      - head_id
+      - founder_id
+    CreateRequestBody9:
+      type: object
+      properties:
+        address:
+          type: string
+          description: 仓库地址
+          example: 地址
+        code:
+          type: string
+          description: 仓库编码
+          example: 123awe12qwe
+        founder_id:
+          type: string
+          description: 创建人ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        name:
+          type: string
+          description: 仓库名
+          example: 1号仓库
+        type:
+          type: integer
+          description: 仓库状态
+          example: 1
+          enum:
+          - 1
+          - 2
+          - 3
+      example:
+        address: 地址
+        code: 123awe12qwe
+        founder_id: 519151ca-6250-4eec-8016-1e14a68dc448
+        name: 1号仓库
+        type: 1
+      required:
+      - name
+      - code
+      - address
+      - type
+      - founder_id
     Credentials:
       type: object
       properties:
@@ -191,6 +3776,94 @@ components:
       required:
       - token
       - expires_in
+    Customer:
+      type: object
+      properties:
+        address:
+          type: string
+          description: 客户地址
+          example: 咸阳
+        email:
+          type: string
+          description: 客户邮箱
+          example: adb@adb.com
+        id:
+          type: string
+          description: ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        industry:
+          type: integer
+          description: 客户行业
+          example: 1
+          format: int64
+        level:
+          type: integer
+          description: 客户等级
+          example: 1
+          format: int64
+        mobile:
+          type: string
+          description: 客户手机
+          example: "18000001234"
+        name:
+          type: string
+          description: 客户姓名
+          example: 张三
+        note:
+          type: string
+          description: 备注
+          example: 备注
+        src:
+          type: integer
+          description: 客户来源
+          example: 1
+          format: int64
+        url:
+          type: string
+          description: 客户网址
+          example: http://www.baidu.com
+      example:
+        address: 咸阳
+        email: adb@adb.com
+        id: 519151ca-6250-4eec-8016-1e14a68dc448
+        industry: 1
+        level: 1
+        mobile: "18000001234"
+        name: 张三
+        note: 备注
+        src: 1
+        url: http://www.baidu.com
+      required:
+      - id
+      - name
+      - src
+      - mobile
+      - url
+      - email
+      - industry
+      - level
+      - note
+      - address
+    DeleteRequestBody:
+      type: object
+      properties:
+        ids:
+          type: array
+          items:
+            type: string
+            example: 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+          example:
+          - 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+          - 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+          - 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+          maxItems: 100
+      example:
+        ids:
+        - 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+        - 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+        - 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
+      required:
+      - ids
     Error:
       type: object
       properties:
@@ -219,7 +3892,7 @@ components:
         timeout:
           type: boolean
           description: Is the error a timeout?
-          example: false
+          example: true
       example:
         id: 3F1FKVRR
         message: Value of ID must be an integer
@@ -231,45 +3904,1685 @@ components:
       - temporary
       - timeout
       - fault
-    GetCaptchaImageResponseBody:
+    Founder:
       type: object
       properties:
-        data:
-          $ref: '#/components/schemas/Captcha'
-        errcode:
-          type: integer
-          description: 错误码
-          example: 0
-          minimum: 0
-          maximum: 999999
-        errmsg:
+        id:
           type: string
-          description: 错误消息
-          example: ""
+          description: ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        name:
+          type: string
+          description: 姓名
+          example: 张三
       example:
-        data:
-          captchaId: Sequi ad recusandae harum sunt culpa aliquid.
-          image: Eos quae rerum provident.
-        errcode: 0
-        errmsg: ""
+        id: 519151ca-6250-4eec-8016-1e14a68dc448
+        name: 张三
       required:
-      - errcode
-      - errmsg
-    LoginByUsernameRequestBody:
+      - id
+      - name
+    Founder2:
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        name:
+          type: string
+          description: 姓名
+          example: 张三
+      example:
+        id: 519151ca-6250-4eec-8016-1e14a68dc448
+        name: 张三
+      required:
+      - id
+      - name
+    GetResponseBody:
+      type: object
+      properties:
+        address:
+          type: string
+          description: 客户地址
+          example: 咸阳
+        email:
+          type: string
+          description: 客户邮箱
+          example: adb@adb.com
+        id:
+          type: string
+          description: ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        industry:
+          type: integer
+          description: 客户行业
+          example: 1
+          format: int64
+        level:
+          type: integer
+          description: 客户等级
+          example: 1
+          format: int64
+        mobile:
+          type: string
+          description: 客户手机
+          example: "18000001234"
+        name:
+          type: string
+          description: 客户姓名
+          example: 张三
+        note:
+          type: string
+          description: 备注
+          example: 备注
+        src:
+          type: integer
+          description: 客户来源
+          example: 1
+          format: int64
+        url:
+          type: string
+          description: 客户网址
+          example: http://www.baidu.com
+      description: GetResponseBody result type (default view)
+      example:
+        address: 咸阳
+        email: adb@adb.com
+        id: 519151ca-6250-4eec-8016-1e14a68dc448
+        industry: 1
+        level: 1
+        mobile: "18000001234"
+        name: 张三
+        note: 备注
+        src: 1
+        url: http://www.baidu.com
+      required:
+      - id
+      - name
+      - src
+      - mobile
+      - url
+      - email
+      - industry
+      - level
+      - note
+      - address
+    GetResponseBody2:
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        name:
+          type: string
+          description: 组名
+          example: 普通用户
+      description: GetResponseBody result type (default view)
+      example:
+        id: 519151ca-6250-4eec-8016-1e14a68dc448
+        name: 普通用户
+      required:
+      - id
+      - name
+    GetResponseBody3:
+      type: object
+      properties:
+        code:
+          type: string
+          description: 产品编码
+          example: 123asd123123asd
+        cost_price:
+          type: integer
+          description: 成本价
+          example: 123
+          format: int64
+        founder:
+          $ref: '#/components/schemas/Founder'
+        id:
+          type: string
+          description: ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        image:
+          type: string
+          description: 产品图片
+          example: /images/123.jpg
+        is_shelves:
+          type: boolean
+          description: 是否上架
+          example: false
+        market_price:
+          type: integer
+          description: 市场价
+          example: 123
+          format: int64
+        name:
+          type: string
+          description: 产品名
+          example: 灌装辣椒
+        note:
+          type: string
+          description: 产品备注
+          example: 备注
+        size:
+          type: string
+          description: 产品规格
+          example: 瓶
+        type:
+          type: integer
+          description: 产品类型
+          example: 1
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          - 6
+          - 7
+          - 8
+        unit:
+          type: integer
+          description: 产品单位
+          example: 1
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          - 6
+          - 7
+          - 8
+      description: GetResponseBody result type (default view)
+      example:
+        code: 123asd123123asd
+        cost_price: 123
+        founder:
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          name: 张三
+        id: 519151ca-6250-4eec-8016-1e14a68dc448
+        image: /images/123.jpg
+        is_shelves: false
+        market_price: 123
+        name: 灌装辣椒
+        note: 备注
+        size: 瓶
+        type: 1
+        unit: 1
+      required:
+      - id
+      - name
+      - unit
+      - cost_price
+      - market_price
+      - note
+      - image
+      - code
+      - size
+      - type
+      - is_shelves
+      - founder
+    GetResponseBody4:
+      type: object
+      properties:
+        code:
+          type: string
+          description: 销售编码
+          example: 123asd123123asd
+        consignment_date:
+          type: string
+          description: 销售日期
+          example: "2021-01-01"
+        customer:
+          $ref: '#/components/schemas/GetResponseBody'
+        founder:
+          $ref: '#/components/schemas/Founder'
+        head:
+          $ref: '#/components/schemas/Head'
+        id:
+          type: string
+          description: ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        is_sales_return:
+          type: boolean
+          description: 销售还是退货
+          example: false
+          enum:
+          - false
+          - true
+        money:
+          type: integer
+          description: 销售金额
+          example: 123
+          format: int64
+        name:
+          type: string
+          description: 销售单名
+          example: xx销售
+        note:
+          type: string
+          description: 备注
+          example: 备注
+      description: GetResponseBody result type (default view)
+      example:
+        code: 123asd123123asd
+        consignment_date: "2021-01-01"
+        customer:
+          address: 咸阳
+          email: adb@adb.com
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          industry: 1
+          level: 1
+          mobile: "18000001234"
+          name: 张三
+          note: 备注
+          src: 1
+          url: http://www.baidu.com
+        founder:
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          name: 张三
+        head:
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          name: 张三
+        id: 519151ca-6250-4eec-8016-1e14a68dc448
+        is_sales_return: false
+        money: 123
+        name: xx销售
+        note: 备注
+      required:
+      - id
+      - name
+      - code
+      - customer
+      - money
+      - consignment_date
+      - is_sales_return
+      - note
+      - head
+      - founder
+    GetResponseBody5:
+      type: object
+      properties:
+        code:
+          type: string
+          description: 采购编码
+          example: 123asd123123asd
+        founder:
+          $ref: '#/components/schemas/Founder'
+        head:
+          $ref: '#/components/schemas/Head'
+        id:
+          type: string
+          description: ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        is_sales_return:
+          type: boolean
+          description: 采购还是退货
+          example: false
+        money:
+          type: integer
+          description: 采购金额
+          example: 123
+          format: int64
+        note:
+          type: string
+          description: 产品备注
+          example: 备注
+        supplier:
+          $ref: '#/components/schemas/Supplier'
+      description: GetResponseBody result type (default view)
+      example:
+        code: 123asd123123asd
+        founder:
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          name: 张三
+        head:
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          name: 张三
+        id: 519151ca-6250-4eec-8016-1e14a68dc448
+        is_sales_return: false
+        money: 123
+        note: 备注
+        supplier:
+          contact_address: 咸阳
+          contact_name: 张三
+          contact_phone: "1808001010"
+          founder:
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            name: 张三
+          head:
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            name: 张三
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          level: 1
+          name: xx公司
+          note: 备注
+      required:
+      - id
+      - supplier
+      - code
+      - money
+      - is_sales_return
+      - note
+      - head
+      - founder
+    GetResponseBody6:
+      type: object
+      properties:
+        email:
+          type: string
+          description: 邮箱
+          example: adb@adb.com
+        group:
+          $ref: '#/components/schemas/GetResponseBody2'
+        id:
+          type: string
+          description: ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        is_admin:
+          type: boolean
+          description: 是否是管理员
+          example: false
+        jobs:
+          type: integer
+          description: 1 - 推销员，2 - 经理，3 - 管理员
+          example: 1
+          enum:
+          - 1
+          - 2
+          - 3
+        mobile:
+          type: string
+          description: 手机号
+          example: "1808001010"
+        name:
+          type: string
+          description: 姓名
+          example: 张三
+        superior:
+          $ref: '#/components/schemas/Superior'
+        username:
+          type: string
+          description: 用户名
+          example: 用户名
+      description: GetResponseBody result type (default view)
+      example:
+        email: adb@adb.com
+        group:
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          name: 普通用户
+        id: 519151ca-6250-4eec-8016-1e14a68dc448
+        is_admin: false
+        jobs: 1
+        mobile: "1808001010"
+        name: 张三
+        superior:
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          name: 张三
+        username: 用户名
+      required:
+      - id
+      - username
+      - name
+      - mobile
+      - email
+      - jobs
+      - is_admin
+      - superior
+      - group
+    GetResponseBody7:
+      type: object
+      properties:
+        code:
+          type: string
+          description: 库存单号
+          example: 123qwe123qwe
+        founder:
+          $ref: '#/components/schemas/Founder'
+        head:
+          $ref: '#/components/schemas/Head'
+        id:
+          type: string
+          description: ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        in_and_out:
+          type: integer
+          description: 入库还是出库
+          example: 1
+          format: int64
+        inventory_date:
+          type: string
+          description: 库存时间
+          example: "20210101"
+        note:
+          type: string
+          description: 备注
+          example: 备注
+        number:
+          type: integer
+          description: 产品数量
+          example: 123
+          format: int64
+        product:
+          $ref: '#/components/schemas/GetResponseBody3'
+        type:
+          type: integer
+          description: 库存类型
+          example: 1
+          format: int64
+        warehouse:
+          $ref: '#/components/schemas/Warehouse'
+      description: GetResponseBody result type (default view)
+      example:
+        code: 123qwe123qwe
+        founder:
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          name: 张三
+        head:
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          name: 张三
+        id: 519151ca-6250-4eec-8016-1e14a68dc448
+        in_and_out: 1
+        inventory_date: "20210101"
+        note: 备注
+        number: 123
+        product:
+          code: 123asd123123asd
+          cost_price: 123
+          founder:
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            name: 张三
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          image: /images/123.jpg
+          is_shelves: false
+          market_price: 123
+          name: 灌装辣椒
+          note: 备注
+          size: 瓶
+          type: 1
+          unit: 1
+        type: 1
+        warehouse:
+          address: 地址
+          code: 123awe12qwe
+          founder:
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            name: 张三
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          name: 1号仓库
+          type: 1
+      required:
+      - id
+      - product
+      - number
+      - code
+      - warehouse
+      - type
+      - inventory_date
+      - in_and_out
+      - note
+      - head
+      - founder
+    Group:
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        name:
+          type: string
+          description: 组名
+          example: 普通用户
+      example:
+        id: 519151ca-6250-4eec-8016-1e14a68dc448
+        name: 普通用户
+      required:
+      - id
+      - name
+    Head:
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        name:
+          type: string
+          description: 姓名
+          example: 张三
+      example:
+        id: 519151ca-6250-4eec-8016-1e14a68dc448
+        name: 张三
+      required:
+      - id
+      - name
+    Head2:
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        name:
+          type: string
+          description: 姓名
+          example: 张三
+      example:
+        id: 519151ca-6250-4eec-8016-1e14a68dc448
+        name: 张三
+      required:
+      - id
+      - name
+    Inventory:
+      type: object
+      properties:
+        code:
+          type: string
+          description: 库存单号
+          example: 123qwe123qwe
+        founder:
+          $ref: '#/components/schemas/Founder2'
+        head:
+          $ref: '#/components/schemas/Head2'
+        id:
+          type: string
+          description: ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        in_and_out:
+          type: integer
+          description: 入库还是出库
+          example: 1
+          format: int64
+        inventory_date:
+          type: string
+          description: 库存时间
+          example: "20210101"
+        note:
+          type: string
+          description: 备注
+          example: 备注
+        number:
+          type: integer
+          description: 产品数量
+          example: 123
+          format: int64
+        product:
+          $ref: '#/components/schemas/Product'
+        type:
+          type: integer
+          description: 库存类型
+          example: 1
+          format: int64
+        warehouse:
+          $ref: '#/components/schemas/Warehouse2'
+      example:
+        code: 123qwe123qwe
+        founder:
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          name: 张三
+        head:
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          name: 张三
+        id: 519151ca-6250-4eec-8016-1e14a68dc448
+        in_and_out: 1
+        inventory_date: "20210101"
+        note: 备注
+        number: 123
+        product:
+          code: 123asd123123asd
+          cost_price: 123
+          founder:
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            name: 张三
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          image: /images/123.jpg
+          is_shelves: false
+          market_price: 123
+          name: 灌装辣椒
+          note: 备注
+          size: 瓶
+          type: 1
+          unit: 1
+        type: 1
+        warehouse:
+          address: 地址
+          code: 123awe12qwe
+          founder:
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            name: 张三
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          name: 1号仓库
+          type: 1
+      required:
+      - id
+      - product
+      - number
+      - code
+      - warehouse
+      - type
+      - inventory_date
+      - in_and_out
+      - note
+      - head
+      - founder
+    ListResponseBody:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Customer'
+          example:
+          - address: 咸阳
+            email: adb@adb.com
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            industry: 1
+            level: 1
+            mobile: "18000001234"
+            name: 张三
+            note: 备注
+            src: 1
+            url: http://www.baidu.com
+          - address: 咸阳
+            email: adb@adb.com
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            industry: 1
+            level: 1
+            mobile: "18000001234"
+            name: 张三
+            note: 备注
+            src: 1
+            url: http://www.baidu.com
+        nextCursor:
+          type: integer
+          description: 下一页游标
+          example: 100
+          format: int64
+        total:
+          type: integer
+          description: 总记录数
+          example: 7046603197595318774
+          format: int64
+      example:
+        items:
+        - address: 咸阳
+          email: adb@adb.com
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          industry: 1
+          level: 1
+          mobile: "18000001234"
+          name: 张三
+          note: 备注
+          src: 1
+          url: http://www.baidu.com
+        - address: 咸阳
+          email: adb@adb.com
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          industry: 1
+          level: 1
+          mobile: "18000001234"
+          name: 张三
+          note: 备注
+          src: 1
+          url: http://www.baidu.com
+        nextCursor: 100
+        total: 6407513389700695416
+      required:
+      - items
+      - nextCursor
+      - total
+    ListResponseBody2:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Group'
+          example:
+          - id: 519151ca-6250-4eec-8016-1e14a68dc448
+            name: 普通用户
+          - id: 519151ca-6250-4eec-8016-1e14a68dc448
+            name: 普通用户
+          - id: 519151ca-6250-4eec-8016-1e14a68dc448
+            name: 普通用户
+        nextCursor:
+          type: integer
+          description: 下一页游标
+          example: 100
+          format: int64
+        total:
+          type: integer
+          description: 总记录数
+          example: 868886166856227576
+          format: int64
+      example:
+        items:
+        - id: 519151ca-6250-4eec-8016-1e14a68dc448
+          name: 普通用户
+        - id: 519151ca-6250-4eec-8016-1e14a68dc448
+          name: 普通用户
+        - id: 519151ca-6250-4eec-8016-1e14a68dc448
+          name: 普通用户
+        nextCursor: 100
+        total: 474918699640276613
+      required:
+      - items
+      - nextCursor
+      - total
+    ListResponseBody3:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
+          example:
+          - code: 123asd123123asd
+            cost_price: 123
+            founder:
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              name: 张三
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            image: /images/123.jpg
+            is_shelves: false
+            market_price: 123
+            name: 灌装辣椒
+            note: 备注
+            size: 瓶
+            type: 1
+            unit: 1
+          - code: 123asd123123asd
+            cost_price: 123
+            founder:
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              name: 张三
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            image: /images/123.jpg
+            is_shelves: false
+            market_price: 123
+            name: 灌装辣椒
+            note: 备注
+            size: 瓶
+            type: 1
+            unit: 1
+          - code: 123asd123123asd
+            cost_price: 123
+            founder:
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              name: 张三
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            image: /images/123.jpg
+            is_shelves: false
+            market_price: 123
+            name: 灌装辣椒
+            note: 备注
+            size: 瓶
+            type: 1
+            unit: 1
+        nextCursor:
+          type: integer
+          description: 下一页游标
+          example: 100
+          format: int64
+        total:
+          type: integer
+          description: 总记录数
+          example: 3990383464445385755
+          format: int64
+      example:
+        items:
+        - code: 123asd123123asd
+          cost_price: 123
+          founder:
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            name: 张三
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          image: /images/123.jpg
+          is_shelves: false
+          market_price: 123
+          name: 灌装辣椒
+          note: 备注
+          size: 瓶
+          type: 1
+          unit: 1
+        - code: 123asd123123asd
+          cost_price: 123
+          founder:
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            name: 张三
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          image: /images/123.jpg
+          is_shelves: false
+          market_price: 123
+          name: 灌装辣椒
+          note: 备注
+          size: 瓶
+          type: 1
+          unit: 1
+        nextCursor: 100
+        total: 7198103812005111544
+      required:
+      - items
+      - nextCursor
+      - total
+    ListResponseBody4:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Sales'
+          example:
+          - code: 123asd123123asd
+            consignment_date: "2021-01-01"
+            customer:
+              address: 咸阳
+              email: adb@adb.com
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              industry: 1
+              level: 1
+              mobile: "18000001234"
+              name: 张三
+              note: 备注
+              src: 1
+              url: http://www.baidu.com
+            founder:
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              name: 张三
+            head:
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              name: 张三
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            is_sales_return: false
+            money: 123
+            name: xx销售
+            note: 备注
+          - code: 123asd123123asd
+            consignment_date: "2021-01-01"
+            customer:
+              address: 咸阳
+              email: adb@adb.com
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              industry: 1
+              level: 1
+              mobile: "18000001234"
+              name: 张三
+              note: 备注
+              src: 1
+              url: http://www.baidu.com
+            founder:
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              name: 张三
+            head:
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              name: 张三
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            is_sales_return: false
+            money: 123
+            name: xx销售
+            note: 备注
+          - code: 123asd123123asd
+            consignment_date: "2021-01-01"
+            customer:
+              address: 咸阳
+              email: adb@adb.com
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              industry: 1
+              level: 1
+              mobile: "18000001234"
+              name: 张三
+              note: 备注
+              src: 1
+              url: http://www.baidu.com
+            founder:
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              name: 张三
+            head:
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              name: 张三
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            is_sales_return: false
+            money: 123
+            name: xx销售
+            note: 备注
+          - code: 123asd123123asd
+            consignment_date: "2021-01-01"
+            customer:
+              address: 咸阳
+              email: adb@adb.com
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              industry: 1
+              level: 1
+              mobile: "18000001234"
+              name: 张三
+              note: 备注
+              src: 1
+              url: http://www.baidu.com
+            founder:
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              name: 张三
+            head:
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              name: 张三
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            is_sales_return: false
+            money: 123
+            name: xx销售
+            note: 备注
+        nextCursor:
+          type: integer
+          description: 下一页游标
+          example: 100
+          format: int64
+        total:
+          type: integer
+          description: 总记录数
+          example: 23789732964644147
+          format: int64
+      example:
+        items:
+        - code: 123asd123123asd
+          consignment_date: "2021-01-01"
+          customer:
+            address: 咸阳
+            email: adb@adb.com
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            industry: 1
+            level: 1
+            mobile: "18000001234"
+            name: 张三
+            note: 备注
+            src: 1
+            url: http://www.baidu.com
+          founder:
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            name: 张三
+          head:
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            name: 张三
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          is_sales_return: false
+          money: 123
+          name: xx销售
+          note: 备注
+        - code: 123asd123123asd
+          consignment_date: "2021-01-01"
+          customer:
+            address: 咸阳
+            email: adb@adb.com
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            industry: 1
+            level: 1
+            mobile: "18000001234"
+            name: 张三
+            note: 备注
+            src: 1
+            url: http://www.baidu.com
+          founder:
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            name: 张三
+          head:
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            name: 张三
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          is_sales_return: false
+          money: 123
+          name: xx销售
+          note: 备注
+        - code: 123asd123123asd
+          consignment_date: "2021-01-01"
+          customer:
+            address: 咸阳
+            email: adb@adb.com
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            industry: 1
+            level: 1
+            mobile: "18000001234"
+            name: 张三
+            note: 备注
+            src: 1
+            url: http://www.baidu.com
+          founder:
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            name: 张三
+          head:
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            name: 张三
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          is_sales_return: false
+          money: 123
+          name: xx销售
+          note: 备注
+        nextCursor: 100
+        total: 4203170778257660264
+      required:
+      - items
+      - nextCursor
+      - total
+    ListResponseBody5:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Procurement'
+          example:
+          - code: 123asd123123asd
+            founder:
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              name: 张三
+            head:
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              name: 张三
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            is_sales_return: false
+            money: 123
+            note: 备注
+            supplier:
+              contact_address: 咸阳
+              contact_name: 张三
+              contact_phone: "1808001010"
+              founder:
+                id: 519151ca-6250-4eec-8016-1e14a68dc448
+                name: 张三
+              head:
+                id: 519151ca-6250-4eec-8016-1e14a68dc448
+                name: 张三
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              level: 1
+              name: xx公司
+              note: 备注
+          - code: 123asd123123asd
+            founder:
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              name: 张三
+            head:
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              name: 张三
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            is_sales_return: false
+            money: 123
+            note: 备注
+            supplier:
+              contact_address: 咸阳
+              contact_name: 张三
+              contact_phone: "1808001010"
+              founder:
+                id: 519151ca-6250-4eec-8016-1e14a68dc448
+                name: 张三
+              head:
+                id: 519151ca-6250-4eec-8016-1e14a68dc448
+                name: 张三
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              level: 1
+              name: xx公司
+              note: 备注
+        nextCursor:
+          type: integer
+          description: 下一页游标
+          example: 100
+          format: int64
+        total:
+          type: integer
+          description: 总记录数
+          example: 6510246308820760709
+          format: int64
+      example:
+        items:
+        - code: 123asd123123asd
+          founder:
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            name: 张三
+          head:
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            name: 张三
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          is_sales_return: false
+          money: 123
+          note: 备注
+          supplier:
+            contact_address: 咸阳
+            contact_name: 张三
+            contact_phone: "1808001010"
+            founder:
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              name: 张三
+            head:
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              name: 张三
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            level: 1
+            name: xx公司
+            note: 备注
+        - code: 123asd123123asd
+          founder:
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            name: 张三
+          head:
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            name: 张三
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          is_sales_return: false
+          money: 123
+          note: 备注
+          supplier:
+            contact_address: 咸阳
+            contact_name: 张三
+            contact_phone: "1808001010"
+            founder:
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              name: 张三
+            head:
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              name: 张三
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            level: 1
+            name: xx公司
+            note: 备注
+        - code: 123asd123123asd
+          founder:
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            name: 张三
+          head:
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            name: 张三
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          is_sales_return: false
+          money: 123
+          note: 备注
+          supplier:
+            contact_address: 咸阳
+            contact_name: 张三
+            contact_phone: "1808001010"
+            founder:
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              name: 张三
+            head:
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              name: 张三
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            level: 1
+            name: xx公司
+            note: 备注
+        nextCursor: 100
+        total: 9136136454315325899
+      required:
+      - items
+      - nextCursor
+      - total
+    ListResponseBody6:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Supplier2'
+          example:
+          - contact_address: 咸阳
+            contact_name: 张三
+            contact_phone: "1808001010"
+            founder:
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              name: 张三
+            head:
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              name: 张三
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            level: 1
+            name: xx公司
+            note: 备注
+          - contact_address: 咸阳
+            contact_name: 张三
+            contact_phone: "1808001010"
+            founder:
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              name: 张三
+            head:
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              name: 张三
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            level: 1
+            name: xx公司
+            note: 备注
+          - contact_address: 咸阳
+            contact_name: 张三
+            contact_phone: "1808001010"
+            founder:
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              name: 张三
+            head:
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              name: 张三
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            level: 1
+            name: xx公司
+            note: 备注
+          - contact_address: 咸阳
+            contact_name: 张三
+            contact_phone: "1808001010"
+            founder:
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              name: 张三
+            head:
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              name: 张三
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            level: 1
+            name: xx公司
+            note: 备注
+        nextCursor:
+          type: integer
+          description: 下一页游标
+          example: 100
+          format: int64
+        total:
+          type: integer
+          description: 总记录数
+          example: 7032689857009000065
+          format: int64
+      example:
+        items:
+        - contact_address: 咸阳
+          contact_name: 张三
+          contact_phone: "1808001010"
+          founder:
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            name: 张三
+          head:
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            name: 张三
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          level: 1
+          name: xx公司
+          note: 备注
+        - contact_address: 咸阳
+          contact_name: 张三
+          contact_phone: "1808001010"
+          founder:
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            name: 张三
+          head:
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            name: 张三
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          level: 1
+          name: xx公司
+          note: 备注
+        - contact_address: 咸阳
+          contact_name: 张三
+          contact_phone: "1808001010"
+          founder:
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            name: 张三
+          head:
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            name: 张三
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          level: 1
+          name: xx公司
+          note: 备注
+        - contact_address: 咸阳
+          contact_name: 张三
+          contact_phone: "1808001010"
+          founder:
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            name: 张三
+          head:
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            name: 张三
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          level: 1
+          name: xx公司
+          note: 备注
+        nextCursor: 100
+        total: 4351161675937046032
+      required:
+      - items
+      - nextCursor
+      - total
+    ListResponseBody7:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+          example:
+          - email: adb@adb.com
+            group:
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              name: 普通用户
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            is_admin: false
+            jobs: 1
+            mobile: "1808001010"
+            name: 张三
+            superior:
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              name: 张三
+            username: 用户名
+          - email: adb@adb.com
+            group:
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              name: 普通用户
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            is_admin: false
+            jobs: 1
+            mobile: "1808001010"
+            name: 张三
+            superior:
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              name: 张三
+            username: 用户名
+        nextCursor:
+          type: integer
+          description: 下一页游标
+          example: 100
+          format: int64
+        total:
+          type: integer
+          description: 总记录数
+          example: 6192568363283025347
+          format: int64
+      example:
+        items:
+        - email: adb@adb.com
+          group:
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            name: 普通用户
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          is_admin: false
+          jobs: 1
+          mobile: "1808001010"
+          name: 张三
+          superior:
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            name: 张三
+          username: 用户名
+        - email: adb@adb.com
+          group:
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            name: 普通用户
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          is_admin: false
+          jobs: 1
+          mobile: "1808001010"
+          name: 张三
+          superior:
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            name: 张三
+          username: 用户名
+        nextCursor: 100
+        total: 4273120804081518143
+      required:
+      - items
+      - nextCursor
+      - total
+    ListResponseBody8:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Inventory'
+          example:
+          - code: 123qwe123qwe
+            founder:
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              name: 张三
+            head:
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              name: 张三
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            in_and_out: 1
+            inventory_date: "20210101"
+            note: 备注
+            number: 123
+            product:
+              code: 123asd123123asd
+              cost_price: 123
+              founder:
+                id: 519151ca-6250-4eec-8016-1e14a68dc448
+                name: 张三
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              image: /images/123.jpg
+              is_shelves: false
+              market_price: 123
+              name: 灌装辣椒
+              note: 备注
+              size: 瓶
+              type: 1
+              unit: 1
+            type: 1
+            warehouse:
+              address: 地址
+              code: 123awe12qwe
+              founder:
+                id: 519151ca-6250-4eec-8016-1e14a68dc448
+                name: 张三
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              name: 1号仓库
+              type: 1
+          - code: 123qwe123qwe
+            founder:
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              name: 张三
+            head:
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              name: 张三
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            in_and_out: 1
+            inventory_date: "20210101"
+            note: 备注
+            number: 123
+            product:
+              code: 123asd123123asd
+              cost_price: 123
+              founder:
+                id: 519151ca-6250-4eec-8016-1e14a68dc448
+                name: 张三
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              image: /images/123.jpg
+              is_shelves: false
+              market_price: 123
+              name: 灌装辣椒
+              note: 备注
+              size: 瓶
+              type: 1
+              unit: 1
+            type: 1
+            warehouse:
+              address: 地址
+              code: 123awe12qwe
+              founder:
+                id: 519151ca-6250-4eec-8016-1e14a68dc448
+                name: 张三
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              name: 1号仓库
+              type: 1
+        nextCursor:
+          type: integer
+          description: 下一页游标
+          example: 100
+          format: int64
+        total:
+          type: integer
+          description: 总记录数
+          example: 3069282197394338434
+          format: int64
+      example:
+        items:
+        - code: 123qwe123qwe
+          founder:
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            name: 张三
+          head:
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            name: 张三
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          in_and_out: 1
+          inventory_date: "20210101"
+          note: 备注
+          number: 123
+          product:
+            code: 123asd123123asd
+            cost_price: 123
+            founder:
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              name: 张三
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            image: /images/123.jpg
+            is_shelves: false
+            market_price: 123
+            name: 灌装辣椒
+            note: 备注
+            size: 瓶
+            type: 1
+            unit: 1
+          type: 1
+          warehouse:
+            address: 地址
+            code: 123awe12qwe
+            founder:
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              name: 张三
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            name: 1号仓库
+            type: 1
+        - code: 123qwe123qwe
+          founder:
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            name: 张三
+          head:
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            name: 张三
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          in_and_out: 1
+          inventory_date: "20210101"
+          note: 备注
+          number: 123
+          product:
+            code: 123asd123123asd
+            cost_price: 123
+            founder:
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              name: 张三
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            image: /images/123.jpg
+            is_shelves: false
+            market_price: 123
+            name: 灌装辣椒
+            note: 备注
+            size: 瓶
+            type: 1
+            unit: 1
+          type: 1
+          warehouse:
+            address: 地址
+            code: 123awe12qwe
+            founder:
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              name: 张三
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            name: 1号仓库
+            type: 1
+        nextCursor: 100
+        total: 6754867762809705094
+      required:
+      - items
+      - nextCursor
+      - total
+    ListResponseBody9:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Warehouse2'
+          example:
+          - address: 地址
+            code: 123awe12qwe
+            founder:
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              name: 张三
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            name: 1号仓库
+            type: 1
+          - address: 地址
+            code: 123awe12qwe
+            founder:
+              id: 519151ca-6250-4eec-8016-1e14a68dc448
+              name: 张三
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            name: 1号仓库
+            type: 1
+        nextCursor:
+          type: integer
+          description: 下一页游标
+          example: 100
+          format: int64
+        total:
+          type: integer
+          description: 总记录数
+          example: 2615744933134304013
+          format: int64
+      example:
+        items:
+        - address: 地址
+          code: 123awe12qwe
+          founder:
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            name: 张三
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          name: 1号仓库
+          type: 1
+        - address: 地址
+          code: 123awe12qwe
+          founder:
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            name: 张三
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          name: 1号仓库
+          type: 1
+        - address: 地址
+          code: 123awe12qwe
+          founder:
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            name: 张三
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          name: 1号仓库
+          type: 1
+        - address: 地址
+          code: 123awe12qwe
+          founder:
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            name: 张三
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          name: 1号仓库
+          type: 1
+        nextCursor: 100
+        total: 8672118554926050133
+      required:
+      - items
+      - nextCursor
+      - total
+    LoginRequestBody:
       type: object
       properties:
         captchaId:
           type: string
           description: 图形验证码ID
           default: ""
-          example: 3l
+          example: fz
           minLength: 1
           maxLength: 128
         humanCode:
           type: string
           description: 图形验证码
           default: ""
-          example: 14h
+          example: h1o
           minLength: 4
           maxLength: 8
         password:
@@ -285,73 +5598,454 @@ components:
           minLength: 1
           maxLength: 128
       example:
-        captchaId: "y"
-        humanCode: pgd
+        captchaId: qq1
+        humanCode: g4d
         password: password
         username: user
       required:
       - username
       - password
-    LoginByUsernameResponseBody:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/Session'
-        errcode:
-          type: integer
-          description: 错误码
-          example: 0
-          minimum: 0
-          maximum: 999999
-        errmsg:
-          type: string
-          description: 错误消息
-          example: ""
-      example:
-        data:
-          credentials:
-            expires_in: 25200
-            token: eyJhbGciOiJIUz...
-          user:
-            id: Sit praesentium beatae dignissimos blanditiis voluptas ut.
-            mobile: Repellat ea.
-            username: Sed fugit sint ex nulla.
-        errcode: 0
-        errmsg: ""
-      required:
-      - errcode
-      - errmsg
-    Session:
+    LoginResponseBody:
       type: object
       properties:
         credentials:
           $ref: '#/components/schemas/Credentials'
         user:
-          $ref: '#/components/schemas/User'
-      description: 会话
+          $ref: '#/components/schemas/GetResponseBody6'
+      description: LoginResponseBody result type (default view)
       example:
         credentials:
           expires_in: 25200
           token: eyJhbGciOiJIUz...
         user:
-          id: Sit praesentium beatae dignissimos blanditiis voluptas ut.
-          mobile: Repellat ea.
-          username: Sed fugit sint ex nulla.
+          email: adb@adb.com
+          group:
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            name: 普通用户
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          is_admin: false
+          jobs: 1
+          mobile: "1808001010"
+          name: 张三
+          superior:
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            name: 张三
+          username: 用户名
       required:
       - user
       - credentials
-    Successresult:
+    Procurement:
+      type: object
+      properties:
+        code:
+          type: string
+          description: 采购编码
+          example: 123asd123123asd
+        founder:
+          $ref: '#/components/schemas/Founder2'
+        head:
+          $ref: '#/components/schemas/Head2'
+        id:
+          type: string
+          description: ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        is_sales_return:
+          type: boolean
+          description: 采购还是退货
+          example: false
+        money:
+          type: integer
+          description: 采购金额
+          example: 123
+          format: int64
+        note:
+          type: string
+          description: 产品备注
+          example: 备注
+        supplier:
+          $ref: '#/components/schemas/Supplier2'
+      example:
+        code: 123asd123123asd
+        founder:
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          name: 张三
+        head:
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          name: 张三
+        id: 519151ca-6250-4eec-8016-1e14a68dc448
+        is_sales_return: false
+        money: 123
+        note: 备注
+        supplier:
+          contact_address: 咸阳
+          contact_name: 张三
+          contact_phone: "1808001010"
+          founder:
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            name: 张三
+          head:
+            id: 519151ca-6250-4eec-8016-1e14a68dc448
+            name: 张三
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          level: 1
+          name: xx公司
+          note: 备注
+      required:
+      - id
+      - supplier
+      - code
+      - money
+      - is_sales_return
+      - note
+      - head
+      - founder
+    Product:
+      type: object
+      properties:
+        code:
+          type: string
+          description: 产品编码
+          example: 123asd123123asd
+        cost_price:
+          type: integer
+          description: 成本价
+          example: 123
+          format: int64
+        founder:
+          $ref: '#/components/schemas/Founder2'
+        id:
+          type: string
+          description: ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        image:
+          type: string
+          description: 产品图片
+          example: /images/123.jpg
+        is_shelves:
+          type: boolean
+          description: 是否上架
+          example: false
+        market_price:
+          type: integer
+          description: 市场价
+          example: 123
+          format: int64
+        name:
+          type: string
+          description: 产品名
+          example: 灌装辣椒
+        note:
+          type: string
+          description: 产品备注
+          example: 备注
+        size:
+          type: string
+          description: 产品规格
+          example: 瓶
+        type:
+          type: integer
+          description: 产品类型
+          example: 1
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          - 6
+          - 7
+          - 8
+        unit:
+          type: integer
+          description: 产品单位
+          example: 1
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          - 6
+          - 7
+          - 8
+      example:
+        code: 123asd123123asd
+        cost_price: 123
+        founder:
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          name: 张三
+        id: 519151ca-6250-4eec-8016-1e14a68dc448
+        image: /images/123.jpg
+        is_shelves: false
+        market_price: 123
+        name: 灌装辣椒
+        note: 备注
+        size: 瓶
+        type: 1
+        unit: 1
+      required:
+      - id
+      - name
+      - unit
+      - cost_price
+      - market_price
+      - note
+      - image
+      - code
+      - size
+      - type
+      - is_shelves
+      - founder
+    Sales:
+      type: object
+      properties:
+        code:
+          type: string
+          description: 销售编码
+          example: 123asd123123asd
+        consignment_date:
+          type: string
+          description: 销售日期
+          example: "2021-01-01"
+        customer:
+          $ref: '#/components/schemas/Customer'
+        founder:
+          $ref: '#/components/schemas/Founder2'
+        head:
+          $ref: '#/components/schemas/Head2'
+        id:
+          type: string
+          description: ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        is_sales_return:
+          type: boolean
+          description: 销售还是退货
+          example: false
+          enum:
+          - false
+          - true
+        money:
+          type: integer
+          description: 销售金额
+          example: 123
+          format: int64
+        name:
+          type: string
+          description: 销售单名
+          example: xx销售
+        note:
+          type: string
+          description: 备注
+          example: 备注
+      example:
+        code: 123asd123123asd
+        consignment_date: "2021-01-01"
+        customer:
+          address: 咸阳
+          email: adb@adb.com
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          industry: 1
+          level: 1
+          mobile: "18000001234"
+          name: 张三
+          note: 备注
+          src: 1
+          url: http://www.baidu.com
+        founder:
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          name: 张三
+        head:
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          name: 张三
+        id: 519151ca-6250-4eec-8016-1e14a68dc448
+        is_sales_return: false
+        money: 123
+        name: xx销售
+        note: 备注
+      required:
+      - id
+      - name
+      - code
+      - customer
+      - money
+      - consignment_date
+      - is_sales_return
+      - note
+      - head
+      - founder
+    SuccessResult:
       type: object
       properties:
         ok:
           type: boolean
           description: success
           example: true
-      description: 成功信息
       example:
         ok: true
       required:
       - ok
+    Superior:
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        name:
+          type: string
+          description: 姓名
+          example: 张三
+      example:
+        id: 519151ca-6250-4eec-8016-1e14a68dc448
+        name: 张三
+      required:
+      - id
+      - name
+    Superior2:
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        name:
+          type: string
+          description: 姓名
+          example: 张三
+      example:
+        id: 519151ca-6250-4eec-8016-1e14a68dc448
+        name: 张三
+      required:
+      - id
+      - name
+    Supplier:
+      type: object
+      properties:
+        contact_address:
+          type: string
+          description: 联系人地址
+          example: 咸阳
+        contact_name:
+          type: string
+          description: 联系人姓名
+          example: 张三
+        contact_phone:
+          type: string
+          description: 联系人手机
+          example: "1808001010"
+        founder:
+          $ref: '#/components/schemas/Founder'
+        head:
+          $ref: '#/components/schemas/Head'
+        id:
+          type: string
+          description: ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        level:
+          type: integer
+          description: 级别
+          example: 1
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+        name:
+          type: string
+          description: 供应商名
+          example: xx公司
+        note:
+          type: string
+          description: 产品备注
+          example: 备注
+      example:
+        contact_address: 咸阳
+        contact_name: 张三
+        contact_phone: "1808001010"
+        founder:
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          name: 张三
+        head:
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          name: 张三
+        id: 519151ca-6250-4eec-8016-1e14a68dc448
+        level: 1
+        name: xx公司
+        note: 备注
+      required:
+      - id
+      - name
+      - level
+      - contact_name
+      - contact_phone
+      - contact_address
+      - note
+      - head
+      - founder
+    Supplier2:
+      type: object
+      properties:
+        contact_address:
+          type: string
+          description: 联系人地址
+          example: 咸阳
+        contact_name:
+          type: string
+          description: 联系人姓名
+          example: 张三
+        contact_phone:
+          type: string
+          description: 联系人手机
+          example: "1808001010"
+        founder:
+          $ref: '#/components/schemas/Founder2'
+        head:
+          $ref: '#/components/schemas/Head2'
+        id:
+          type: string
+          description: ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        level:
+          type: integer
+          description: 级别
+          example: 1
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+        name:
+          type: string
+          description: 供应商名
+          example: xx公司
+        note:
+          type: string
+          description: 产品备注
+          example: 备注
+      example:
+        contact_address: 咸阳
+        contact_name: 张三
+        contact_phone: "1808001010"
+        founder:
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          name: 张三
+        head:
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          name: 张三
+        id: 519151ca-6250-4eec-8016-1e14a68dc448
+        level: 1
+        name: xx公司
+        note: 备注
+      required:
+      - id
+      - name
+      - level
+      - contact_name
+      - contact_phone
+      - contact_address
+      - note
+      - head
+      - founder
     UpdatePasswordRequestBody:
       type: object
       properties:
@@ -374,50 +6068,670 @@ components:
     UpdatePasswordResponseBody:
       type: object
       properties:
-        data:
-          $ref: '#/components/schemas/Successresult'
-        errcode:
-          type: integer
-          description: 错误码
-          example: 0
-          minimum: 0
-          maximum: 999999
-        errmsg:
-          type: string
-          description: 错误消息
-          example: ""
+        ok:
+          type: boolean
+          description: success
+          example: true
+      description: UpdatePasswordResponseBody result type (default view)
       example:
-        data:
-          ok: true
-        errcode: 0
-        errmsg: ""
+        ok: true
       required:
-      - errcode
-      - errmsg
-    User:
+      - ok
+    UpdateRequestBody:
+      type: object
+      properties:
+        address:
+          type: string
+          description: 客户地址
+          example: 咸阳
+        email:
+          type: string
+          description: 客户邮箱
+          example: adb@adb.com
+          format: email
+        id:
+          type: string
+          description: ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        industry:
+          type: integer
+          description: 客户行业
+          example: 1
+          format: int64
+        level:
+          type: integer
+          description: 客户等级
+          example: 1
+          format: int64
+        mobile:
+          type: string
+          description: 客户手机
+          example: "18000001234"
+          format: regexp
+          pattern: ^1(?:3\d|4[4-9]|5[0-35-9]|6[67]|7[013-8]|8\d|9\d)\d{8}$
+          minLength: 11
+          maxLength: 11
+        name:
+          type: string
+          description: 客户姓名
+          example: 张三
+        note:
+          type: string
+          description: 备注
+          example: 备注
+        src:
+          type: integer
+          description: 客户来源
+          example: 1
+          format: int64
+        url:
+          type: string
+          description: 客户网址
+          example: http://www.baidu.com
+          format: uri
+      example:
+        address: 咸阳
+        email: adb@adb.com
+        id: 519151ca-6250-4eec-8016-1e14a68dc448
+        industry: 1
+        level: 1
+        mobile: "18000001234"
+        name: 张三
+        note: 备注
+        src: 1
+        url: http://www.baidu.com
+      required:
+      - id
+      - name
+      - src
+      - mobile
+      - url
+      - email
+      - industry
+      - level
+      - note
+      - address
+    UpdateRequestBody2:
       type: object
       properties:
         id:
           type: string
+          description: 用户ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        name:
+          type: string
+          description: 组名
+          example: 管理员
+      example:
+        id: 519151ca-6250-4eec-8016-1e14a68dc448
+        name: 管理员
+      required:
+      - id
+      - name
+    UpdateRequestBody3:
+      type: object
+      properties:
+        cost_price:
+          type: integer
+          description: 成本价
+          example: 123
+          format: int64
+        id:
+          type: string
+          description: 用户ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        image:
+          type: string
+          description: 产品图片
+          example: /images/123.jpg
+        is_shelves:
+          type: boolean
+          description: 是否上架
+          example: false
+        market_price:
+          type: integer
+          description: 市场价
+          example: 123
+          format: int64
+        name:
+          type: string
+          description: 产品名
+          example: 灌装辣椒
+        note:
+          type: string
+          description: 产品备注
+          example: 备注
+        size:
+          type: string
+          description: 产品规格
+          example: 瓶
+        type:
+          type: integer
+          description: 产品类型
+          example: 1
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          - 6
+          - 7
+          - 8
+        unit:
+          type: integer
+          description: 产品单位
+          example: 1
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          - 6
+          - 7
+          - 8
+      example:
+        cost_price: 123
+        id: 519151ca-6250-4eec-8016-1e14a68dc448
+        image: /images/123.jpg
+        is_shelves: false
+        market_price: 123
+        name: 灌装辣椒
+        note: 备注
+        size: 瓶
+        type: 1
+        unit: 1
+      required:
+      - id
+      - name
+      - unit
+      - cost_price
+      - market_price
+      - note
+      - image
+      - size
+      - type
+      - is_shelves
+    UpdateRequestBody4:
+      type: object
+      properties:
+        consignment_date:
+          type: string
+          description: 销售日期
+          example: "2021-01-01"
+        customer_id:
+          type: string
+          description: 客户ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        head_id:
+          type: string
+          description: 负责人ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        id:
+          type: string
+          description: 用户ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        is_sales_return:
+          type: boolean
+          description: 销售还是退货
+          example: false
+          enum:
+          - false
+          - true
+        money:
+          type: integer
+          description: 销售金额
+          example: 123
+          format: int64
+        name:
+          type: string
+          description: 销售单名
+          example: xx销售
+        note:
+          type: string
+          description: 备注
+          example: 备注
+      example:
+        consignment_date: "2021-01-01"
+        customer_id: 519151ca-6250-4eec-8016-1e14a68dc448
+        head_id: 519151ca-6250-4eec-8016-1e14a68dc448
+        id: 519151ca-6250-4eec-8016-1e14a68dc448
+        is_sales_return: false
+        money: 123
+        name: xx销售
+        note: 备注
+      required:
+      - id
+      - name
+      - customer_id
+      - money
+      - is_sales_return
+      - note
+      - head_id
+    UpdateRequestBody5:
+      type: object
+      properties:
+        code:
+          type: string
+          description: 采购编码
+          example: 123asd123123asd
+        head_id:
+          type: string
+          description: 负责人ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        id:
+          type: string
           description: ID
-          example: Sapiente sed.
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        is_sales_return:
+          type: boolean
+          description: 采购还是退货
+          example: false
+          enum:
+          - false
+          - true
+        money:
+          type: integer
+          description: 采购金额
+          example: 123
+          format: int64
+        note:
+          type: string
+          description: 备注
+          example: 备注
+      example:
+        code: 123asd123123asd
+        head_id: 519151ca-6250-4eec-8016-1e14a68dc448
+        id: 519151ca-6250-4eec-8016-1e14a68dc448
+        is_sales_return: false
+        money: 123
+        note: 备注
+      required:
+      - id
+      - code
+      - money
+      - is_sales_return
+      - note
+      - head_id
+    UpdateRequestBody6:
+      type: object
+      properties:
+        contact_address:
+          type: string
+          description: 联系人地址
+          example: 咸阳
+        contact_name:
+          type: string
+          description: 联系人姓名
+          example: 张三
+        contact_phone:
+          type: string
+          description: 联系人手机
+          example: "1808001010"
+          format: regexp
+          pattern: ^1(?:3\d|4[4-9]|5[0-35-9]|6[67]|7[013-8]|8\d|9\d)\d{8}$
+          minLength: 11
+          maxLength: 11
+        head_id:
+          type: string
+          description: 负责人ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        id:
+          type: string
+          description: ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        level:
+          type: integer
+          description: 级别
+          example: 1
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+        name:
+          type: string
+          description: 供应商名
+          example: xx公司
+        note:
+          type: string
+          description: 产品备注
+          example: 备注
+      example:
+        contact_address: 咸阳
+        contact_name: 张三
+        contact_phone: "1808001010"
+        head_id: 519151ca-6250-4eec-8016-1e14a68dc448
+        id: 519151ca-6250-4eec-8016-1e14a68dc448
+        level: 1
+        name: xx公司
+        note: 备注
+      required:
+      - id
+      - name
+      - level
+      - contact_name
+      - contact_phone
+      - contact_address
+      - note
+      - head_id
+    UpdateRequestBody7:
+      type: object
+      properties:
+        email:
+          type: string
+          description: 邮箱
+          example: adb@adb.com
+          format: email
+        group_id:
+          type: string
+          description: 所属组
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        id:
+          type: string
+          description: 用户ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        jobs:
+          type: integer
+          description: 1 - 推销员，2 - 经理，3 - 管理员
+          example: 1
+          enum:
+          - 1
+          - 2
+          - 3
         mobile:
           type: string
           description: 手机号
-          example: Adipisci ad rerum officiis tempore placeat.
+          example: "1808001010"
+          format: regexp
+          pattern: ^1(?:3\d|4[4-9]|5[0-35-9]|6[67]|7[013-8]|8\d|9\d)\d{8}$
+          minLength: 11
+          maxLength: 11
+        name:
+          type: string
+          description: 姓名
+          example: 张三
+        superior_id:
+          type: string
+          description: 直属上级ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+      example:
+        email: adb@adb.com
+        group_id: 519151ca-6250-4eec-8016-1e14a68dc448
+        id: 519151ca-6250-4eec-8016-1e14a68dc448
+        jobs: 1
+        mobile: "1808001010"
+        name: 张三
+        superior_id: 519151ca-6250-4eec-8016-1e14a68dc448
+      required:
+      - id
+      - name
+      - mobile
+      - email
+      - jobs
+      - superior_id
+      - group_id
+    UpdateRequestBody8:
+      type: object
+      properties:
+        code:
+          type: string
+          description: 库存单号
+          example: 123qwe123qwe
+        head_id:
+          type: string
+          description: 负责人ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        id:
+          type: string
+          description: ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        in_and_out:
+          type: integer
+          description: 入库还是出库
+          example: 1
+          enum:
+          - 1
+          - 2
+        inventory_date:
+          type: string
+          description: 库存时间
+          example: "20210101"
+        note:
+          type: string
+          description: 备注
+          example: 备注
+        number:
+          type: integer
+          description: 产品数量
+          example: 123
+          format: int64
+        product_id:
+          type: string
+          description: 产品ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        type:
+          type: integer
+          description: 库存类型
+          example: 1
+          enum:
+          - 1
+          - 2
+          - 3
+        warehouse_id:
+          type: string
+          description: 仓库ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+      example:
+        code: 123qwe123qwe
+        head_id: 519151ca-6250-4eec-8016-1e14a68dc448
+        id: 519151ca-6250-4eec-8016-1e14a68dc448
+        in_and_out: 1
+        inventory_date: "20210101"
+        note: 备注
+        number: 123
+        product_id: 519151ca-6250-4eec-8016-1e14a68dc448
+        type: 1
+        warehouse_id: 519151ca-6250-4eec-8016-1e14a68dc448
+      required:
+      - id
+      - product_id
+      - number
+      - code
+      - warehouse_id
+      - type
+      - inventory_date
+      - in_and_out
+      - note
+      - head_id
+    UpdateRequestBody9:
+      type: object
+      properties:
+        address:
+          type: string
+          description: 仓库地址
+          example: 地址
+        code:
+          type: string
+          description: 仓库编码
+          example: 123awe12qwe
+        id:
+          type: string
+          description: ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        name:
+          type: string
+          description: 仓库名
+          example: 1号仓库
+        type:
+          type: integer
+          description: 仓库状态
+          example: 1
+          enum:
+          - 1
+          - 2
+          - 3
+      example:
+        address: 地址
+        code: 123awe12qwe
+        id: 519151ca-6250-4eec-8016-1e14a68dc448
+        name: 1号仓库
+        type: 1
+      required:
+      - id
+      - name
+      - code
+      - address
+      - type
+    User:
+      type: object
+      properties:
+        email:
+          type: string
+          description: 邮箱
+          example: adb@adb.com
+        group:
+          $ref: '#/components/schemas/Group'
+        id:
+          type: string
+          description: ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        is_admin:
+          type: boolean
+          description: 是否是管理员
+          example: false
+        jobs:
+          type: integer
+          description: 1 - 推销员，2 - 经理，3 - 管理员
+          example: 1
+          enum:
+          - 1
+          - 2
+          - 3
+        mobile:
+          type: string
+          description: 手机号
+          example: "1808001010"
+        name:
+          type: string
+          description: 姓名
+          example: 张三
+        superior:
+          $ref: '#/components/schemas/Superior2'
         username:
           type: string
           description: 用户名
-          example: Facilis harum quaerat consectetur recusandae et.
+          example: 用户名
       description: 用户
       example:
-        id: Nobis veritatis.
-        mobile: Non sed.
-        username: Voluptatum aut impedit molestiae aut minus.
+        email: adb@adb.com
+        group:
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          name: 普通用户
+        id: 519151ca-6250-4eec-8016-1e14a68dc448
+        is_admin: false
+        jobs: 1
+        mobile: "1808001010"
+        name: 张三
+        superior:
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          name: 张三
+        username: 用户名
       required:
       - id
       - username
+      - name
       - mobile
+      - email
+      - jobs
+      - is_admin
+      - superior
+      - group
+    Warehouse:
+      type: object
+      properties:
+        address:
+          type: string
+          description: 仓库地址
+          example: 地址
+        code:
+          type: string
+          description: 仓库编码
+          example: 123awe12qwe
+        founder:
+          $ref: '#/components/schemas/Founder'
+        id:
+          type: string
+          description: ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        name:
+          type: string
+          description: 仓库名
+          example: 1号仓库
+        type:
+          type: integer
+          description: 仓库状态
+          example: 1
+          format: int64
+      example:
+        address: 地址
+        code: 123awe12qwe
+        founder:
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          name: 张三
+        id: 519151ca-6250-4eec-8016-1e14a68dc448
+        name: 1号仓库
+        type: 1
+      required:
+      - id
+      - name
+      - code
+      - address
+      - type
+      - founder
+    Warehouse2:
+      type: object
+      properties:
+        address:
+          type: string
+          description: 仓库地址
+          example: 地址
+        code:
+          type: string
+          description: 仓库编码
+          example: 123awe12qwe
+        founder:
+          $ref: '#/components/schemas/Founder2'
+        id:
+          type: string
+          description: ID
+          example: 519151ca-6250-4eec-8016-1e14a68dc448
+        name:
+          type: string
+          description: 仓库名
+          example: 1号仓库
+        type:
+          type: integer
+          description: 仓库状态
+          example: 1
+          format: int64
+      example:
+        address: 地址
+        code: 123awe12qwe
+        founder:
+          id: 519151ca-6250-4eec-8016-1e14a68dc448
+          name: 张三
+        id: 519151ca-6250-4eec-8016-1e14a68dc448
+        name: 1号仓库
+        type: 1
+      required:
+      - id
+      - name
+      - code
+      - address
+      - type
+      - founder
   securitySchemes:
     jwt_header_Authorization:
       type: http

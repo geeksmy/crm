@@ -4,8 +4,8 @@ type Product struct {
 	BaseUUIDModel
 	Name        string `gorm:"type:varchar(128);"`
 	Unit        int    `gorm:"type:int"`
-	CostPrice   string `gorm:"type:varchar(32)"`
-	MarketPrice string `gorm:"type:varchar(32)"`
+	CostPrice   int    `gorm:"type:int"`
+	MarketPrice int    `gorm:"type:int"`
 	Note        string `gorm:"type:varchar(256);"`
 	Image       string `gorm:"type:varchar(128);"`
 	Code        string `gorm:"type:varchar(32)"`

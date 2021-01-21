@@ -10,9 +10,11 @@ type User struct {
 	BaseUUIDModel
 	Username   string     `gorm:"type:varchar(36);not null;"`
 	Password   string     `gorm:"type:varchar(128);"`
+	Name       string     `gorm:"type:varchar(36);"`
 	Mobile     string     `gorm:"type:varchar(15);"`
 	Email      string     `gorm:"type:varchar(128)"`
 	Jobs       int        `gorm:"type:int"`
+	IsAdmin    bool       `gorm:"type:boolean;default:false"`
 	SuperiorID string     `gorm:"type:varchar(36)"` // 直属上级
 	GroupID    string     `gorm:"type:varchar(36)"`
 	LoginAt    *time.Time `sql:"index" msgpack:"-"`
@@ -50,9 +52,6 @@ func (u *User) CheckPassword(plainPwd, hashedPwd string) bool {
 	// will be a string so we'll need to convert it to a byte slice
 	byteHash := []byte(hashedPwd)
 	err := bcrypt.CompareHashAndPassword(byteHash, []byte(plainPwd))
-	if err != nil {
-		return false
-	}
 
-	return true
+	return err == nil
 }

@@ -16,34 +16,45 @@ type usersrvc struct {
 
 // NewUser returns the User service implementation.
 func NewUser(logger *log.Logger) user.Service {
-	return &usersrvc{
-		logger: logger,
-		Auther: Auther{
-			logger: logger,
-		},
-	}
+	return &usersrvc{Auther{logger: logger}, logger}
 }
 
-// 使用账号密码登录
-func (s *usersrvc) LoginByUsername(ctx context.Context, p *user.LoginByUsernamePayload) (res *user.LoginByUsernameResult, err error) {
-	res = &user.LoginByUsernameResult{}
+// 获取单个用户
+func (s *usersrvc) Get(ctx context.Context, p *user.GetPayload) (res *user.User, err error) {
+	res = &user.User{}
 	logger := L(ctx, s.logger)
-	logger.Info("user.LoginByUsername")
+	logger.Info("user.Get")
 	return
 }
 
-// 修改登录密码
-func (s *usersrvc) UpdatePassword(ctx context.Context, p *user.UpdatePasswordPayload) (res *user.UpdatePasswordResult, err error) {
-	res = &user.UpdatePasswordResult{}
+// 获取用户列表
+func (s *usersrvc) List(ctx context.Context, p *user.ListPayload) (res *user.ListResult, err error) {
+	res = &user.ListResult{}
 	logger := L(ctx, s.logger)
-	logger.Info("user.UpdatePassword")
+	logger.Info("user.List")
 	return
 }
 
-// 获取图形验证码
-func (s *usersrvc) GetCaptchaImage(ctx context.Context) (res *user.GetCaptchaImageResult, err error) {
-	res = &user.GetCaptchaImageResult{}
+// 更新用户
+func (s *usersrvc) Update(ctx context.Context, p *user.UpdatePayload) (res *user.User, err error) {
+	res = &user.User{}
 	logger := L(ctx, s.logger)
-	logger.Info("user.GetCaptchaImage")
+	logger.Info("user.Update")
+	return
+}
+
+// 创建用户
+func (s *usersrvc) Create(ctx context.Context, p *user.CreatePayload) (res *user.User, err error) {
+	res = &user.User{}
+	logger := L(ctx, s.logger)
+	logger.Info("user.Create")
+	return
+}
+
+// 删除用户
+func (s *usersrvc) Delete(ctx context.Context, p *user.DeletePayload) (res *user.SuccessResult, err error) {
+	res = &user.SuccessResult{}
+	logger := L(ctx, s.logger)
+	logger.Info("user.Delete")
 	return
 }

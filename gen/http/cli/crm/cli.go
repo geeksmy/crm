@@ -8,7 +8,16 @@
 package cli
 
 import (
+	authc "crm/gen/http/auth/client"
+	customerc "crm/gen/http/customer/client"
+	groupc "crm/gen/http/group/client"
+	inventoryc "crm/gen/http/inventory/client"
+	procurementc "crm/gen/http/procurement/client"
+	productc "crm/gen/http/product/client"
+	salesc "crm/gen/http/sales/client"
+	supplierc "crm/gen/http/supplier/client"
 	userc "crm/gen/http/user/client"
+	warehousec "crm/gen/http/warehouse/client"
 	"flag"
 	"fmt"
 	"net/http"
@@ -23,18 +32,26 @@ import (
 //    command (subcommand1|subcommand2|...)
 //
 func UsageCommands() string {
-	return `user (login-by-username|update-password|get-captcha-image)
+	return `customer (get|list|update|create|delete)
+group (get|list|update|create|delete)
+product (get|list|update|create|delete)
+sales (get|list|update|create|delete)
+procurement (get|list|update|create|delete)
+supplier (get|list|update|create|delete)
+user (get|list|update|create|delete)
+auth (login|update-password|captcha-image)
+inventory (get|list|update|create|delete)
+warehouse (get|list|update|create|delete)
 `
 }
 
 // UsageExamples produces an example of a valid invocation of the CLI tool.
 func UsageExamples() string {
-	return os.Args[0] + ` user login-by-username --body '{
-      "captchaId": "ge",
-      "humanCode": "j8t",
-      "password": "password",
-      "username": "user"
-   }'` + "\n" +
+	return os.Args[0] + ` customer get --id "91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f" --token "eyJhbGciOiJIUz..."` + "\n" +
+		os.Args[0] + ` group get --id "91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f" --token "eyJhbGciOiJIUz..."` + "\n" +
+		os.Args[0] + ` product get --id "91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f" --token "eyJhbGciOiJIUz..."` + "\n" +
+		os.Args[0] + ` sales get --id "91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f" --token "eyJhbGciOiJIUz..."` + "\n" +
+		os.Args[0] + ` procurement get --id "91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f" --token "eyJhbGciOiJIUz..."` + "\n" +
 		""
 }
 
@@ -48,21 +65,273 @@ func ParseEndpoint(
 	restore bool,
 ) (goa.Endpoint, interface{}, error) {
 	var (
+		customerFlags = flag.NewFlagSet("customer", flag.ContinueOnError)
+
+		customerGetFlags     = flag.NewFlagSet("get", flag.ExitOnError)
+		customerGetIDFlag    = customerGetFlags.String("id", "REQUIRED", "")
+		customerGetTokenFlag = customerGetFlags.String("token", "REQUIRED", "")
+
+		customerListFlags     = flag.NewFlagSet("list", flag.ExitOnError)
+		customerListTokenFlag = customerListFlags.String("token", "REQUIRED", "")
+
+		customerUpdateFlags     = flag.NewFlagSet("update", flag.ExitOnError)
+		customerUpdateBodyFlag  = customerUpdateFlags.String("body", "REQUIRED", "")
+		customerUpdateTokenFlag = customerUpdateFlags.String("token", "REQUIRED", "")
+
+		customerCreateFlags     = flag.NewFlagSet("create", flag.ExitOnError)
+		customerCreateBodyFlag  = customerCreateFlags.String("body", "REQUIRED", "")
+		customerCreateTokenFlag = customerCreateFlags.String("token", "REQUIRED", "")
+
+		customerDeleteFlags     = flag.NewFlagSet("delete", flag.ExitOnError)
+		customerDeleteBodyFlag  = customerDeleteFlags.String("body", "REQUIRED", "")
+		customerDeleteTokenFlag = customerDeleteFlags.String("token", "REQUIRED", "")
+
+		groupFlags = flag.NewFlagSet("group", flag.ContinueOnError)
+
+		groupGetFlags     = flag.NewFlagSet("get", flag.ExitOnError)
+		groupGetIDFlag    = groupGetFlags.String("id", "REQUIRED", "")
+		groupGetTokenFlag = groupGetFlags.String("token", "REQUIRED", "")
+
+		groupListFlags     = flag.NewFlagSet("list", flag.ExitOnError)
+		groupListTokenFlag = groupListFlags.String("token", "REQUIRED", "")
+
+		groupUpdateFlags     = flag.NewFlagSet("update", flag.ExitOnError)
+		groupUpdateBodyFlag  = groupUpdateFlags.String("body", "REQUIRED", "")
+		groupUpdateTokenFlag = groupUpdateFlags.String("token", "REQUIRED", "")
+
+		groupCreateFlags     = flag.NewFlagSet("create", flag.ExitOnError)
+		groupCreateBodyFlag  = groupCreateFlags.String("body", "REQUIRED", "")
+		groupCreateTokenFlag = groupCreateFlags.String("token", "REQUIRED", "")
+
+		groupDeleteFlags     = flag.NewFlagSet("delete", flag.ExitOnError)
+		groupDeleteBodyFlag  = groupDeleteFlags.String("body", "REQUIRED", "")
+		groupDeleteTokenFlag = groupDeleteFlags.String("token", "REQUIRED", "")
+
+		productFlags = flag.NewFlagSet("product", flag.ContinueOnError)
+
+		productGetFlags     = flag.NewFlagSet("get", flag.ExitOnError)
+		productGetIDFlag    = productGetFlags.String("id", "REQUIRED", "")
+		productGetTokenFlag = productGetFlags.String("token", "REQUIRED", "")
+
+		productListFlags     = flag.NewFlagSet("list", flag.ExitOnError)
+		productListTokenFlag = productListFlags.String("token", "REQUIRED", "")
+
+		productUpdateFlags     = flag.NewFlagSet("update", flag.ExitOnError)
+		productUpdateBodyFlag  = productUpdateFlags.String("body", "REQUIRED", "")
+		productUpdateTokenFlag = productUpdateFlags.String("token", "REQUIRED", "")
+
+		productCreateFlags     = flag.NewFlagSet("create", flag.ExitOnError)
+		productCreateBodyFlag  = productCreateFlags.String("body", "REQUIRED", "")
+		productCreateTokenFlag = productCreateFlags.String("token", "REQUIRED", "")
+
+		productDeleteFlags     = flag.NewFlagSet("delete", flag.ExitOnError)
+		productDeleteBodyFlag  = productDeleteFlags.String("body", "REQUIRED", "")
+		productDeleteTokenFlag = productDeleteFlags.String("token", "REQUIRED", "")
+
+		salesFlags = flag.NewFlagSet("sales", flag.ContinueOnError)
+
+		salesGetFlags     = flag.NewFlagSet("get", flag.ExitOnError)
+		salesGetIDFlag    = salesGetFlags.String("id", "REQUIRED", "")
+		salesGetTokenFlag = salesGetFlags.String("token", "REQUIRED", "")
+
+		salesListFlags     = flag.NewFlagSet("list", flag.ExitOnError)
+		salesListTokenFlag = salesListFlags.String("token", "REQUIRED", "")
+
+		salesUpdateFlags     = flag.NewFlagSet("update", flag.ExitOnError)
+		salesUpdateBodyFlag  = salesUpdateFlags.String("body", "REQUIRED", "")
+		salesUpdateTokenFlag = salesUpdateFlags.String("token", "REQUIRED", "")
+
+		salesCreateFlags     = flag.NewFlagSet("create", flag.ExitOnError)
+		salesCreateBodyFlag  = salesCreateFlags.String("body", "REQUIRED", "")
+		salesCreateTokenFlag = salesCreateFlags.String("token", "REQUIRED", "")
+
+		salesDeleteFlags     = flag.NewFlagSet("delete", flag.ExitOnError)
+		salesDeleteBodyFlag  = salesDeleteFlags.String("body", "REQUIRED", "")
+		salesDeleteTokenFlag = salesDeleteFlags.String("token", "REQUIRED", "")
+
+		procurementFlags = flag.NewFlagSet("procurement", flag.ContinueOnError)
+
+		procurementGetFlags     = flag.NewFlagSet("get", flag.ExitOnError)
+		procurementGetIDFlag    = procurementGetFlags.String("id", "REQUIRED", "")
+		procurementGetTokenFlag = procurementGetFlags.String("token", "REQUIRED", "")
+
+		procurementListFlags     = flag.NewFlagSet("list", flag.ExitOnError)
+		procurementListTokenFlag = procurementListFlags.String("token", "REQUIRED", "")
+
+		procurementUpdateFlags     = flag.NewFlagSet("update", flag.ExitOnError)
+		procurementUpdateBodyFlag  = procurementUpdateFlags.String("body", "REQUIRED", "")
+		procurementUpdateTokenFlag = procurementUpdateFlags.String("token", "REQUIRED", "")
+
+		procurementCreateFlags     = flag.NewFlagSet("create", flag.ExitOnError)
+		procurementCreateBodyFlag  = procurementCreateFlags.String("body", "REQUIRED", "")
+		procurementCreateTokenFlag = procurementCreateFlags.String("token", "REQUIRED", "")
+
+		procurementDeleteFlags     = flag.NewFlagSet("delete", flag.ExitOnError)
+		procurementDeleteBodyFlag  = procurementDeleteFlags.String("body", "REQUIRED", "")
+		procurementDeleteTokenFlag = procurementDeleteFlags.String("token", "REQUIRED", "")
+
+		supplierFlags = flag.NewFlagSet("supplier", flag.ContinueOnError)
+
+		supplierGetFlags     = flag.NewFlagSet("get", flag.ExitOnError)
+		supplierGetIDFlag    = supplierGetFlags.String("id", "REQUIRED", "")
+		supplierGetTokenFlag = supplierGetFlags.String("token", "REQUIRED", "")
+
+		supplierListFlags     = flag.NewFlagSet("list", flag.ExitOnError)
+		supplierListTokenFlag = supplierListFlags.String("token", "REQUIRED", "")
+
+		supplierUpdateFlags     = flag.NewFlagSet("update", flag.ExitOnError)
+		supplierUpdateBodyFlag  = supplierUpdateFlags.String("body", "REQUIRED", "")
+		supplierUpdateTokenFlag = supplierUpdateFlags.String("token", "REQUIRED", "")
+
+		supplierCreateFlags     = flag.NewFlagSet("create", flag.ExitOnError)
+		supplierCreateBodyFlag  = supplierCreateFlags.String("body", "REQUIRED", "")
+		supplierCreateTokenFlag = supplierCreateFlags.String("token", "REQUIRED", "")
+
+		supplierDeleteFlags     = flag.NewFlagSet("delete", flag.ExitOnError)
+		supplierDeleteBodyFlag  = supplierDeleteFlags.String("body", "REQUIRED", "")
+		supplierDeleteTokenFlag = supplierDeleteFlags.String("token", "REQUIRED", "")
+
 		userFlags = flag.NewFlagSet("user", flag.ContinueOnError)
 
-		userLoginByUsernameFlags    = flag.NewFlagSet("login-by-username", flag.ExitOnError)
-		userLoginByUsernameBodyFlag = userLoginByUsernameFlags.String("body", "REQUIRED", "")
+		userGetFlags     = flag.NewFlagSet("get", flag.ExitOnError)
+		userGetIDFlag    = userGetFlags.String("id", "REQUIRED", "")
+		userGetTokenFlag = userGetFlags.String("token", "REQUIRED", "")
 
-		userUpdatePasswordFlags     = flag.NewFlagSet("update-password", flag.ExitOnError)
-		userUpdatePasswordBodyFlag  = userUpdatePasswordFlags.String("body", "REQUIRED", "")
-		userUpdatePasswordTokenFlag = userUpdatePasswordFlags.String("token", "REQUIRED", "")
+		userListFlags     = flag.NewFlagSet("list", flag.ExitOnError)
+		userListTokenFlag = userListFlags.String("token", "REQUIRED", "")
 
-		userGetCaptchaImageFlags = flag.NewFlagSet("get-captcha-image", flag.ExitOnError)
+		userUpdateFlags     = flag.NewFlagSet("update", flag.ExitOnError)
+		userUpdateBodyFlag  = userUpdateFlags.String("body", "REQUIRED", "")
+		userUpdateTokenFlag = userUpdateFlags.String("token", "REQUIRED", "")
+
+		userCreateFlags     = flag.NewFlagSet("create", flag.ExitOnError)
+		userCreateBodyFlag  = userCreateFlags.String("body", "REQUIRED", "")
+		userCreateTokenFlag = userCreateFlags.String("token", "REQUIRED", "")
+
+		userDeleteFlags     = flag.NewFlagSet("delete", flag.ExitOnError)
+		userDeleteBodyFlag  = userDeleteFlags.String("body", "REQUIRED", "")
+		userDeleteTokenFlag = userDeleteFlags.String("token", "REQUIRED", "")
+
+		authFlags = flag.NewFlagSet("auth", flag.ContinueOnError)
+
+		authLoginFlags    = flag.NewFlagSet("login", flag.ExitOnError)
+		authLoginBodyFlag = authLoginFlags.String("body", "REQUIRED", "")
+
+		authUpdatePasswordFlags     = flag.NewFlagSet("update-password", flag.ExitOnError)
+		authUpdatePasswordBodyFlag  = authUpdatePasswordFlags.String("body", "REQUIRED", "")
+		authUpdatePasswordTokenFlag = authUpdatePasswordFlags.String("token", "REQUIRED", "")
+
+		authCaptchaImageFlags = flag.NewFlagSet("captcha-image", flag.ExitOnError)
+
+		inventoryFlags = flag.NewFlagSet("inventory", flag.ContinueOnError)
+
+		inventoryGetFlags     = flag.NewFlagSet("get", flag.ExitOnError)
+		inventoryGetIDFlag    = inventoryGetFlags.String("id", "REQUIRED", "")
+		inventoryGetTokenFlag = inventoryGetFlags.String("token", "REQUIRED", "")
+
+		inventoryListFlags     = flag.NewFlagSet("list", flag.ExitOnError)
+		inventoryListTokenFlag = inventoryListFlags.String("token", "REQUIRED", "")
+
+		inventoryUpdateFlags     = flag.NewFlagSet("update", flag.ExitOnError)
+		inventoryUpdateBodyFlag  = inventoryUpdateFlags.String("body", "REQUIRED", "")
+		inventoryUpdateTokenFlag = inventoryUpdateFlags.String("token", "REQUIRED", "")
+
+		inventoryCreateFlags     = flag.NewFlagSet("create", flag.ExitOnError)
+		inventoryCreateBodyFlag  = inventoryCreateFlags.String("body", "REQUIRED", "")
+		inventoryCreateTokenFlag = inventoryCreateFlags.String("token", "REQUIRED", "")
+
+		inventoryDeleteFlags     = flag.NewFlagSet("delete", flag.ExitOnError)
+		inventoryDeleteBodyFlag  = inventoryDeleteFlags.String("body", "REQUIRED", "")
+		inventoryDeleteTokenFlag = inventoryDeleteFlags.String("token", "REQUIRED", "")
+
+		warehouseFlags = flag.NewFlagSet("warehouse", flag.ContinueOnError)
+
+		warehouseGetFlags     = flag.NewFlagSet("get", flag.ExitOnError)
+		warehouseGetIDFlag    = warehouseGetFlags.String("id", "REQUIRED", "")
+		warehouseGetTokenFlag = warehouseGetFlags.String("token", "REQUIRED", "")
+
+		warehouseListFlags     = flag.NewFlagSet("list", flag.ExitOnError)
+		warehouseListTokenFlag = warehouseListFlags.String("token", "REQUIRED", "")
+
+		warehouseUpdateFlags     = flag.NewFlagSet("update", flag.ExitOnError)
+		warehouseUpdateBodyFlag  = warehouseUpdateFlags.String("body", "REQUIRED", "")
+		warehouseUpdateTokenFlag = warehouseUpdateFlags.String("token", "REQUIRED", "")
+
+		warehouseCreateFlags     = flag.NewFlagSet("create", flag.ExitOnError)
+		warehouseCreateBodyFlag  = warehouseCreateFlags.String("body", "REQUIRED", "")
+		warehouseCreateTokenFlag = warehouseCreateFlags.String("token", "REQUIRED", "")
+
+		warehouseDeleteFlags     = flag.NewFlagSet("delete", flag.ExitOnError)
+		warehouseDeleteBodyFlag  = warehouseDeleteFlags.String("body", "REQUIRED", "")
+		warehouseDeleteTokenFlag = warehouseDeleteFlags.String("token", "REQUIRED", "")
 	)
+	customerFlags.Usage = customerUsage
+	customerGetFlags.Usage = customerGetUsage
+	customerListFlags.Usage = customerListUsage
+	customerUpdateFlags.Usage = customerUpdateUsage
+	customerCreateFlags.Usage = customerCreateUsage
+	customerDeleteFlags.Usage = customerDeleteUsage
+
+	groupFlags.Usage = groupUsage
+	groupGetFlags.Usage = groupGetUsage
+	groupListFlags.Usage = groupListUsage
+	groupUpdateFlags.Usage = groupUpdateUsage
+	groupCreateFlags.Usage = groupCreateUsage
+	groupDeleteFlags.Usage = groupDeleteUsage
+
+	productFlags.Usage = productUsage
+	productGetFlags.Usage = productGetUsage
+	productListFlags.Usage = productListUsage
+	productUpdateFlags.Usage = productUpdateUsage
+	productCreateFlags.Usage = productCreateUsage
+	productDeleteFlags.Usage = productDeleteUsage
+
+	salesFlags.Usage = salesUsage
+	salesGetFlags.Usage = salesGetUsage
+	salesListFlags.Usage = salesListUsage
+	salesUpdateFlags.Usage = salesUpdateUsage
+	salesCreateFlags.Usage = salesCreateUsage
+	salesDeleteFlags.Usage = salesDeleteUsage
+
+	procurementFlags.Usage = procurementUsage
+	procurementGetFlags.Usage = procurementGetUsage
+	procurementListFlags.Usage = procurementListUsage
+	procurementUpdateFlags.Usage = procurementUpdateUsage
+	procurementCreateFlags.Usage = procurementCreateUsage
+	procurementDeleteFlags.Usage = procurementDeleteUsage
+
+	supplierFlags.Usage = supplierUsage
+	supplierGetFlags.Usage = supplierGetUsage
+	supplierListFlags.Usage = supplierListUsage
+	supplierUpdateFlags.Usage = supplierUpdateUsage
+	supplierCreateFlags.Usage = supplierCreateUsage
+	supplierDeleteFlags.Usage = supplierDeleteUsage
+
 	userFlags.Usage = userUsage
-	userLoginByUsernameFlags.Usage = userLoginByUsernameUsage
-	userUpdatePasswordFlags.Usage = userUpdatePasswordUsage
-	userGetCaptchaImageFlags.Usage = userGetCaptchaImageUsage
+	userGetFlags.Usage = userGetUsage
+	userListFlags.Usage = userListUsage
+	userUpdateFlags.Usage = userUpdateUsage
+	userCreateFlags.Usage = userCreateUsage
+	userDeleteFlags.Usage = userDeleteUsage
+
+	authFlags.Usage = authUsage
+	authLoginFlags.Usage = authLoginUsage
+	authUpdatePasswordFlags.Usage = authUpdatePasswordUsage
+	authCaptchaImageFlags.Usage = authCaptchaImageUsage
+
+	inventoryFlags.Usage = inventoryUsage
+	inventoryGetFlags.Usage = inventoryGetUsage
+	inventoryListFlags.Usage = inventoryListUsage
+	inventoryUpdateFlags.Usage = inventoryUpdateUsage
+	inventoryCreateFlags.Usage = inventoryCreateUsage
+	inventoryDeleteFlags.Usage = inventoryDeleteUsage
+
+	warehouseFlags.Usage = warehouseUsage
+	warehouseGetFlags.Usage = warehouseGetUsage
+	warehouseListFlags.Usage = warehouseListUsage
+	warehouseUpdateFlags.Usage = warehouseUpdateUsage
+	warehouseCreateFlags.Usage = warehouseCreateUsage
+	warehouseDeleteFlags.Usage = warehouseDeleteUsage
 
 	if err := flag.CommandLine.Parse(os.Args[1:]); err != nil {
 		return nil, nil, err
@@ -79,8 +348,26 @@ func ParseEndpoint(
 	{
 		svcn = flag.Arg(0)
 		switch svcn {
+		case "customer":
+			svcf = customerFlags
+		case "group":
+			svcf = groupFlags
+		case "product":
+			svcf = productFlags
+		case "sales":
+			svcf = salesFlags
+		case "procurement":
+			svcf = procurementFlags
+		case "supplier":
+			svcf = supplierFlags
 		case "user":
 			svcf = userFlags
+		case "auth":
+			svcf = authFlags
+		case "inventory":
+			svcf = inventoryFlags
+		case "warehouse":
+			svcf = warehouseFlags
 		default:
 			return nil, nil, fmt.Errorf("unknown service %q", svcn)
 		}
@@ -96,16 +383,187 @@ func ParseEndpoint(
 	{
 		epn = svcf.Arg(0)
 		switch svcn {
+		case "customer":
+			switch epn {
+			case "get":
+				epf = customerGetFlags
+
+			case "list":
+				epf = customerListFlags
+
+			case "update":
+				epf = customerUpdateFlags
+
+			case "create":
+				epf = customerCreateFlags
+
+			case "delete":
+				epf = customerDeleteFlags
+
+			}
+
+		case "group":
+			switch epn {
+			case "get":
+				epf = groupGetFlags
+
+			case "list":
+				epf = groupListFlags
+
+			case "update":
+				epf = groupUpdateFlags
+
+			case "create":
+				epf = groupCreateFlags
+
+			case "delete":
+				epf = groupDeleteFlags
+
+			}
+
+		case "product":
+			switch epn {
+			case "get":
+				epf = productGetFlags
+
+			case "list":
+				epf = productListFlags
+
+			case "update":
+				epf = productUpdateFlags
+
+			case "create":
+				epf = productCreateFlags
+
+			case "delete":
+				epf = productDeleteFlags
+
+			}
+
+		case "sales":
+			switch epn {
+			case "get":
+				epf = salesGetFlags
+
+			case "list":
+				epf = salesListFlags
+
+			case "update":
+				epf = salesUpdateFlags
+
+			case "create":
+				epf = salesCreateFlags
+
+			case "delete":
+				epf = salesDeleteFlags
+
+			}
+
+		case "procurement":
+			switch epn {
+			case "get":
+				epf = procurementGetFlags
+
+			case "list":
+				epf = procurementListFlags
+
+			case "update":
+				epf = procurementUpdateFlags
+
+			case "create":
+				epf = procurementCreateFlags
+
+			case "delete":
+				epf = procurementDeleteFlags
+
+			}
+
+		case "supplier":
+			switch epn {
+			case "get":
+				epf = supplierGetFlags
+
+			case "list":
+				epf = supplierListFlags
+
+			case "update":
+				epf = supplierUpdateFlags
+
+			case "create":
+				epf = supplierCreateFlags
+
+			case "delete":
+				epf = supplierDeleteFlags
+
+			}
+
 		case "user":
 			switch epn {
-			case "login-by-username":
-				epf = userLoginByUsernameFlags
+			case "get":
+				epf = userGetFlags
+
+			case "list":
+				epf = userListFlags
+
+			case "update":
+				epf = userUpdateFlags
+
+			case "create":
+				epf = userCreateFlags
+
+			case "delete":
+				epf = userDeleteFlags
+
+			}
+
+		case "auth":
+			switch epn {
+			case "login":
+				epf = authLoginFlags
 
 			case "update-password":
-				epf = userUpdatePasswordFlags
+				epf = authUpdatePasswordFlags
 
-			case "get-captcha-image":
-				epf = userGetCaptchaImageFlags
+			case "captcha-image":
+				epf = authCaptchaImageFlags
+
+			}
+
+		case "inventory":
+			switch epn {
+			case "get":
+				epf = inventoryGetFlags
+
+			case "list":
+				epf = inventoryListFlags
+
+			case "update":
+				epf = inventoryUpdateFlags
+
+			case "create":
+				epf = inventoryCreateFlags
+
+			case "delete":
+				epf = inventoryDeleteFlags
+
+			}
+
+		case "warehouse":
+			switch epn {
+			case "get":
+				epf = warehouseGetFlags
+
+			case "list":
+				epf = warehouseListFlags
+
+			case "update":
+				epf = warehouseUpdateFlags
+
+			case "create":
+				epf = warehouseCreateFlags
+
+			case "delete":
+				epf = warehouseDeleteFlags
 
 			}
 
@@ -129,18 +587,189 @@ func ParseEndpoint(
 	)
 	{
 		switch svcn {
+		case "customer":
+			c := customerc.NewClient(scheme, host, doer, enc, dec, restore)
+			switch epn {
+			case "get":
+				endpoint = c.Get()
+				data, err = customerc.BuildGetPayload(*customerGetIDFlag, *customerGetTokenFlag)
+			case "list":
+				endpoint = c.List()
+				data, err = customerc.BuildListPayload(*customerListTokenFlag)
+			case "update":
+				endpoint = c.Update()
+				data, err = customerc.BuildUpdatePayload(*customerUpdateBodyFlag, *customerUpdateTokenFlag)
+			case "create":
+				endpoint = c.Create()
+				data, err = customerc.BuildCreatePayload(*customerCreateBodyFlag, *customerCreateTokenFlag)
+			case "delete":
+				endpoint = c.Delete()
+				data, err = customerc.BuildDeletePayload(*customerDeleteBodyFlag, *customerDeleteTokenFlag)
+			}
+		case "group":
+			c := groupc.NewClient(scheme, host, doer, enc, dec, restore)
+			switch epn {
+			case "get":
+				endpoint = c.Get()
+				data, err = groupc.BuildGetPayload(*groupGetIDFlag, *groupGetTokenFlag)
+			case "list":
+				endpoint = c.List()
+				data, err = groupc.BuildListPayload(*groupListTokenFlag)
+			case "update":
+				endpoint = c.Update()
+				data, err = groupc.BuildUpdatePayload(*groupUpdateBodyFlag, *groupUpdateTokenFlag)
+			case "create":
+				endpoint = c.Create()
+				data, err = groupc.BuildCreatePayload(*groupCreateBodyFlag, *groupCreateTokenFlag)
+			case "delete":
+				endpoint = c.Delete()
+				data, err = groupc.BuildDeletePayload(*groupDeleteBodyFlag, *groupDeleteTokenFlag)
+			}
+		case "product":
+			c := productc.NewClient(scheme, host, doer, enc, dec, restore)
+			switch epn {
+			case "get":
+				endpoint = c.Get()
+				data, err = productc.BuildGetPayload(*productGetIDFlag, *productGetTokenFlag)
+			case "list":
+				endpoint = c.List()
+				data, err = productc.BuildListPayload(*productListTokenFlag)
+			case "update":
+				endpoint = c.Update()
+				data, err = productc.BuildUpdatePayload(*productUpdateBodyFlag, *productUpdateTokenFlag)
+			case "create":
+				endpoint = c.Create()
+				data, err = productc.BuildCreatePayload(*productCreateBodyFlag, *productCreateTokenFlag)
+			case "delete":
+				endpoint = c.Delete()
+				data, err = productc.BuildDeletePayload(*productDeleteBodyFlag, *productDeleteTokenFlag)
+			}
+		case "sales":
+			c := salesc.NewClient(scheme, host, doer, enc, dec, restore)
+			switch epn {
+			case "get":
+				endpoint = c.Get()
+				data, err = salesc.BuildGetPayload(*salesGetIDFlag, *salesGetTokenFlag)
+			case "list":
+				endpoint = c.List()
+				data, err = salesc.BuildListPayload(*salesListTokenFlag)
+			case "update":
+				endpoint = c.Update()
+				data, err = salesc.BuildUpdatePayload(*salesUpdateBodyFlag, *salesUpdateTokenFlag)
+			case "create":
+				endpoint = c.Create()
+				data, err = salesc.BuildCreatePayload(*salesCreateBodyFlag, *salesCreateTokenFlag)
+			case "delete":
+				endpoint = c.Delete()
+				data, err = salesc.BuildDeletePayload(*salesDeleteBodyFlag, *salesDeleteTokenFlag)
+			}
+		case "procurement":
+			c := procurementc.NewClient(scheme, host, doer, enc, dec, restore)
+			switch epn {
+			case "get":
+				endpoint = c.Get()
+				data, err = procurementc.BuildGetPayload(*procurementGetIDFlag, *procurementGetTokenFlag)
+			case "list":
+				endpoint = c.List()
+				data, err = procurementc.BuildListPayload(*procurementListTokenFlag)
+			case "update":
+				endpoint = c.Update()
+				data, err = procurementc.BuildUpdatePayload(*procurementUpdateBodyFlag, *procurementUpdateTokenFlag)
+			case "create":
+				endpoint = c.Create()
+				data, err = procurementc.BuildCreatePayload(*procurementCreateBodyFlag, *procurementCreateTokenFlag)
+			case "delete":
+				endpoint = c.Delete()
+				data, err = procurementc.BuildDeletePayload(*procurementDeleteBodyFlag, *procurementDeleteTokenFlag)
+			}
+		case "supplier":
+			c := supplierc.NewClient(scheme, host, doer, enc, dec, restore)
+			switch epn {
+			case "get":
+				endpoint = c.Get()
+				data, err = supplierc.BuildGetPayload(*supplierGetIDFlag, *supplierGetTokenFlag)
+			case "list":
+				endpoint = c.List()
+				data, err = supplierc.BuildListPayload(*supplierListTokenFlag)
+			case "update":
+				endpoint = c.Update()
+				data, err = supplierc.BuildUpdatePayload(*supplierUpdateBodyFlag, *supplierUpdateTokenFlag)
+			case "create":
+				endpoint = c.Create()
+				data, err = supplierc.BuildCreatePayload(*supplierCreateBodyFlag, *supplierCreateTokenFlag)
+			case "delete":
+				endpoint = c.Delete()
+				data, err = supplierc.BuildDeletePayload(*supplierDeleteBodyFlag, *supplierDeleteTokenFlag)
+			}
 		case "user":
 			c := userc.NewClient(scheme, host, doer, enc, dec, restore)
 			switch epn {
-			case "login-by-username":
-				endpoint = c.LoginByUsername()
-				data, err = userc.BuildLoginByUsernamePayload(*userLoginByUsernameBodyFlag)
+			case "get":
+				endpoint = c.Get()
+				data, err = userc.BuildGetPayload(*userGetIDFlag, *userGetTokenFlag)
+			case "list":
+				endpoint = c.List()
+				data, err = userc.BuildListPayload(*userListTokenFlag)
+			case "update":
+				endpoint = c.Update()
+				data, err = userc.BuildUpdatePayload(*userUpdateBodyFlag, *userUpdateTokenFlag)
+			case "create":
+				endpoint = c.Create()
+				data, err = userc.BuildCreatePayload(*userCreateBodyFlag, *userCreateTokenFlag)
+			case "delete":
+				endpoint = c.Delete()
+				data, err = userc.BuildDeletePayload(*userDeleteBodyFlag, *userDeleteTokenFlag)
+			}
+		case "auth":
+			c := authc.NewClient(scheme, host, doer, enc, dec, restore)
+			switch epn {
+			case "login":
+				endpoint = c.Login()
+				data, err = authc.BuildLoginPayload(*authLoginBodyFlag)
 			case "update-password":
 				endpoint = c.UpdatePassword()
-				data, err = userc.BuildUpdatePasswordPayload(*userUpdatePasswordBodyFlag, *userUpdatePasswordTokenFlag)
-			case "get-captcha-image":
-				endpoint = c.GetCaptchaImage()
+				data, err = authc.BuildUpdatePasswordPayload(*authUpdatePasswordBodyFlag, *authUpdatePasswordTokenFlag)
+			case "captcha-image":
+				endpoint = c.CaptchaImage()
 				data = nil
+			}
+		case "inventory":
+			c := inventoryc.NewClient(scheme, host, doer, enc, dec, restore)
+			switch epn {
+			case "get":
+				endpoint = c.Get()
+				data, err = inventoryc.BuildGetPayload(*inventoryGetIDFlag, *inventoryGetTokenFlag)
+			case "list":
+				endpoint = c.List()
+				data, err = inventoryc.BuildListPayload(*inventoryListTokenFlag)
+			case "update":
+				endpoint = c.Update()
+				data, err = inventoryc.BuildUpdatePayload(*inventoryUpdateBodyFlag, *inventoryUpdateTokenFlag)
+			case "create":
+				endpoint = c.Create()
+				data, err = inventoryc.BuildCreatePayload(*inventoryCreateBodyFlag, *inventoryCreateTokenFlag)
+			case "delete":
+				endpoint = c.Delete()
+				data, err = inventoryc.BuildDeletePayload(*inventoryDeleteBodyFlag, *inventoryDeleteTokenFlag)
+			}
+		case "warehouse":
+			c := warehousec.NewClient(scheme, host, doer, enc, dec, restore)
+			switch epn {
+			case "get":
+				endpoint = c.Get()
+				data, err = warehousec.BuildGetPayload(*warehouseGetIDFlag, *warehouseGetTokenFlag)
+			case "list":
+				endpoint = c.List()
+				data, err = warehousec.BuildListPayload(*warehouseListTokenFlag)
+			case "update":
+				endpoint = c.Update()
+				data, err = warehousec.BuildUpdatePayload(*warehouseUpdateBodyFlag, *warehouseUpdateTokenFlag)
+			case "create":
+				endpoint = c.Create()
+				data, err = warehousec.BuildCreatePayload(*warehouseCreateBodyFlag, *warehouseCreateTokenFlag)
+			case "delete":
+				endpoint = c.Delete()
+				data, err = warehousec.BuildDeletePayload(*warehouseDeleteBodyFlag, *warehouseDeleteTokenFlag)
 			}
 		}
 	}
@@ -151,58 +780,951 @@ func ParseEndpoint(
 	return endpoint, data, nil
 }
 
+// customerUsage displays the usage of the customer command and its subcommands.
+func customerUsage() {
+	fmt.Fprintf(os.Stderr, `客户服务
+Usage:
+    %s [globalflags] customer COMMAND [flags]
+
+COMMAND:
+    get: 获取单个客户
+    list: 获取客户列表
+    update: 更新客户
+    create: 创建客户
+    delete: 删除客户
+
+Additional help:
+    %s customer COMMAND --help
+`, os.Args[0], os.Args[0])
+}
+func customerGetUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] customer get -id STRING -token STRING
+
+获取单个客户
+    -id STRING: 
+    -token STRING: 
+
+Example:
+    `+os.Args[0]+` customer get --id "91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f" --token "eyJhbGciOiJIUz..."
+`, os.Args[0])
+}
+
+func customerListUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] customer list -token STRING
+
+获取客户列表
+    -token STRING: 
+
+Example:
+    `+os.Args[0]+` customer list --token "eyJhbGciOiJIUz..."
+`, os.Args[0])
+}
+
+func customerUpdateUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] customer update -body JSON -token STRING
+
+更新客户
+    -body JSON: 
+    -token STRING: 
+
+Example:
+    `+os.Args[0]+` customer update --body '{
+      "address": "咸阳",
+      "email": "adb@adb.com",
+      "id": "519151ca-6250-4eec-8016-1e14a68dc448",
+      "industry": 1,
+      "level": 1,
+      "mobile": "18000001234",
+      "name": "张三",
+      "note": "备注",
+      "src": 1,
+      "url": "http://www.baidu.com"
+   }' --token "eyJhbGciOiJIUz..."
+`, os.Args[0])
+}
+
+func customerCreateUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] customer create -body JSON -token STRING
+
+创建客户
+    -body JSON: 
+    -token STRING: 
+
+Example:
+    `+os.Args[0]+` customer create --body '{
+      "address": "咸阳",
+      "email": "adb@adb.com",
+      "industry": 1,
+      "level": 1,
+      "mobile": "18000001234",
+      "name": "张三",
+      "note": "备注",
+      "src": 1,
+      "url": "http://www.baidu.com"
+   }' --token "eyJhbGciOiJIUz..."
+`, os.Args[0])
+}
+
+func customerDeleteUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] customer delete -body JSON -token STRING
+
+删除客户
+    -body JSON: 
+    -token STRING: 
+
+Example:
+    `+os.Args[0]+` customer delete --body '{
+      "ids": [
+         "91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f",
+         "91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f",
+         "91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f"
+      ]
+   }' --token "eyJhbGciOiJIUz..."
+`, os.Args[0])
+}
+
+// groupUsage displays the usage of the group command and its subcommands.
+func groupUsage() {
+	fmt.Fprintf(os.Stderr, `组服务
+Usage:
+    %s [globalflags] group COMMAND [flags]
+
+COMMAND:
+    get: 获取单个组
+    list: 获取组列表
+    update: 更新组
+    create: 创建组
+    delete: 删除组
+
+Additional help:
+    %s group COMMAND --help
+`, os.Args[0], os.Args[0])
+}
+func groupGetUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] group get -id STRING -token STRING
+
+获取单个组
+    -id STRING: 
+    -token STRING: 
+
+Example:
+    `+os.Args[0]+` group get --id "91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f" --token "eyJhbGciOiJIUz..."
+`, os.Args[0])
+}
+
+func groupListUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] group list -token STRING
+
+获取组列表
+    -token STRING: 
+
+Example:
+    `+os.Args[0]+` group list --token "eyJhbGciOiJIUz..."
+`, os.Args[0])
+}
+
+func groupUpdateUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] group update -body JSON -token STRING
+
+更新组
+    -body JSON: 
+    -token STRING: 
+
+Example:
+    `+os.Args[0]+` group update --body '{
+      "id": "519151ca-6250-4eec-8016-1e14a68dc448",
+      "name": "管理员"
+   }' --token "eyJhbGciOiJIUz..."
+`, os.Args[0])
+}
+
+func groupCreateUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] group create -body JSON -token STRING
+
+创建组
+    -body JSON: 
+    -token STRING: 
+
+Example:
+    `+os.Args[0]+` group create --body '{
+      "name": "张三"
+   }' --token "eyJhbGciOiJIUz..."
+`, os.Args[0])
+}
+
+func groupDeleteUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] group delete -body JSON -token STRING
+
+删除组
+    -body JSON: 
+    -token STRING: 
+
+Example:
+    `+os.Args[0]+` group delete --body '{
+      "ids": [
+         "91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f",
+         "91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f",
+         "91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f"
+      ]
+   }' --token "eyJhbGciOiJIUz..."
+`, os.Args[0])
+}
+
+// productUsage displays the usage of the product command and its subcommands.
+func productUsage() {
+	fmt.Fprintf(os.Stderr, `产品服务
+Usage:
+    %s [globalflags] product COMMAND [flags]
+
+COMMAND:
+    get: 获取单个产品
+    list: 获取产品列表
+    update: 更新产品
+    create: 创建产品
+    delete: 删除产品
+
+Additional help:
+    %s product COMMAND --help
+`, os.Args[0], os.Args[0])
+}
+func productGetUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] product get -id STRING -token STRING
+
+获取单个产品
+    -id STRING: 
+    -token STRING: 
+
+Example:
+    `+os.Args[0]+` product get --id "91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f" --token "eyJhbGciOiJIUz..."
+`, os.Args[0])
+}
+
+func productListUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] product list -token STRING
+
+获取产品列表
+    -token STRING: 
+
+Example:
+    `+os.Args[0]+` product list --token "eyJhbGciOiJIUz..."
+`, os.Args[0])
+}
+
+func productUpdateUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] product update -body JSON -token STRING
+
+更新产品
+    -body JSON: 
+    -token STRING: 
+
+Example:
+    `+os.Args[0]+` product update --body '{
+      "cost_price": 123,
+      "id": "519151ca-6250-4eec-8016-1e14a68dc448",
+      "image": "/images/123.jpg",
+      "is_shelves": false,
+      "market_price": 123,
+      "name": "灌装辣椒",
+      "note": "备注",
+      "size": "瓶",
+      "type": 1,
+      "unit": 1
+   }' --token "eyJhbGciOiJIUz..."
+`, os.Args[0])
+}
+
+func productCreateUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] product create -body JSON -token STRING
+
+创建产品
+    -body JSON: 
+    -token STRING: 
+
+Example:
+    `+os.Args[0]+` product create --body '{
+      "code": "123asd123123asd",
+      "cost_price": 123,
+      "founder_id": "519151ca-6250-4eec-8016-1e14a68dc448",
+      "image": "/images/123.jpg",
+      "is_shelves": false,
+      "market_price": 123,
+      "name": "灌装辣椒",
+      "note": "备注",
+      "size": "瓶",
+      "type": 1,
+      "unit": 1
+   }' --token "eyJhbGciOiJIUz..."
+`, os.Args[0])
+}
+
+func productDeleteUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] product delete -body JSON -token STRING
+
+删除产品
+    -body JSON: 
+    -token STRING: 
+
+Example:
+    `+os.Args[0]+` product delete --body '{
+      "ids": [
+         "91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f",
+         "91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f",
+         "91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f"
+      ]
+   }' --token "eyJhbGciOiJIUz..."
+`, os.Args[0])
+}
+
+// salesUsage displays the usage of the sales command and its subcommands.
+func salesUsage() {
+	fmt.Fprintf(os.Stderr, `销售服务
+Usage:
+    %s [globalflags] sales COMMAND [flags]
+
+COMMAND:
+    get: 获取单个销售
+    list: 获取销售列表
+    update: 更新销售
+    create: 创建销售
+    delete: 删除销售
+
+Additional help:
+    %s sales COMMAND --help
+`, os.Args[0], os.Args[0])
+}
+func salesGetUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] sales get -id STRING -token STRING
+
+获取单个销售
+    -id STRING: 
+    -token STRING: 
+
+Example:
+    `+os.Args[0]+` sales get --id "91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f" --token "eyJhbGciOiJIUz..."
+`, os.Args[0])
+}
+
+func salesListUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] sales list -token STRING
+
+获取销售列表
+    -token STRING: 
+
+Example:
+    `+os.Args[0]+` sales list --token "eyJhbGciOiJIUz..."
+`, os.Args[0])
+}
+
+func salesUpdateUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] sales update -body JSON -token STRING
+
+更新销售
+    -body JSON: 
+    -token STRING: 
+
+Example:
+    `+os.Args[0]+` sales update --body '{
+      "consignment_date": "2021-01-01",
+      "customer_id": "519151ca-6250-4eec-8016-1e14a68dc448",
+      "head_id": "519151ca-6250-4eec-8016-1e14a68dc448",
+      "id": "519151ca-6250-4eec-8016-1e14a68dc448",
+      "is_sales_return": false,
+      "money": 123,
+      "name": "xx销售",
+      "note": "备注"
+   }' --token "eyJhbGciOiJIUz..."
+`, os.Args[0])
+}
+
+func salesCreateUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] sales create -body JSON -token STRING
+
+创建销售
+    -body JSON: 
+    -token STRING: 
+
+Example:
+    `+os.Args[0]+` sales create --body '{
+      "code": "123asd123123asd",
+      "consignment_date": "2021-01-01",
+      "customer_id": "519151ca-6250-4eec-8016-1e14a68dc448",
+      "founder_id": "519151ca-6250-4eec-8016-1e14a68dc448",
+      "head_id": "519151ca-6250-4eec-8016-1e14a68dc448",
+      "is_sales_return": false,
+      "money": 123,
+      "name": "xx销售",
+      "note": "备注"
+   }' --token "eyJhbGciOiJIUz..."
+`, os.Args[0])
+}
+
+func salesDeleteUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] sales delete -body JSON -token STRING
+
+删除销售
+    -body JSON: 
+    -token STRING: 
+
+Example:
+    `+os.Args[0]+` sales delete --body '{
+      "ids": [
+         "91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f",
+         "91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f",
+         "91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f"
+      ]
+   }' --token "eyJhbGciOiJIUz..."
+`, os.Args[0])
+}
+
+// procurementUsage displays the usage of the procurement command and its
+// subcommands.
+func procurementUsage() {
+	fmt.Fprintf(os.Stderr, `采购服务
+Usage:
+    %s [globalflags] procurement COMMAND [flags]
+
+COMMAND:
+    get: 获取单个采购
+    list: 获取采购列表
+    update: 更新采购
+    create: 创建采购
+    delete: 删除采购
+
+Additional help:
+    %s procurement COMMAND --help
+`, os.Args[0], os.Args[0])
+}
+func procurementGetUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] procurement get -id STRING -token STRING
+
+获取单个采购
+    -id STRING: 
+    -token STRING: 
+
+Example:
+    `+os.Args[0]+` procurement get --id "91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f" --token "eyJhbGciOiJIUz..."
+`, os.Args[0])
+}
+
+func procurementListUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] procurement list -token STRING
+
+获取采购列表
+    -token STRING: 
+
+Example:
+    `+os.Args[0]+` procurement list --token "eyJhbGciOiJIUz..."
+`, os.Args[0])
+}
+
+func procurementUpdateUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] procurement update -body JSON -token STRING
+
+更新采购
+    -body JSON: 
+    -token STRING: 
+
+Example:
+    `+os.Args[0]+` procurement update --body '{
+      "code": "123asd123123asd",
+      "head_id": "519151ca-6250-4eec-8016-1e14a68dc448",
+      "id": "519151ca-6250-4eec-8016-1e14a68dc448",
+      "is_sales_return": false,
+      "money": 123,
+      "note": "备注"
+   }' --token "eyJhbGciOiJIUz..."
+`, os.Args[0])
+}
+
+func procurementCreateUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] procurement create -body JSON -token STRING
+
+创建采购
+    -body JSON: 
+    -token STRING: 
+
+Example:
+    `+os.Args[0]+` procurement create --body '{
+      "code": "123asd123123asd",
+      "founder_id": "519151ca-6250-4eec-8016-1e14a68dc448",
+      "head_id": "519151ca-6250-4eec-8016-1e14a68dc448",
+      "is_sales_return": false,
+      "money": 123,
+      "note": "备注",
+      "supplier_id": "519151ca-6250-4eec-8016-1e14a68dc448"
+   }' --token "eyJhbGciOiJIUz..."
+`, os.Args[0])
+}
+
+func procurementDeleteUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] procurement delete -body JSON -token STRING
+
+删除采购
+    -body JSON: 
+    -token STRING: 
+
+Example:
+    `+os.Args[0]+` procurement delete --body '{
+      "ids": [
+         "91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f",
+         "91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f",
+         "91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f"
+      ]
+   }' --token "eyJhbGciOiJIUz..."
+`, os.Args[0])
+}
+
+// supplierUsage displays the usage of the supplier command and its subcommands.
+func supplierUsage() {
+	fmt.Fprintf(os.Stderr, `供应商服务
+Usage:
+    %s [globalflags] supplier COMMAND [flags]
+
+COMMAND:
+    get: 获取单个供应商
+    list: 获取供应商列表
+    update: 更新供应商
+    create: 创建供应商
+    delete: 删除供应商
+
+Additional help:
+    %s supplier COMMAND --help
+`, os.Args[0], os.Args[0])
+}
+func supplierGetUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] supplier get -id STRING -token STRING
+
+获取单个供应商
+    -id STRING: 
+    -token STRING: 
+
+Example:
+    `+os.Args[0]+` supplier get --id "91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f" --token "eyJhbGciOiJIUz..."
+`, os.Args[0])
+}
+
+func supplierListUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] supplier list -token STRING
+
+获取供应商列表
+    -token STRING: 
+
+Example:
+    `+os.Args[0]+` supplier list --token "eyJhbGciOiJIUz..."
+`, os.Args[0])
+}
+
+func supplierUpdateUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] supplier update -body JSON -token STRING
+
+更新供应商
+    -body JSON: 
+    -token STRING: 
+
+Example:
+    `+os.Args[0]+` supplier update --body '{
+      "contact_address": "咸阳",
+      "contact_name": "张三",
+      "contact_phone": "1808001010",
+      "head_id": "519151ca-6250-4eec-8016-1e14a68dc448",
+      "id": "519151ca-6250-4eec-8016-1e14a68dc448",
+      "level": 1,
+      "name": "xx公司",
+      "note": "备注"
+   }' --token "eyJhbGciOiJIUz..."
+`, os.Args[0])
+}
+
+func supplierCreateUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] supplier create -body JSON -token STRING
+
+创建供应商
+    -body JSON: 
+    -token STRING: 
+
+Example:
+    `+os.Args[0]+` supplier create --body '{
+      "contact_address": "咸阳",
+      "contact_name": "张三",
+      "contact_phone": "1808001010",
+      "founder_id": "519151ca-6250-4eec-8016-1e14a68dc448",
+      "head_id": "519151ca-6250-4eec-8016-1e14a68dc448",
+      "level": 1,
+      "name": "xx公司",
+      "note": "备注"
+   }' --token "eyJhbGciOiJIUz..."
+`, os.Args[0])
+}
+
+func supplierDeleteUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] supplier delete -body JSON -token STRING
+
+删除供应商
+    -body JSON: 
+    -token STRING: 
+
+Example:
+    `+os.Args[0]+` supplier delete --body '{
+      "ids": [
+         "91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f",
+         "91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f",
+         "91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f"
+      ]
+   }' --token "eyJhbGciOiJIUz..."
+`, os.Args[0])
+}
+
 // userUsage displays the usage of the user command and its subcommands.
 func userUsage() {
-	fmt.Fprintf(os.Stderr, `微服务
+	fmt.Fprintf(os.Stderr, `用户服务
 Usage:
     %s [globalflags] user COMMAND [flags]
 
 COMMAND:
-    login-by-username: 使用账号密码登录
-    update-password: 修改登录密码
-    get-captcha-image: 获取图形验证码
+    get: 获取单个用户
+    list: 获取用户列表
+    update: 更新用户
+    create: 创建用户
+    delete: 删除用户
 
 Additional help:
     %s user COMMAND --help
 `, os.Args[0], os.Args[0])
 }
-func userLoginByUsernameUsage() {
-	fmt.Fprintf(os.Stderr, `%s [flags] user login-by-username -body JSON
+func userGetUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] user get -id STRING -token STRING
+
+获取单个用户
+    -id STRING: 
+    -token STRING: 
+
+Example:
+    `+os.Args[0]+` user get --id "91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f" --token "eyJhbGciOiJIUz..."
+`, os.Args[0])
+}
+
+func userListUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] user list -token STRING
+
+获取用户列表
+    -token STRING: 
+
+Example:
+    `+os.Args[0]+` user list --token "eyJhbGciOiJIUz..."
+`, os.Args[0])
+}
+
+func userUpdateUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] user update -body JSON -token STRING
+
+更新用户
+    -body JSON: 
+    -token STRING: 
+
+Example:
+    `+os.Args[0]+` user update --body '{
+      "email": "adb@adb.com",
+      "group_id": "519151ca-6250-4eec-8016-1e14a68dc448",
+      "id": "519151ca-6250-4eec-8016-1e14a68dc448",
+      "jobs": 1,
+      "mobile": "1808001010",
+      "name": "张三",
+      "superior_id": "519151ca-6250-4eec-8016-1e14a68dc448"
+   }' --token "eyJhbGciOiJIUz..."
+`, os.Args[0])
+}
+
+func userCreateUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] user create -body JSON -token STRING
+
+创建用户
+    -body JSON: 
+    -token STRING: 
+
+Example:
+    `+os.Args[0]+` user create --body '{
+      "email": "adb@adb.com",
+      "group_id": "519151ca-6250-4eec-8016-1e14a68dc448",
+      "jobs": 1,
+      "mobile": "1808001010",
+      "name": "张三",
+      "password": "abc",
+      "superior_id": "519151ca-6250-4eec-8016-1e14a68dc448",
+      "username": "abc"
+   }' --token "eyJhbGciOiJIUz..."
+`, os.Args[0])
+}
+
+func userDeleteUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] user delete -body JSON -token STRING
+
+删除用户
+    -body JSON: 
+    -token STRING: 
+
+Example:
+    `+os.Args[0]+` user delete --body '{
+      "ids": [
+         "91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f",
+         "91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f",
+         "91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f"
+      ]
+   }' --token "eyJhbGciOiJIUz..."
+`, os.Args[0])
+}
+
+// authUsage displays the usage of the auth command and its subcommands.
+func authUsage() {
+	fmt.Fprintf(os.Stderr, `鉴权服务
+Usage:
+    %s [globalflags] auth COMMAND [flags]
+
+COMMAND:
+    login: 使用账号密码登录
+    update-password: 修改登录密码
+    captcha-image: 获取图形验证码
+
+Additional help:
+    %s auth COMMAND --help
+`, os.Args[0], os.Args[0])
+}
+func authLoginUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] auth login -body JSON
 
 使用账号密码登录
     -body JSON: 
 
 Example:
-    `+os.Args[0]+` user login-by-username --body '{
-      "captchaId": "ge",
-      "humanCode": "j8t",
+    `+os.Args[0]+` auth login --body '{
+      "captchaId": "t",
+      "humanCode": "ncr",
       "password": "password",
       "username": "user"
    }'
 `, os.Args[0])
 }
 
-func userUpdatePasswordUsage() {
-	fmt.Fprintf(os.Stderr, `%s [flags] user update-password -body JSON -token STRING
+func authUpdatePasswordUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] auth update-password -body JSON -token STRING
 
 修改登录密码
     -body JSON: 
     -token STRING: 
 
 Example:
-    `+os.Args[0]+` user update-password --body '{
+    `+os.Args[0]+` auth update-password --body '{
       "new_password": "abc123",
       "old_password": "123abc"
    }' --token "eyJhbGciOiJIUz..."
 `, os.Args[0])
 }
 
-func userGetCaptchaImageUsage() {
-	fmt.Fprintf(os.Stderr, `%s [flags] user get-captcha-image
+func authCaptchaImageUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] auth captcha-image
 
 获取图形验证码
 
 Example:
-    `+os.Args[0]+` user get-captcha-image
+    `+os.Args[0]+` auth captcha-image
+`, os.Args[0])
+}
+
+// inventoryUsage displays the usage of the inventory command and its
+// subcommands.
+func inventoryUsage() {
+	fmt.Fprintf(os.Stderr, `库存服务
+Usage:
+    %s [globalflags] inventory COMMAND [flags]
+
+COMMAND:
+    get: 获取单个库存
+    list: 获取库存列表
+    update: 更新库存
+    create: 创建库存
+    delete: 删除库存
+
+Additional help:
+    %s inventory COMMAND --help
+`, os.Args[0], os.Args[0])
+}
+func inventoryGetUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] inventory get -id STRING -token STRING
+
+获取单个库存
+    -id STRING: 
+    -token STRING: 
+
+Example:
+    `+os.Args[0]+` inventory get --id "91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f" --token "eyJhbGciOiJIUz..."
+`, os.Args[0])
+}
+
+func inventoryListUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] inventory list -token STRING
+
+获取库存列表
+    -token STRING: 
+
+Example:
+    `+os.Args[0]+` inventory list --token "eyJhbGciOiJIUz..."
+`, os.Args[0])
+}
+
+func inventoryUpdateUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] inventory update -body JSON -token STRING
+
+更新库存
+    -body JSON: 
+    -token STRING: 
+
+Example:
+    `+os.Args[0]+` inventory update --body '{
+      "code": "123qwe123qwe",
+      "head_id": "519151ca-6250-4eec-8016-1e14a68dc448",
+      "id": "519151ca-6250-4eec-8016-1e14a68dc448",
+      "in_and_out": 1,
+      "inventory_date": "20210101",
+      "note": "备注",
+      "number": 123,
+      "product_id": "519151ca-6250-4eec-8016-1e14a68dc448",
+      "type": 1,
+      "warehouse_id": "519151ca-6250-4eec-8016-1e14a68dc448"
+   }' --token "eyJhbGciOiJIUz..."
+`, os.Args[0])
+}
+
+func inventoryCreateUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] inventory create -body JSON -token STRING
+
+创建库存
+    -body JSON: 
+    -token STRING: 
+
+Example:
+    `+os.Args[0]+` inventory create --body '{
+      "code": "123qwe123qwe",
+      "founder_id": "519151ca-6250-4eec-8016-1e14a68dc448",
+      "head_id": "519151ca-6250-4eec-8016-1e14a68dc448",
+      "in_and_out": 1,
+      "inventory_date": "20210101",
+      "note": "备注",
+      "number": 123,
+      "product_id": "519151ca-6250-4eec-8016-1e14a68dc448",
+      "type": 1,
+      "warehouse_id": "519151ca-6250-4eec-8016-1e14a68dc448"
+   }' --token "eyJhbGciOiJIUz..."
+`, os.Args[0])
+}
+
+func inventoryDeleteUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] inventory delete -body JSON -token STRING
+
+删除库存
+    -body JSON: 
+    -token STRING: 
+
+Example:
+    `+os.Args[0]+` inventory delete --body '{
+      "ids": [
+         "91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f",
+         "91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f",
+         "91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f"
+      ]
+   }' --token "eyJhbGciOiJIUz..."
+`, os.Args[0])
+}
+
+// warehouseUsage displays the usage of the warehouse command and its
+// subcommands.
+func warehouseUsage() {
+	fmt.Fprintf(os.Stderr, `仓库服务
+Usage:
+    %s [globalflags] warehouse COMMAND [flags]
+
+COMMAND:
+    get: 获取单个仓库
+    list: 获取仓库列表
+    update: 更新仓库
+    create: 创建仓库
+    delete: 删除仓库
+
+Additional help:
+    %s warehouse COMMAND --help
+`, os.Args[0], os.Args[0])
+}
+func warehouseGetUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] warehouse get -id STRING -token STRING
+
+获取单个仓库
+    -id STRING: 
+    -token STRING: 
+
+Example:
+    `+os.Args[0]+` warehouse get --id "91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f" --token "eyJhbGciOiJIUz..."
+`, os.Args[0])
+}
+
+func warehouseListUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] warehouse list -token STRING
+
+获取仓库列表
+    -token STRING: 
+
+Example:
+    `+os.Args[0]+` warehouse list --token "eyJhbGciOiJIUz..."
+`, os.Args[0])
+}
+
+func warehouseUpdateUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] warehouse update -body JSON -token STRING
+
+更新仓库
+    -body JSON: 
+    -token STRING: 
+
+Example:
+    `+os.Args[0]+` warehouse update --body '{
+      "address": "地址",
+      "code": "123awe12qwe",
+      "id": "519151ca-6250-4eec-8016-1e14a68dc448",
+      "name": "1号仓库",
+      "type": 1
+   }' --token "eyJhbGciOiJIUz..."
+`, os.Args[0])
+}
+
+func warehouseCreateUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] warehouse create -body JSON -token STRING
+
+创建仓库
+    -body JSON: 
+    -token STRING: 
+
+Example:
+    `+os.Args[0]+` warehouse create --body '{
+      "address": "地址",
+      "code": "123awe12qwe",
+      "founder_id": "519151ca-6250-4eec-8016-1e14a68dc448",
+      "name": "1号仓库",
+      "type": 1
+   }' --token "eyJhbGciOiJIUz..."
+`, os.Args[0])
+}
+
+func warehouseDeleteUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] warehouse delete -body JSON -token STRING
+
+删除仓库
+    -body JSON: 
+    -token STRING: 
+
+Example:
+    `+os.Args[0]+` warehouse delete --body '{
+      "ids": [
+         "91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f",
+         "91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f",
+         "91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f"
+      ]
+   }' --token "eyJhbGciOiJIUz..."
 `, os.Args[0])
 }

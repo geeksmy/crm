@@ -9,19 +9,24 @@ package user
 
 import (
 	"context"
+	userviews "crm/gen/user/views"
 
 	goa "goa.design/goa/v3/pkg"
 	"goa.design/goa/v3/security"
 )
 
-// 微服务
+// 用户服务
 type Service interface {
-	// 使用账号密码登录
-	LoginByUsername(context.Context, *LoginByUsernamePayload) (res *LoginByUsernameResult, err error)
-	// 修改登录密码
-	UpdatePassword(context.Context, *UpdatePasswordPayload) (res *UpdatePasswordResult, err error)
-	// 获取图形验证码
-	GetCaptchaImage(context.Context) (res *GetCaptchaImageResult, err error)
+	// 获取单个用户
+	Get(context.Context, *GetPayload) (res *User, err error)
+	// 获取用户列表
+	List(context.Context, *ListPayload) (res *ListResult, err error)
+	// 更新用户
+	Update(context.Context, *UpdatePayload) (res *User, err error)
+	// 创建用户
+	Create(context.Context, *CreatePayload) (res *User, err error)
+	// 删除用户
+	Delete(context.Context, *DeletePayload) (res *SuccessResult, err error)
 }
 
 // Auther defines the authorization functions to be implemented by the service.
@@ -38,94 +43,119 @@ const ServiceName = "User"
 // MethodNames lists the service method names as defined in the design. These
 // are the same values that are set in the endpoint request contexts under the
 // MethodKey key.
-var MethodNames = [3]string{"LoginByUsername", "UpdatePassword", "GetCaptchaImage"}
+var MethodNames = [5]string{"Get", "List", "Update", "Create", "Delete"}
 
-// LoginByUsernamePayload is the payload type of the User service
-// LoginByUsername method.
-type LoginByUsernamePayload struct {
-	// 用户名
-	Username string
-	// 密码
-	Password string
-	// 图形验证码
-	HumanCode string
-	// 图形验证码ID
-	CaptchaID string
-}
-
-// LoginByUsernameResult is the result type of the User service LoginByUsername
-// method.
-type LoginByUsernameResult struct {
-	// 错误码
-	Errcode int
-	// 错误消息
-	Errmsg string
-	Data   *Session
-}
-
-// UpdatePasswordPayload is the payload type of the User service UpdatePassword
-// method.
-type UpdatePasswordPayload struct {
+// GetPayload is the payload type of the User service Get method.
+type GetPayload struct {
 	// JWT used for authentication
-	Token       string
-	OldPassword string
-	NewPassword string
+	Token string
+	ID    string
 }
 
-// UpdatePasswordResult is the result type of the User service UpdatePassword
-// method.
-type UpdatePasswordResult struct {
-	// 错误码
-	Errcode int
-	// 错误消息
-	Errmsg string
-	Data   *SuccessResult
-}
-
-// GetCaptchaImageResult is the result type of the User service GetCaptchaImage
-// method.
-type GetCaptchaImageResult struct {
-	// 错误码
-	Errcode int
-	// 错误消息
-	Errmsg string
-	Data   *Captcha
-}
-
-// 会话
-type Session struct {
-	User        *User
-	Credentials *Credentials
-}
-
-// 用户
+// User is the result type of the User service Get method.
 type User struct {
 	// ID
 	ID string
 	// 用户名
 	Username string
+	// 姓名
+	Name string
 	// 手机号
 	Mobile string
+	// 邮箱
+	Email string
+	// 1 - 推销员，2 - 经理，3 - 管理员
+	Jobs int
+	// 是否是管理员
+	IsAdmin bool
+	// 直属上级
+	Superior *Superior
+	// 所属组
+	Group *Group
 }
 
-type Credentials struct {
-	// JWT token
+// ListPayload is the payload type of the User service List method.
+type ListPayload struct {
+	// JWT used for authentication
 	Token string
-	// 有效时长（秒）：生成之后x秒内有效
-	ExpiresIn int
 }
 
-// 成功信息
+// ListResult is the result type of the User service List method.
+type ListResult struct {
+	Items []*User
+	// 下一页游标
+	NextCursor int
+	// 总记录数
+	Total int
+}
+
+// UpdatePayload is the payload type of the User service Update method.
+type UpdatePayload struct {
+	// JWT used for authentication
+	Token string
+	// 用户ID
+	ID string
+	// 姓名
+	Name string
+	// 手机号
+	Mobile string
+	// 邮箱
+	Email string
+	// 1 - 推销员，2 - 经理，3 - 管理员
+	Jobs int
+	// 直属上级ID
+	SuperiorID string
+	// 所属组
+	GroupID string
+}
+
+// CreatePayload is the payload type of the User service Create method.
+type CreatePayload struct {
+	// JWT used for authentication
+	Token string
+	// 用户名
+	Username string
+	// 用户密码
+	Password string
+	// 姓名
+	Name string
+	// 手机号
+	Mobile string
+	// 邮箱
+	Email string
+	// 1 - 推销员，2 - 经理，3 - 管理员
+	Jobs int
+	// 直属上级ID
+	SuperiorID string
+	// 所属组
+	GroupID string
+}
+
+// DeletePayload is the payload type of the User service Delete method.
+type DeletePayload struct {
+	// JWT used for authentication
+	Token string
+	Ids   []string
+}
+
+// SuccessResult is the result type of the User service Delete method.
 type SuccessResult struct {
 	// success
 	OK bool
 }
 
-type Captcha struct {
-	// 图片base64
-	Image string
-	// 验证码ID
-	CaptchaID string
+type Superior struct {
+	// ID
+	ID string
+	// 姓名
+	Name string
+}
+
+type Group struct {
+	// ID
+	ID string
+	// 组名
+	Name string
 }
 
 // MakeInternalServerError builds a goa.ServiceError from an error.
@@ -144,4 +174,146 @@ func MakeBadRequest(err error) *goa.ServiceError {
 		ID:      goa.NewErrorID(),
 		Message: err.Error(),
 	}
+}
+
+// NewUser initializes result type User from viewed result type User.
+func NewUser(vres *userviews.User) *User {
+	return newUser(vres.Projected)
+}
+
+// NewViewedUser initializes viewed result type User from result type User
+// using the given view.
+func NewViewedUser(res *User, view string) *userviews.User {
+	p := newUserView(res)
+	return &userviews.User{Projected: p, View: "default"}
+}
+
+// NewSuccessResult initializes result type SuccessResult from viewed result
+// type SuccessResult.
+func NewSuccessResult(vres *userviews.SuccessResult) *SuccessResult {
+	return newSuccessResult(vres.Projected)
+}
+
+// NewViewedSuccessResult initializes viewed result type SuccessResult from
+// result type SuccessResult using the given view.
+func NewViewedSuccessResult(res *SuccessResult, view string) *userviews.SuccessResult {
+	p := newSuccessResultView(res)
+	return &userviews.SuccessResult{Projected: p, View: "default"}
+}
+
+// newUser converts projected type User to service type User.
+func newUser(vres *userviews.UserView) *User {
+	res := &User{}
+	if vres.ID != nil {
+		res.ID = *vres.ID
+	}
+	if vres.Username != nil {
+		res.Username = *vres.Username
+	}
+	if vres.Mobile != nil {
+		res.Mobile = *vres.Mobile
+	}
+	if vres.Name != nil {
+		res.Name = *vres.Name
+	}
+	if vres.Email != nil {
+		res.Email = *vres.Email
+	}
+	if vres.Jobs != nil {
+		res.Jobs = *vres.Jobs
+	}
+	if vres.IsAdmin != nil {
+		res.IsAdmin = *vres.IsAdmin
+	}
+	if vres.Superior != nil {
+		res.Superior = newSuperior(vres.Superior)
+	}
+	if vres.Group != nil {
+		res.Group = newGroup(vres.Group)
+	}
+	return res
+}
+
+// newUserView projects result type User to projected type UserView using the
+// "default" view.
+func newUserView(res *User) *userviews.UserView {
+	vres := &userviews.UserView{
+		ID:       &res.ID,
+		Username: &res.Username,
+		Name:     &res.Name,
+		Mobile:   &res.Mobile,
+		Email:    &res.Email,
+		Jobs:     &res.Jobs,
+		IsAdmin:  &res.IsAdmin,
+	}
+	if res.Superior != nil {
+		vres.Superior = newSuperiorView(res.Superior)
+	}
+	if res.Group != nil {
+		vres.Group = newGroupView(res.Group)
+	}
+	return vres
+}
+
+// newSuperior converts projected type Superior to service type Superior.
+func newSuperior(vres *userviews.SuperiorView) *Superior {
+	res := &Superior{}
+	if vres.ID != nil {
+		res.ID = *vres.ID
+	}
+	if vres.Name != nil {
+		res.Name = *vres.Name
+	}
+	return res
+}
+
+// newSuperiorView projects result type Superior to projected type SuperiorView
+// using the "default" view.
+func newSuperiorView(res *Superior) *userviews.SuperiorView {
+	vres := &userviews.SuperiorView{
+		ID:   &res.ID,
+		Name: &res.Name,
+	}
+	return vres
+}
+
+// newGroup converts projected type Group to service type Group.
+func newGroup(vres *userviews.GroupView) *Group {
+	res := &Group{}
+	if vres.ID != nil {
+		res.ID = *vres.ID
+	}
+	if vres.Name != nil {
+		res.Name = *vres.Name
+	}
+	return res
+}
+
+// newGroupView projects result type Group to projected type GroupView using
+// the "default" view.
+func newGroupView(res *Group) *userviews.GroupView {
+	vres := &userviews.GroupView{
+		ID:   &res.ID,
+		Name: &res.Name,
+	}
+	return vres
+}
+
+// newSuccessResult converts projected type SuccessResult to service type
+// SuccessResult.
+func newSuccessResult(vres *userviews.SuccessResultView) *SuccessResult {
+	res := &SuccessResult{}
+	if vres.OK != nil {
+		res.OK = *vres.OK
+	}
+	return res
+}
+
+// newSuccessResultView projects result type SuccessResult to projected type
+// SuccessResultView using the "default" view.
+func newSuccessResultView(res *SuccessResult) *userviews.SuccessResultView {
+	vres := &userviews.SuccessResultView{
+		OK: &res.OK,
+	}
+	return vres
 }

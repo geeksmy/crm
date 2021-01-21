@@ -9,65 +9,147 @@ package server
 
 import (
 	user "crm/gen/user"
+	userviews "crm/gen/user/views"
 	"unicode/utf8"
 
 	goa "goa.design/goa/v3/pkg"
 )
 
-// LoginByUsernameRequestBody is the type of the "User" service
-// "LoginByUsername" endpoint HTTP request body.
-type LoginByUsernameRequestBody struct {
+// UpdateRequestBody is the type of the "User" service "Update" endpoint HTTP
+// request body.
+type UpdateRequestBody struct {
+	// 用户ID
+	ID *string `form:"id,omitempty" json:"id,omitempty" xml:"id,omitempty"`
+	// 姓名
+	Name *string `form:"name,omitempty" json:"name,omitempty" xml:"name,omitempty"`
+	// 手机号
+	Mobile *string `form:"mobile,omitempty" json:"mobile,omitempty" xml:"mobile,omitempty"`
+	// 邮箱
+	Email *string `form:"email,omitempty" json:"email,omitempty" xml:"email,omitempty"`
+	// 1 - 推销员，2 - 经理，3 - 管理员
+	Jobs *int `form:"jobs,omitempty" json:"jobs,omitempty" xml:"jobs,omitempty"`
+	// 直属上级ID
+	SuperiorID *string `form:"superior_id,omitempty" json:"superior_id,omitempty" xml:"superior_id,omitempty"`
+	// 所属组
+	GroupID *string `form:"group_id,omitempty" json:"group_id,omitempty" xml:"group_id,omitempty"`
+}
+
+// CreateRequestBody is the type of the "User" service "Create" endpoint HTTP
+// request body.
+type CreateRequestBody struct {
 	// 用户名
 	Username *string `form:"username,omitempty" json:"username,omitempty" xml:"username,omitempty"`
-	// 密码
+	// 用户密码
 	Password *string `form:"password,omitempty" json:"password,omitempty" xml:"password,omitempty"`
-	// 图形验证码
-	HumanCode *string `form:"humanCode,omitempty" json:"humanCode,omitempty" xml:"humanCode,omitempty"`
-	// 图形验证码ID
-	CaptchaID *string `form:"captchaId,omitempty" json:"captchaId,omitempty" xml:"captchaId,omitempty"`
+	// 姓名
+	Name *string `form:"name,omitempty" json:"name,omitempty" xml:"name,omitempty"`
+	// 手机号
+	Mobile *string `form:"mobile,omitempty" json:"mobile,omitempty" xml:"mobile,omitempty"`
+	// 邮箱
+	Email *string `form:"email,omitempty" json:"email,omitempty" xml:"email,omitempty"`
+	// 1 - 推销员，2 - 经理，3 - 管理员
+	Jobs *int `form:"jobs,omitempty" json:"jobs,omitempty" xml:"jobs,omitempty"`
+	// 直属上级ID
+	SuperiorID *string `form:"superior_id,omitempty" json:"superior_id,omitempty" xml:"superior_id,omitempty"`
+	// 所属组
+	GroupID *string `form:"group_id,omitempty" json:"group_id,omitempty" xml:"group_id,omitempty"`
 }
 
-// UpdatePasswordRequestBody is the type of the "User" service "UpdatePassword"
-// endpoint HTTP request body.
-type UpdatePasswordRequestBody struct {
-	OldPassword *string `form:"old_password,omitempty" json:"old_password,omitempty" xml:"old_password,omitempty"`
-	NewPassword *string `form:"new_password,omitempty" json:"new_password,omitempty" xml:"new_password,omitempty"`
+// DeleteRequestBody is the type of the "User" service "Delete" endpoint HTTP
+// request body.
+type DeleteRequestBody struct {
+	Ids []string `form:"ids,omitempty" json:"ids,omitempty" xml:"ids,omitempty"`
 }
 
-// LoginByUsernameResponseBody is the type of the "User" service
-// "LoginByUsername" endpoint HTTP response body.
-type LoginByUsernameResponseBody struct {
-	// 错误码
-	Errcode int `form:"errcode" json:"errcode" xml:"errcode"`
-	// 错误消息
-	Errmsg string               `form:"errmsg" json:"errmsg" xml:"errmsg"`
-	Data   *SessionResponseBody `form:"data,omitempty" json:"data,omitempty" xml:"data,omitempty"`
+// GetResponseBody is the type of the "User" service "Get" endpoint HTTP
+// response body.
+type GetResponseBody struct {
+	// ID
+	ID string `form:"id" json:"id" xml:"id"`
+	// 用户名
+	Username string `form:"username" json:"username" xml:"username"`
+	// 手机号
+	Mobile string `form:"mobile" json:"mobile" xml:"mobile"`
+	// 姓名
+	Name string `form:"name" json:"name" xml:"name"`
+	// 邮箱
+	Email string `form:"email" json:"email" xml:"email"`
+	// 1 - 推销员，2 - 经理，3 - 管理员
+	Jobs int `form:"jobs" json:"jobs" xml:"jobs"`
+	// 是否是管理员
+	IsAdmin bool `form:"is_admin" json:"is_admin" xml:"is_admin"`
+	// 直属上级
+	Superior *SuperiorResponseBody `form:"superior" json:"superior" xml:"superior"`
+	// 所属组
+	Group *GroupResponseBody `form:"group" json:"group" xml:"group"`
 }
 
-// UpdatePasswordResponseBody is the type of the "User" service
-// "UpdatePassword" endpoint HTTP response body.
-type UpdatePasswordResponseBody struct {
-	// 错误码
-	Errcode int `form:"errcode" json:"errcode" xml:"errcode"`
-	// 错误消息
-	Errmsg string                     `form:"errmsg" json:"errmsg" xml:"errmsg"`
-	Data   *SuccessResultResponseBody `form:"data,omitempty" json:"data,omitempty" xml:"data,omitempty"`
+// ListResponseBody is the type of the "User" service "List" endpoint HTTP
+// response body.
+type ListResponseBody struct {
+	Items []*UserResponseBody `form:"items" json:"items" xml:"items"`
+	// 下一页游标
+	NextCursor int `form:"nextCursor" json:"nextCursor" xml:"nextCursor"`
+	// 总记录数
+	Total int `form:"total" json:"total" xml:"total"`
 }
 
-// GetCaptchaImageResponseBody is the type of the "User" service
-// "GetCaptchaImage" endpoint HTTP response body.
-type GetCaptchaImageResponseBody struct {
-	// 错误码
-	Errcode int `form:"errcode" json:"errcode" xml:"errcode"`
-	// 错误消息
-	Errmsg string               `form:"errmsg" json:"errmsg" xml:"errmsg"`
-	Data   *CaptchaResponseBody `form:"data,omitempty" json:"data,omitempty" xml:"data,omitempty"`
+// UpdateResponseBody is the type of the "User" service "Update" endpoint HTTP
+// response body.
+type UpdateResponseBody struct {
+	// ID
+	ID string `form:"id" json:"id" xml:"id"`
+	// 用户名
+	Username string `form:"username" json:"username" xml:"username"`
+	// 手机号
+	Mobile string `form:"mobile" json:"mobile" xml:"mobile"`
+	// 姓名
+	Name string `form:"name" json:"name" xml:"name"`
+	// 邮箱
+	Email string `form:"email" json:"email" xml:"email"`
+	// 1 - 推销员，2 - 经理，3 - 管理员
+	Jobs int `form:"jobs" json:"jobs" xml:"jobs"`
+	// 是否是管理员
+	IsAdmin bool `form:"is_admin" json:"is_admin" xml:"is_admin"`
+	// 直属上级
+	Superior *SuperiorResponseBody `form:"superior" json:"superior" xml:"superior"`
+	// 所属组
+	Group *GroupResponseBody `form:"group" json:"group" xml:"group"`
 }
 
-// LoginByUsernameInternalServerErrorResponseBody is the type of the "User"
-// service "LoginByUsername" endpoint HTTP response body for the
-// "internal_server_error" error.
-type LoginByUsernameInternalServerErrorResponseBody struct {
+// CreateResponseBody is the type of the "User" service "Create" endpoint HTTP
+// response body.
+type CreateResponseBody struct {
+	// ID
+	ID string `form:"id" json:"id" xml:"id"`
+	// 用户名
+	Username string `form:"username" json:"username" xml:"username"`
+	// 手机号
+	Mobile string `form:"mobile" json:"mobile" xml:"mobile"`
+	// 姓名
+	Name string `form:"name" json:"name" xml:"name"`
+	// 邮箱
+	Email string `form:"email" json:"email" xml:"email"`
+	// 1 - 推销员，2 - 经理，3 - 管理员
+	Jobs int `form:"jobs" json:"jobs" xml:"jobs"`
+	// 是否是管理员
+	IsAdmin bool `form:"is_admin" json:"is_admin" xml:"is_admin"`
+	// 直属上级
+	Superior *SuperiorResponseBody `form:"superior" json:"superior" xml:"superior"`
+	// 所属组
+	Group *GroupResponseBody `form:"group" json:"group" xml:"group"`
+}
+
+// DeleteResponseBody is the type of the "User" service "Delete" endpoint HTTP
+// response body.
+type DeleteResponseBody struct {
+	// success
+	OK bool `form:"ok" json:"ok" xml:"ok"`
+}
+
+// GetInternalServerErrorResponseBody is the type of the "User" service "Get"
+// endpoint HTTP response body for the "internal_server_error" error.
+type GetInternalServerErrorResponseBody struct {
 	// Name is the name of this class of errors.
 	Name string `form:"name" json:"name" xml:"name"`
 	// ID is a unique identifier for this particular occurrence of the problem.
@@ -83,9 +165,9 @@ type LoginByUsernameInternalServerErrorResponseBody struct {
 	Fault bool `form:"fault" json:"fault" xml:"fault"`
 }
 
-// LoginByUsernameBadRequestResponseBody is the type of the "User" service
-// "LoginByUsername" endpoint HTTP response body for the "bad_request" error.
-type LoginByUsernameBadRequestResponseBody struct {
+// GetBadRequestResponseBody is the type of the "User" service "Get" endpoint
+// HTTP response body for the "bad_request" error.
+type GetBadRequestResponseBody struct {
 	// Name is the name of this class of errors.
 	Name string `form:"name" json:"name" xml:"name"`
 	// ID is a unique identifier for this particular occurrence of the problem.
@@ -101,10 +183,9 @@ type LoginByUsernameBadRequestResponseBody struct {
 	Fault bool `form:"fault" json:"fault" xml:"fault"`
 }
 
-// UpdatePasswordInternalServerErrorResponseBody is the type of the "User"
-// service "UpdatePassword" endpoint HTTP response body for the
-// "internal_server_error" error.
-type UpdatePasswordInternalServerErrorResponseBody struct {
+// ListInternalServerErrorResponseBody is the type of the "User" service "List"
+// endpoint HTTP response body for the "internal_server_error" error.
+type ListInternalServerErrorResponseBody struct {
 	// Name is the name of this class of errors.
 	Name string `form:"name" json:"name" xml:"name"`
 	// ID is a unique identifier for this particular occurrence of the problem.
@@ -120,9 +201,9 @@ type UpdatePasswordInternalServerErrorResponseBody struct {
 	Fault bool `form:"fault" json:"fault" xml:"fault"`
 }
 
-// UpdatePasswordBadRequestResponseBody is the type of the "User" service
-// "UpdatePassword" endpoint HTTP response body for the "bad_request" error.
-type UpdatePasswordBadRequestResponseBody struct {
+// ListBadRequestResponseBody is the type of the "User" service "List" endpoint
+// HTTP response body for the "bad_request" error.
+type ListBadRequestResponseBody struct {
 	// Name is the name of this class of errors.
 	Name string `form:"name" json:"name" xml:"name"`
 	// ID is a unique identifier for this particular occurrence of the problem.
@@ -138,10 +219,9 @@ type UpdatePasswordBadRequestResponseBody struct {
 	Fault bool `form:"fault" json:"fault" xml:"fault"`
 }
 
-// GetCaptchaImageInternalServerErrorResponseBody is the type of the "User"
-// service "GetCaptchaImage" endpoint HTTP response body for the
-// "internal_server_error" error.
-type GetCaptchaImageInternalServerErrorResponseBody struct {
+// UpdateInternalServerErrorResponseBody is the type of the "User" service
+// "Update" endpoint HTTP response body for the "internal_server_error" error.
+type UpdateInternalServerErrorResponseBody struct {
 	// Name is the name of this class of errors.
 	Name string `form:"name" json:"name" xml:"name"`
 	// ID is a unique identifier for this particular occurrence of the problem.
@@ -157,9 +237,9 @@ type GetCaptchaImageInternalServerErrorResponseBody struct {
 	Fault bool `form:"fault" json:"fault" xml:"fault"`
 }
 
-// GetCaptchaImageBadRequestResponseBody is the type of the "User" service
-// "GetCaptchaImage" endpoint HTTP response body for the "bad_request" error.
-type GetCaptchaImageBadRequestResponseBody struct {
+// UpdateBadRequestResponseBody is the type of the "User" service "Update"
+// endpoint HTTP response body for the "bad_request" error.
+type UpdateBadRequestResponseBody struct {
 	// Name is the name of this class of errors.
 	Name string `form:"name" json:"name" xml:"name"`
 	// ID is a unique identifier for this particular occurrence of the problem.
@@ -175,10 +255,92 @@ type GetCaptchaImageBadRequestResponseBody struct {
 	Fault bool `form:"fault" json:"fault" xml:"fault"`
 }
 
-// SessionResponseBody is used to define fields on response body types.
-type SessionResponseBody struct {
-	User        *UserResponseBody        `form:"user" json:"user" xml:"user"`
-	Credentials *CredentialsResponseBody `form:"credentials" json:"credentials" xml:"credentials"`
+// CreateInternalServerErrorResponseBody is the type of the "User" service
+// "Create" endpoint HTTP response body for the "internal_server_error" error.
+type CreateInternalServerErrorResponseBody struct {
+	// Name is the name of this class of errors.
+	Name string `form:"name" json:"name" xml:"name"`
+	// ID is a unique identifier for this particular occurrence of the problem.
+	ID string `form:"id" json:"id" xml:"id"`
+	// Message is a human-readable explanation specific to this occurrence of the
+	// problem.
+	Message string `form:"message" json:"message" xml:"message"`
+	// Is the error temporary?
+	Temporary bool `form:"temporary" json:"temporary" xml:"temporary"`
+	// Is the error a timeout?
+	Timeout bool `form:"timeout" json:"timeout" xml:"timeout"`
+	// Is the error a server-side fault?
+	Fault bool `form:"fault" json:"fault" xml:"fault"`
+}
+
+// CreateBadRequestResponseBody is the type of the "User" service "Create"
+// endpoint HTTP response body for the "bad_request" error.
+type CreateBadRequestResponseBody struct {
+	// Name is the name of this class of errors.
+	Name string `form:"name" json:"name" xml:"name"`
+	// ID is a unique identifier for this particular occurrence of the problem.
+	ID string `form:"id" json:"id" xml:"id"`
+	// Message is a human-readable explanation specific to this occurrence of the
+	// problem.
+	Message string `form:"message" json:"message" xml:"message"`
+	// Is the error temporary?
+	Temporary bool `form:"temporary" json:"temporary" xml:"temporary"`
+	// Is the error a timeout?
+	Timeout bool `form:"timeout" json:"timeout" xml:"timeout"`
+	// Is the error a server-side fault?
+	Fault bool `form:"fault" json:"fault" xml:"fault"`
+}
+
+// DeleteInternalServerErrorResponseBody is the type of the "User" service
+// "Delete" endpoint HTTP response body for the "internal_server_error" error.
+type DeleteInternalServerErrorResponseBody struct {
+	// Name is the name of this class of errors.
+	Name string `form:"name" json:"name" xml:"name"`
+	// ID is a unique identifier for this particular occurrence of the problem.
+	ID string `form:"id" json:"id" xml:"id"`
+	// Message is a human-readable explanation specific to this occurrence of the
+	// problem.
+	Message string `form:"message" json:"message" xml:"message"`
+	// Is the error temporary?
+	Temporary bool `form:"temporary" json:"temporary" xml:"temporary"`
+	// Is the error a timeout?
+	Timeout bool `form:"timeout" json:"timeout" xml:"timeout"`
+	// Is the error a server-side fault?
+	Fault bool `form:"fault" json:"fault" xml:"fault"`
+}
+
+// DeleteBadRequestResponseBody is the type of the "User" service "Delete"
+// endpoint HTTP response body for the "bad_request" error.
+type DeleteBadRequestResponseBody struct {
+	// Name is the name of this class of errors.
+	Name string `form:"name" json:"name" xml:"name"`
+	// ID is a unique identifier for this particular occurrence of the problem.
+	ID string `form:"id" json:"id" xml:"id"`
+	// Message is a human-readable explanation specific to this occurrence of the
+	// problem.
+	Message string `form:"message" json:"message" xml:"message"`
+	// Is the error temporary?
+	Temporary bool `form:"temporary" json:"temporary" xml:"temporary"`
+	// Is the error a timeout?
+	Timeout bool `form:"timeout" json:"timeout" xml:"timeout"`
+	// Is the error a server-side fault?
+	Fault bool `form:"fault" json:"fault" xml:"fault"`
+}
+
+// SuperiorResponseBody is used to define fields on response body types.
+type SuperiorResponseBody struct {
+	// ID
+	ID string `form:"id" json:"id" xml:"id"`
+	// 姓名
+	Name string `form:"name" json:"name" xml:"name"`
+}
+
+// GroupResponseBody is used to define fields on response body types.
+type GroupResponseBody struct {
+	// ID
+	ID string `form:"id" json:"id" xml:"id"`
+	// 组名
+	Name string `form:"name" json:"name" xml:"name"`
 }
 
 // UserResponseBody is used to define fields on response body types.
@@ -187,75 +349,114 @@ type UserResponseBody struct {
 	ID string `form:"id" json:"id" xml:"id"`
 	// 用户名
 	Username string `form:"username" json:"username" xml:"username"`
+	// 姓名
+	Name string `form:"name" json:"name" xml:"name"`
 	// 手机号
 	Mobile string `form:"mobile" json:"mobile" xml:"mobile"`
+	// 邮箱
+	Email string `form:"email" json:"email" xml:"email"`
+	// 1 - 推销员，2 - 经理，3 - 管理员
+	Jobs int `form:"jobs" json:"jobs" xml:"jobs"`
+	// 是否是管理员
+	IsAdmin bool `form:"is_admin" json:"is_admin" xml:"is_admin"`
+	// 直属上级
+	Superior *SuperiorResponseBody `form:"superior" json:"superior" xml:"superior"`
+	// 所属组
+	Group *GroupResponseBody `form:"group" json:"group" xml:"group"`
 }
 
-// CredentialsResponseBody is used to define fields on response body types.
-type CredentialsResponseBody struct {
-	// JWT token
-	Token string `form:"token" json:"token" xml:"token"`
-	// 有效时长（秒）：生成之后x秒内有效
-	ExpiresIn int `form:"expires_in" json:"expires_in" xml:"expires_in"`
-}
-
-// SuccessResultResponseBody is used to define fields on response body types.
-type SuccessResultResponseBody struct {
-	// success
-	OK bool `form:"ok" json:"ok" xml:"ok"`
-}
-
-// CaptchaResponseBody is used to define fields on response body types.
-type CaptchaResponseBody struct {
-	// 图片base64
-	Image string `form:"image" json:"image" xml:"image"`
-	// 验证码ID
-	CaptchaID string `form:"captchaId" json:"captchaId" xml:"captchaId"`
-}
-
-// NewLoginByUsernameResponseBody builds the HTTP response body from the result
-// of the "LoginByUsername" endpoint of the "User" service.
-func NewLoginByUsernameResponseBody(res *user.LoginByUsernameResult) *LoginByUsernameResponseBody {
-	body := &LoginByUsernameResponseBody{
-		Errcode: res.Errcode,
-		Errmsg:  res.Errmsg,
+// NewGetResponseBody builds the HTTP response body from the result of the
+// "Get" endpoint of the "User" service.
+func NewGetResponseBody(res *userviews.UserView) *GetResponseBody {
+	body := &GetResponseBody{
+		ID:       *res.ID,
+		Username: *res.Username,
+		Name:     *res.Name,
+		Mobile:   *res.Mobile,
+		Email:    *res.Email,
+		Jobs:     *res.Jobs,
+		IsAdmin:  *res.IsAdmin,
 	}
-	if res.Data != nil {
-		body.Data = marshalUserSessionToSessionResponseBody(res.Data)
+	if res.Superior != nil {
+		body.Superior = marshalUserviewsSuperiorViewToSuperiorResponseBody(res.Superior)
+	}
+	if res.Group != nil {
+		body.Group = marshalUserviewsGroupViewToGroupResponseBody(res.Group)
 	}
 	return body
 }
 
-// NewUpdatePasswordResponseBody builds the HTTP response body from the result
-// of the "UpdatePassword" endpoint of the "User" service.
-func NewUpdatePasswordResponseBody(res *user.UpdatePasswordResult) *UpdatePasswordResponseBody {
-	body := &UpdatePasswordResponseBody{
-		Errcode: res.Errcode,
-		Errmsg:  res.Errmsg,
+// NewListResponseBody builds the HTTP response body from the result of the
+// "List" endpoint of the "User" service.
+func NewListResponseBody(res *user.ListResult) *ListResponseBody {
+	body := &ListResponseBody{
+		NextCursor: res.NextCursor,
+		Total:      res.Total,
 	}
-	if res.Data != nil {
-		body.Data = marshalUserSuccessResultToSuccessResultResponseBody(res.Data)
-	}
-	return body
-}
-
-// NewGetCaptchaImageResponseBody builds the HTTP response body from the result
-// of the "GetCaptchaImage" endpoint of the "User" service.
-func NewGetCaptchaImageResponseBody(res *user.GetCaptchaImageResult) *GetCaptchaImageResponseBody {
-	body := &GetCaptchaImageResponseBody{
-		Errcode: res.Errcode,
-		Errmsg:  res.Errmsg,
-	}
-	if res.Data != nil {
-		body.Data = marshalUserCaptchaToCaptchaResponseBody(res.Data)
+	if res.Items != nil {
+		body.Items = make([]*UserResponseBody, len(res.Items))
+		for i, val := range res.Items {
+			body.Items[i] = marshalUserUserToUserResponseBody(val)
+		}
 	}
 	return body
 }
 
-// NewLoginByUsernameInternalServerErrorResponseBody builds the HTTP response
-// body from the result of the "LoginByUsername" endpoint of the "User" service.
-func NewLoginByUsernameInternalServerErrorResponseBody(res *goa.ServiceError) *LoginByUsernameInternalServerErrorResponseBody {
-	body := &LoginByUsernameInternalServerErrorResponseBody{
+// NewUpdateResponseBody builds the HTTP response body from the result of the
+// "Update" endpoint of the "User" service.
+func NewUpdateResponseBody(res *userviews.UserView) *UpdateResponseBody {
+	body := &UpdateResponseBody{
+		ID:       *res.ID,
+		Username: *res.Username,
+		Name:     *res.Name,
+		Mobile:   *res.Mobile,
+		Email:    *res.Email,
+		Jobs:     *res.Jobs,
+		IsAdmin:  *res.IsAdmin,
+	}
+	if res.Superior != nil {
+		body.Superior = marshalUserviewsSuperiorViewToSuperiorResponseBody(res.Superior)
+	}
+	if res.Group != nil {
+		body.Group = marshalUserviewsGroupViewToGroupResponseBody(res.Group)
+	}
+	return body
+}
+
+// NewCreateResponseBody builds the HTTP response body from the result of the
+// "Create" endpoint of the "User" service.
+func NewCreateResponseBody(res *userviews.UserView) *CreateResponseBody {
+	body := &CreateResponseBody{
+		ID:       *res.ID,
+		Username: *res.Username,
+		Name:     *res.Name,
+		Mobile:   *res.Mobile,
+		Email:    *res.Email,
+		Jobs:     *res.Jobs,
+		IsAdmin:  *res.IsAdmin,
+	}
+	if res.Superior != nil {
+		body.Superior = marshalUserviewsSuperiorViewToSuperiorResponseBody(res.Superior)
+	}
+	if res.Group != nil {
+		body.Group = marshalUserviewsGroupViewToGroupResponseBody(res.Group)
+	}
+	return body
+}
+
+// NewDeleteResponseBody builds the HTTP response body from the result of the
+// "Delete" endpoint of the "User" service.
+func NewDeleteResponseBody(res *userviews.SuccessResultView) *DeleteResponseBody {
+	body := &DeleteResponseBody{
+		OK: *res.OK,
+	}
+	return body
+}
+
+// NewGetInternalServerErrorResponseBody builds the HTTP response body from the
+// result of the "Get" endpoint of the "User" service.
+func NewGetInternalServerErrorResponseBody(res *goa.ServiceError) *GetInternalServerErrorResponseBody {
+	body := &GetInternalServerErrorResponseBody{
 		Name:      res.Name,
 		ID:        res.ID,
 		Message:   res.Message,
@@ -266,10 +467,10 @@ func NewLoginByUsernameInternalServerErrorResponseBody(res *goa.ServiceError) *L
 	return body
 }
 
-// NewLoginByUsernameBadRequestResponseBody builds the HTTP response body from
-// the result of the "LoginByUsername" endpoint of the "User" service.
-func NewLoginByUsernameBadRequestResponseBody(res *goa.ServiceError) *LoginByUsernameBadRequestResponseBody {
-	body := &LoginByUsernameBadRequestResponseBody{
+// NewGetBadRequestResponseBody builds the HTTP response body from the result
+// of the "Get" endpoint of the "User" service.
+func NewGetBadRequestResponseBody(res *goa.ServiceError) *GetBadRequestResponseBody {
+	body := &GetBadRequestResponseBody{
 		Name:      res.Name,
 		ID:        res.ID,
 		Message:   res.Message,
@@ -280,10 +481,10 @@ func NewLoginByUsernameBadRequestResponseBody(res *goa.ServiceError) *LoginByUse
 	return body
 }
 
-// NewUpdatePasswordInternalServerErrorResponseBody builds the HTTP response
-// body from the result of the "UpdatePassword" endpoint of the "User" service.
-func NewUpdatePasswordInternalServerErrorResponseBody(res *goa.ServiceError) *UpdatePasswordInternalServerErrorResponseBody {
-	body := &UpdatePasswordInternalServerErrorResponseBody{
+// NewListInternalServerErrorResponseBody builds the HTTP response body from
+// the result of the "List" endpoint of the "User" service.
+func NewListInternalServerErrorResponseBody(res *goa.ServiceError) *ListInternalServerErrorResponseBody {
+	body := &ListInternalServerErrorResponseBody{
 		Name:      res.Name,
 		ID:        res.ID,
 		Message:   res.Message,
@@ -294,10 +495,10 @@ func NewUpdatePasswordInternalServerErrorResponseBody(res *goa.ServiceError) *Up
 	return body
 }
 
-// NewUpdatePasswordBadRequestResponseBody builds the HTTP response body from
-// the result of the "UpdatePassword" endpoint of the "User" service.
-func NewUpdatePasswordBadRequestResponseBody(res *goa.ServiceError) *UpdatePasswordBadRequestResponseBody {
-	body := &UpdatePasswordBadRequestResponseBody{
+// NewListBadRequestResponseBody builds the HTTP response body from the result
+// of the "List" endpoint of the "User" service.
+func NewListBadRequestResponseBody(res *goa.ServiceError) *ListBadRequestResponseBody {
+	body := &ListBadRequestResponseBody{
 		Name:      res.Name,
 		ID:        res.ID,
 		Message:   res.Message,
@@ -308,10 +509,10 @@ func NewUpdatePasswordBadRequestResponseBody(res *goa.ServiceError) *UpdatePassw
 	return body
 }
 
-// NewGetCaptchaImageInternalServerErrorResponseBody builds the HTTP response
-// body from the result of the "GetCaptchaImage" endpoint of the "User" service.
-func NewGetCaptchaImageInternalServerErrorResponseBody(res *goa.ServiceError) *GetCaptchaImageInternalServerErrorResponseBody {
-	body := &GetCaptchaImageInternalServerErrorResponseBody{
+// NewUpdateInternalServerErrorResponseBody builds the HTTP response body from
+// the result of the "Update" endpoint of the "User" service.
+func NewUpdateInternalServerErrorResponseBody(res *goa.ServiceError) *UpdateInternalServerErrorResponseBody {
+	body := &UpdateInternalServerErrorResponseBody{
 		Name:      res.Name,
 		ID:        res.ID,
 		Message:   res.Message,
@@ -322,10 +523,10 @@ func NewGetCaptchaImageInternalServerErrorResponseBody(res *goa.ServiceError) *G
 	return body
 }
 
-// NewGetCaptchaImageBadRequestResponseBody builds the HTTP response body from
-// the result of the "GetCaptchaImage" endpoint of the "User" service.
-func NewGetCaptchaImageBadRequestResponseBody(res *goa.ServiceError) *GetCaptchaImageBadRequestResponseBody {
-	body := &GetCaptchaImageBadRequestResponseBody{
+// NewUpdateBadRequestResponseBody builds the HTTP response body from the
+// result of the "Update" endpoint of the "User" service.
+func NewUpdateBadRequestResponseBody(res *goa.ServiceError) *UpdateBadRequestResponseBody {
+	body := &UpdateBadRequestResponseBody{
 		Name:      res.Name,
 		ID:        res.ID,
 		Message:   res.Message,
@@ -336,121 +537,237 @@ func NewGetCaptchaImageBadRequestResponseBody(res *goa.ServiceError) *GetCaptcha
 	return body
 }
 
-// NewLoginByUsernamePayload builds a User service LoginByUsername endpoint
-// payload.
-func NewLoginByUsernamePayload(body *LoginByUsernameRequestBody) *user.LoginByUsernamePayload {
-	v := &user.LoginByUsernamePayload{
-		Username: *body.Username,
-		Password: *body.Password,
+// NewCreateInternalServerErrorResponseBody builds the HTTP response body from
+// the result of the "Create" endpoint of the "User" service.
+func NewCreateInternalServerErrorResponseBody(res *goa.ServiceError) *CreateInternalServerErrorResponseBody {
+	body := &CreateInternalServerErrorResponseBody{
+		Name:      res.Name,
+		ID:        res.ID,
+		Message:   res.Message,
+		Temporary: res.Temporary,
+		Timeout:   res.Timeout,
+		Fault:     res.Fault,
 	}
-	if body.HumanCode != nil {
-		v.HumanCode = *body.HumanCode
+	return body
+}
+
+// NewCreateBadRequestResponseBody builds the HTTP response body from the
+// result of the "Create" endpoint of the "User" service.
+func NewCreateBadRequestResponseBody(res *goa.ServiceError) *CreateBadRequestResponseBody {
+	body := &CreateBadRequestResponseBody{
+		Name:      res.Name,
+		ID:        res.ID,
+		Message:   res.Message,
+		Temporary: res.Temporary,
+		Timeout:   res.Timeout,
+		Fault:     res.Fault,
 	}
-	if body.CaptchaID != nil {
-		v.CaptchaID = *body.CaptchaID
+	return body
+}
+
+// NewDeleteInternalServerErrorResponseBody builds the HTTP response body from
+// the result of the "Delete" endpoint of the "User" service.
+func NewDeleteInternalServerErrorResponseBody(res *goa.ServiceError) *DeleteInternalServerErrorResponseBody {
+	body := &DeleteInternalServerErrorResponseBody{
+		Name:      res.Name,
+		ID:        res.ID,
+		Message:   res.Message,
+		Temporary: res.Temporary,
+		Timeout:   res.Timeout,
+		Fault:     res.Fault,
 	}
-	if body.HumanCode == nil {
-		v.HumanCode = ""
+	return body
+}
+
+// NewDeleteBadRequestResponseBody builds the HTTP response body from the
+// result of the "Delete" endpoint of the "User" service.
+func NewDeleteBadRequestResponseBody(res *goa.ServiceError) *DeleteBadRequestResponseBody {
+	body := &DeleteBadRequestResponseBody{
+		Name:      res.Name,
+		ID:        res.ID,
+		Message:   res.Message,
+		Temporary: res.Temporary,
+		Timeout:   res.Timeout,
+		Fault:     res.Fault,
 	}
-	if body.CaptchaID == nil {
-		v.CaptchaID = ""
-	}
+	return body
+}
+
+// NewGetPayload builds a User service Get endpoint payload.
+func NewGetPayload(id string, token string) *user.GetPayload {
+	v := &user.GetPayload{}
+	v.ID = id
+	v.Token = token
 
 	return v
 }
 
-// NewUpdatePasswordPayload builds a User service UpdatePassword endpoint
-// payload.
-func NewUpdatePasswordPayload(body *UpdatePasswordRequestBody, token string) *user.UpdatePasswordPayload {
-	v := &user.UpdatePasswordPayload{
-		OldPassword: *body.OldPassword,
-		NewPassword: *body.NewPassword,
+// NewListPayload builds a User service List endpoint payload.
+func NewListPayload(token string) *user.ListPayload {
+	v := &user.ListPayload{}
+	v.Token = token
+
+	return v
+}
+
+// NewUpdatePayload builds a User service Update endpoint payload.
+func NewUpdatePayload(body *UpdateRequestBody, token string) *user.UpdatePayload {
+	v := &user.UpdatePayload{
+		ID:         *body.ID,
+		Name:       *body.Name,
+		Mobile:     *body.Mobile,
+		Email:      *body.Email,
+		Jobs:       *body.Jobs,
+		SuperiorID: *body.SuperiorID,
+		GroupID:    *body.GroupID,
 	}
 	v.Token = token
 
 	return v
 }
 
-// ValidateLoginByUsernameRequestBody runs the validations defined on
-// LoginByUsernameRequestBody
-func ValidateLoginByUsernameRequestBody(body *LoginByUsernameRequestBody) (err error) {
+// NewCreatePayload builds a User service Create endpoint payload.
+func NewCreatePayload(body *CreateRequestBody, token string) *user.CreatePayload {
+	v := &user.CreatePayload{
+		Username:   *body.Username,
+		Password:   *body.Password,
+		Name:       *body.Name,
+		Mobile:     *body.Mobile,
+		Email:      *body.Email,
+		Jobs:       *body.Jobs,
+		SuperiorID: *body.SuperiorID,
+		GroupID:    *body.GroupID,
+	}
+	v.Token = token
+
+	return v
+}
+
+// NewDeletePayload builds a User service Delete endpoint payload.
+func NewDeletePayload(body *DeleteRequestBody, token string) *user.DeletePayload {
+	v := &user.DeletePayload{}
+	v.Ids = make([]string, len(body.Ids))
+	for i, val := range body.Ids {
+		v.Ids[i] = val
+	}
+	v.Token = token
+
+	return v
+}
+
+// ValidateUpdateRequestBody runs the validations defined on UpdateRequestBody
+func ValidateUpdateRequestBody(body *UpdateRequestBody) (err error) {
+	if body.ID == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("id", "body"))
+	}
+	if body.Name == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("name", "body"))
+	}
+	if body.Mobile == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("mobile", "body"))
+	}
+	if body.Email == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("email", "body"))
+	}
+	if body.Jobs == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("jobs", "body"))
+	}
+	if body.SuperiorID == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("superior_id", "body"))
+	}
+	if body.GroupID == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("group_id", "body"))
+	}
+	if body.Mobile != nil {
+		err = goa.MergeErrors(err, goa.ValidateFormat("body.mobile", *body.Mobile, goa.FormatRegexp))
+	}
+	if body.Mobile != nil {
+		err = goa.MergeErrors(err, goa.ValidatePattern("body.mobile", *body.Mobile, "^1(?:3\\d|4[4-9]|5[0-35-9]|6[67]|7[013-8]|8\\d|9\\d)\\d{8}$"))
+	}
+	if body.Mobile != nil {
+		if utf8.RuneCountInString(*body.Mobile) < 11 {
+			err = goa.MergeErrors(err, goa.InvalidLengthError("body.mobile", *body.Mobile, utf8.RuneCountInString(*body.Mobile), 11, true))
+		}
+	}
+	if body.Mobile != nil {
+		if utf8.RuneCountInString(*body.Mobile) > 11 {
+			err = goa.MergeErrors(err, goa.InvalidLengthError("body.mobile", *body.Mobile, utf8.RuneCountInString(*body.Mobile), 11, false))
+		}
+	}
+	if body.Email != nil {
+		err = goa.MergeErrors(err, goa.ValidateFormat("body.email", *body.Email, goa.FormatEmail))
+	}
+	if body.Jobs != nil {
+		if !(*body.Jobs == 1 || *body.Jobs == 2 || *body.Jobs == 3) {
+			err = goa.MergeErrors(err, goa.InvalidEnumValueError("body.jobs", *body.Jobs, []interface{}{1, 2, 3}))
+		}
+	}
+	return
+}
+
+// ValidateCreateRequestBody runs the validations defined on CreateRequestBody
+func ValidateCreateRequestBody(body *CreateRequestBody) (err error) {
 	if body.Username == nil {
 		err = goa.MergeErrors(err, goa.MissingFieldError("username", "body"))
 	}
 	if body.Password == nil {
 		err = goa.MergeErrors(err, goa.MissingFieldError("password", "body"))
 	}
-	if body.Username != nil {
-		if utf8.RuneCountInString(*body.Username) < 1 {
-			err = goa.MergeErrors(err, goa.InvalidLengthError("body.username", *body.Username, utf8.RuneCountInString(*body.Username), 1, true))
-		}
+	if body.Name == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("name", "body"))
+	}
+	if body.Mobile == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("mobile", "body"))
+	}
+	if body.Email == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("email", "body"))
+	}
+	if body.Jobs == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("jobs", "body"))
+	}
+	if body.SuperiorID == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("superior_id", "body"))
+	}
+	if body.GroupID == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("group_id", "body"))
 	}
 	if body.Username != nil {
-		if utf8.RuneCountInString(*body.Username) > 128 {
-			err = goa.MergeErrors(err, goa.InvalidLengthError("body.username", *body.Username, utf8.RuneCountInString(*body.Username), 128, false))
+		err = goa.MergeErrors(err, goa.ValidatePattern("body.username", *body.Username, "(\\d+.*[a-zA-Z]+)|([a-zA-Z]+.*\\d+)"))
+	}
+	if body.Mobile != nil {
+		err = goa.MergeErrors(err, goa.ValidateFormat("body.mobile", *body.Mobile, goa.FormatRegexp))
+	}
+	if body.Mobile != nil {
+		err = goa.MergeErrors(err, goa.ValidatePattern("body.mobile", *body.Mobile, "^1(?:3\\d|4[4-9]|5[0-35-9]|6[67]|7[013-8]|8\\d|9\\d)\\d{8}$"))
+	}
+	if body.Mobile != nil {
+		if utf8.RuneCountInString(*body.Mobile) < 11 {
+			err = goa.MergeErrors(err, goa.InvalidLengthError("body.mobile", *body.Mobile, utf8.RuneCountInString(*body.Mobile), 11, true))
 		}
 	}
-	if body.Password != nil {
-		if utf8.RuneCountInString(*body.Password) < 1 {
-			err = goa.MergeErrors(err, goa.InvalidLengthError("body.password", *body.Password, utf8.RuneCountInString(*body.Password), 1, true))
+	if body.Mobile != nil {
+		if utf8.RuneCountInString(*body.Mobile) > 11 {
+			err = goa.MergeErrors(err, goa.InvalidLengthError("body.mobile", *body.Mobile, utf8.RuneCountInString(*body.Mobile), 11, false))
 		}
 	}
-	if body.Password != nil {
-		if utf8.RuneCountInString(*body.Password) > 128 {
-			err = goa.MergeErrors(err, goa.InvalidLengthError("body.password", *body.Password, utf8.RuneCountInString(*body.Password), 128, false))
-		}
+	if body.Email != nil {
+		err = goa.MergeErrors(err, goa.ValidateFormat("body.email", *body.Email, goa.FormatEmail))
 	}
-	if body.HumanCode != nil {
-		if utf8.RuneCountInString(*body.HumanCode) < 4 {
-			err = goa.MergeErrors(err, goa.InvalidLengthError("body.humanCode", *body.HumanCode, utf8.RuneCountInString(*body.HumanCode), 4, true))
-		}
-	}
-	if body.HumanCode != nil {
-		if utf8.RuneCountInString(*body.HumanCode) > 8 {
-			err = goa.MergeErrors(err, goa.InvalidLengthError("body.humanCode", *body.HumanCode, utf8.RuneCountInString(*body.HumanCode), 8, false))
-		}
-	}
-	if body.CaptchaID != nil {
-		if utf8.RuneCountInString(*body.CaptchaID) < 1 {
-			err = goa.MergeErrors(err, goa.InvalidLengthError("body.captchaId", *body.CaptchaID, utf8.RuneCountInString(*body.CaptchaID), 1, true))
-		}
-	}
-	if body.CaptchaID != nil {
-		if utf8.RuneCountInString(*body.CaptchaID) > 128 {
-			err = goa.MergeErrors(err, goa.InvalidLengthError("body.captchaId", *body.CaptchaID, utf8.RuneCountInString(*body.CaptchaID), 128, false))
+	if body.Jobs != nil {
+		if !(*body.Jobs == 1 || *body.Jobs == 2 || *body.Jobs == 3) {
+			err = goa.MergeErrors(err, goa.InvalidEnumValueError("body.jobs", *body.Jobs, []interface{}{1, 2, 3}))
 		}
 	}
 	return
 }
 
-// ValidateUpdatePasswordRequestBody runs the validations defined on
-// UpdatePasswordRequestBody
-func ValidateUpdatePasswordRequestBody(body *UpdatePasswordRequestBody) (err error) {
-	if body.OldPassword == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("old_password", "body"))
+// ValidateDeleteRequestBody runs the validations defined on DeleteRequestBody
+func ValidateDeleteRequestBody(body *DeleteRequestBody) (err error) {
+	if body.Ids == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("ids", "body"))
 	}
-	if body.NewPassword == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("new_password", "body"))
-	}
-	if body.OldPassword != nil {
-		if utf8.RuneCountInString(*body.OldPassword) < 1 {
-			err = goa.MergeErrors(err, goa.InvalidLengthError("body.old_password", *body.OldPassword, utf8.RuneCountInString(*body.OldPassword), 1, true))
-		}
-	}
-	if body.OldPassword != nil {
-		if utf8.RuneCountInString(*body.OldPassword) > 128 {
-			err = goa.MergeErrors(err, goa.InvalidLengthError("body.old_password", *body.OldPassword, utf8.RuneCountInString(*body.OldPassword), 128, false))
-		}
-	}
-	if body.NewPassword != nil {
-		if utf8.RuneCountInString(*body.NewPassword) < 6 {
-			err = goa.MergeErrors(err, goa.InvalidLengthError("body.new_password", *body.NewPassword, utf8.RuneCountInString(*body.NewPassword), 6, true))
-		}
-	}
-	if body.NewPassword != nil {
-		if utf8.RuneCountInString(*body.NewPassword) > 128 {
-			err = goa.MergeErrors(err, goa.InvalidLengthError("body.new_password", *body.NewPassword, utf8.RuneCountInString(*body.NewPassword), 128, false))
-		}
+	if len(body.Ids) > 100 {
+		err = goa.MergeErrors(err, goa.InvalidLengthError("body.ids", body.Ids, len(body.Ids), 100, false))
 	}
 	return
 }
