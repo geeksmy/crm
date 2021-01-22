@@ -120,6 +120,7 @@ paths:
             schema:
               $ref: '#/components/schemas/UpdatePasswordRequestBody'
             example:
+              id: 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
               new_password: abc123
               old_password: 123abc
       responses:
@@ -162,6 +163,27 @@ paths:
       summary: 获取客户列表
       description: 获取客户列表
       operationId: Customer#List
+      parameters:
+      - name: cursor
+        in: query
+        description: cursor of page
+        allowEmptyValue: true
+        schema:
+          type: integer
+          description: cursor of page
+          example: 0
+          format: int64
+        example: 0
+      - name: limit
+        in: query
+        description: limit of items
+        allowEmptyValue: true
+        schema:
+          type: integer
+          description: limit of items
+          example: 20
+          format: int64
+        example: 20
       responses:
         "200":
           description: OK response.
@@ -483,6 +505,27 @@ paths:
       summary: 获取组列表
       description: 获取组列表
       operationId: Group#List
+      parameters:
+      - name: cursor
+        in: query
+        description: cursor of page
+        allowEmptyValue: true
+        schema:
+          type: integer
+          description: cursor of page
+          example: 0
+          format: int64
+        example: 0
+      - name: limit
+        in: query
+        description: limit of items
+        allowEmptyValue: true
+        schema:
+          type: integer
+          description: limit of items
+          example: 20
+          format: int64
+        example: 20
       responses:
         "200":
           description: OK response.
@@ -728,6 +771,27 @@ paths:
       summary: 获取库存列表
       description: 获取库存列表
       operationId: Inventory#List
+      parameters:
+      - name: cursor
+        in: query
+        description: cursor of page
+        allowEmptyValue: true
+        schema:
+          type: integer
+          description: cursor of page
+          example: 0
+          format: int64
+        example: 0
+      - name: limit
+        in: query
+        description: limit of items
+        allowEmptyValue: true
+        schema:
+          type: integer
+          description: limit of items
+          example: 20
+          format: int64
+        example: 20
       responses:
         "200":
           description: OK response.
@@ -1165,6 +1229,27 @@ paths:
       summary: 获取采购列表
       description: 获取采购列表
       operationId: Procurement#List
+      parameters:
+      - name: cursor
+        in: query
+        description: cursor of page
+        allowEmptyValue: true
+        schema:
+          type: integer
+          description: cursor of page
+          example: 0
+          format: int64
+        example: 0
+      - name: limit
+        in: query
+        description: limit of items
+        allowEmptyValue: true
+        schema:
+          type: integer
+          description: limit of items
+          example: 20
+          format: int64
+        example: 20
       responses:
         "200":
           description: OK response.
@@ -1560,6 +1645,27 @@ paths:
       summary: 获取产品列表
       description: 获取产品列表
       operationId: Product#List
+      parameters:
+      - name: cursor
+        in: query
+        description: cursor of page
+        allowEmptyValue: true
+        schema:
+          type: integer
+          description: cursor of page
+          example: 0
+          format: int64
+        example: 0
+      - name: limit
+        in: query
+        description: limit of items
+        allowEmptyValue: true
+        schema:
+          type: integer
+          description: limit of items
+          example: 20
+          format: int64
+        example: 20
       responses:
         "200":
           description: OK response.
@@ -1911,6 +2017,27 @@ paths:
       summary: 获取销售列表
       description: 获取销售列表
       operationId: Sales#List
+      parameters:
+      - name: cursor
+        in: query
+        description: cursor of page
+        allowEmptyValue: true
+        schema:
+          type: integer
+          description: cursor of page
+          example: 0
+          format: int64
+        example: 0
+      - name: limit
+        in: query
+        description: limit of items
+        allowEmptyValue: true
+        schema:
+          type: integer
+          description: limit of items
+          example: 20
+          format: int64
+        example: 20
       responses:
         "200":
           description: OK response.
@@ -2304,6 +2431,27 @@ paths:
       summary: 获取供应商列表
       description: 获取供应商列表
       operationId: Supplier#List
+      parameters:
+      - name: cursor
+        in: query
+        description: cursor of page
+        allowEmptyValue: true
+        schema:
+          type: integer
+          description: cursor of page
+          example: 0
+          format: int64
+        example: 0
+      - name: limit
+        in: query
+        description: limit of items
+        allowEmptyValue: true
+        schema:
+          type: integer
+          description: limit of items
+          example: 20
+          format: int64
+        example: 20
       responses:
         "200":
           description: OK response.
@@ -2617,6 +2765,27 @@ paths:
       summary: 获取用户列表
       description: 获取用户列表
       operationId: User#List
+      parameters:
+      - name: cursor
+        in: query
+        description: cursor of page
+        allowEmptyValue: true
+        schema:
+          type: integer
+          description: cursor of page
+          example: 0
+          format: int64
+        example: 0
+      - name: limit
+        in: query
+        description: limit of items
+        allowEmptyValue: true
+        schema:
+          type: integer
+          description: limit of items
+          example: 20
+          format: int64
+        example: 20
       responses:
         "200":
           description: OK response.
@@ -2767,6 +2936,7 @@ paths:
             example:
               email: adb@adb.com
               group_id: 519151ca-6250-4eec-8016-1e14a68dc448
+              is_admin: false
               jobs: 1
               mobile: "1808001010"
               name: 张三
@@ -2942,6 +3112,27 @@ paths:
       summary: 获取仓库列表
       description: 获取仓库列表
       operationId: Warehouse#List
+      parameters:
+      - name: cursor
+        in: query
+        description: cursor of page
+        allowEmptyValue: true
+        schema:
+          type: integer
+          description: cursor of page
+          example: 0
+          format: int64
+        example: 0
+      - name: limit
+        in: query
+        description: limit of items
+        allowEmptyValue: true
+        schema:
+          type: integer
+          description: limit of items
+          example: 20
+          format: int64
+        example: 20
       responses:
         "200":
           description: OK response.
@@ -3595,6 +3786,10 @@ components:
           type: string
           description: 所属组
           example: 519151ca-6250-4eec-8016-1e14a68dc448
+        is_admin:
+          type: boolean
+          description: 是否是管理员
+          example: false
         jobs:
           type: integer
           description: 1 - 推销员，2 - 经理，3 - 管理员
@@ -3631,6 +3826,7 @@ components:
       example:
         email: adb@adb.com
         group_id: 519151ca-6250-4eec-8016-1e14a68dc448
+        is_admin: false
         jobs: 1
         mobile: "1808001010"
         name: 张三
@@ -3644,6 +3840,7 @@ components:
       - mobile
       - email
       - jobs
+      - is_admin
       - superior_id
       - group_id
     CreateRequestBody8:
@@ -6049,10 +6246,13 @@ components:
     UpdatePasswordRequestBody:
       type: object
       properties:
+        id:
+          type: string
+          example: 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
         new_password:
           type: string
           example: abc123
-          minLength: 6
+          minLength: 8
           maxLength: 128
         old_password:
           type: string
@@ -6060,9 +6260,11 @@ components:
           minLength: 1
           maxLength: 128
       example:
+        id: 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
         new_password: abc123
         old_password: 123abc
       required:
+      - id
       - old_password
       - new_password
     UpdatePasswordResponseBody:
@@ -6142,15 +6344,6 @@ components:
         url: http://www.baidu.com
       required:
       - id
-      - name
-      - src
-      - mobile
-      - url
-      - email
-      - industry
-      - level
-      - note
-      - address
     UpdateRequestBody2:
       type: object
       properties:
@@ -6167,7 +6360,6 @@ components:
         name: 管理员
       required:
       - id
-      - name
     UpdateRequestBody3:
       type: object
       properties:
@@ -6244,15 +6436,6 @@ components:
         unit: 1
       required:
       - id
-      - name
-      - unit
-      - cost_price
-      - market_price
-      - note
-      - image
-      - size
-      - type
-      - is_shelves
     UpdateRequestBody4:
       type: object
       properties:
@@ -6303,12 +6486,6 @@ components:
         note: 备注
       required:
       - id
-      - name
-      - customer_id
-      - money
-      - is_sales_return
-      - note
-      - head_id
     UpdateRequestBody5:
       type: object
       properties:
@@ -6349,11 +6526,6 @@ components:
         note: 备注
       required:
       - id
-      - code
-      - money
-      - is_sales_return
-      - note
-      - head_id
     UpdateRequestBody6:
       type: object
       properties:
@@ -6409,13 +6581,6 @@ components:
         note: 备注
       required:
       - id
-      - name
-      - level
-      - contact_name
-      - contact_phone
-      - contact_address
-      - note
-      - head_id
     UpdateRequestBody7:
       type: object
       properties:
@@ -6466,12 +6631,6 @@ components:
         superior_id: 519151ca-6250-4eec-8016-1e14a68dc448
       required:
       - id
-      - name
-      - mobile
-      - email
-      - jobs
-      - superior_id
-      - group_id
     UpdateRequestBody8:
       type: object
       properties:
@@ -6536,15 +6695,6 @@ components:
         warehouse_id: 519151ca-6250-4eec-8016-1e14a68dc448
       required:
       - id
-      - product_id
-      - number
-      - code
-      - warehouse_id
-      - type
-      - inventory_date
-      - in_and_out
-      - note
-      - head_id
     UpdateRequestBody9:
       type: object
       properties:
@@ -6580,10 +6730,6 @@ components:
         type: 1
       required:
       - id
-      - name
-      - code
-      - address
-      - type
     User:
       type: object
       properties:

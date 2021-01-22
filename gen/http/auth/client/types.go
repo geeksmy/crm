@@ -30,6 +30,7 @@ type LoginRequestBody struct {
 // UpdatePasswordRequestBody is the type of the "Auth" service "UpdatePassword"
 // endpoint HTTP request body.
 type UpdatePasswordRequestBody struct {
+	ID          string `form:"id" json:"id" xml:"id"`
 	OldPassword string `form:"old_password" json:"old_password" xml:"old_password"`
 	NewPassword string `form:"new_password" json:"new_password" xml:"new_password"`
 }
@@ -241,6 +242,7 @@ func NewLoginRequestBody(p *auth.LoginPayload) *LoginRequestBody {
 // of the "UpdatePassword" endpoint of the "Auth" service.
 func NewUpdatePasswordRequestBody(p *auth.UpdatePasswordPayload) *UpdatePasswordRequestBody {
 	body := &UpdatePasswordRequestBody{
+		ID:          p.ID,
 		OldPassword: p.OldPassword,
 		NewPassword: p.NewPassword,
 	}

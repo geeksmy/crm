@@ -618,8 +618,10 @@ func NewGetPayload(id string, token string) *procurement.GetPayload {
 }
 
 // NewListPayload builds a Procurement service List endpoint payload.
-func NewListPayload(token string) *procurement.ListPayload {
+func NewListPayload(cursor *int, limit *int, token string) *procurement.ListPayload {
 	v := &procurement.ListPayload{}
+	v.Cursor = cursor
+	v.Limit = limit
 	v.Token = token
 
 	return v
@@ -629,11 +631,11 @@ func NewListPayload(token string) *procurement.ListPayload {
 func NewUpdatePayload(body *UpdateRequestBody, token string) *procurement.UpdatePayload {
 	v := &procurement.UpdatePayload{
 		ID:            *body.ID,
-		Code:          *body.Code,
-		Money:         *body.Money,
-		IsSalesReturn: *body.IsSalesReturn,
-		Note:          *body.Note,
-		HeadID:        *body.HeadID,
+		Code:          body.Code,
+		Money:         body.Money,
+		IsSalesReturn: body.IsSalesReturn,
+		Note:          body.Note,
+		HeadID:        body.HeadID,
 	}
 	v.Token = token
 
@@ -672,21 +674,6 @@ func NewDeletePayload(body *DeleteRequestBody, token string) *procurement.Delete
 func ValidateUpdateRequestBody(body *UpdateRequestBody) (err error) {
 	if body.ID == nil {
 		err = goa.MergeErrors(err, goa.MissingFieldError("id", "body"))
-	}
-	if body.Code == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("code", "body"))
-	}
-	if body.Money == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("money", "body"))
-	}
-	if body.IsSalesReturn == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("is_sales_return", "body"))
-	}
-	if body.Note == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("note", "body"))
-	}
-	if body.HeadID == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("head_id", "body"))
 	}
 	if body.IsSalesReturn != nil {
 		if !(*body.IsSalesReturn == false || *body.IsSalesReturn == true) {

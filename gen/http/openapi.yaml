@@ -89,6 +89,7 @@ paths:
         schema:
           $ref: '#/definitions/AuthUpdatePasswordRequestBody'
           required:
+          - id
           - old_password
           - new_password
       responses:
@@ -120,6 +121,16 @@ paths:
           * `role:user`
       operationId: Customer#List
       parameters:
+      - name: cursor
+        in: query
+        description: cursor of page
+        required: false
+        type: integer
+      - name: limit
+        in: query
+        description: limit of items
+        required: false
+        type: integer
       - name: Authorization
         in: header
         description: JWT used for authentication
@@ -300,15 +311,6 @@ paths:
           $ref: '#/definitions/CustomerUpdateRequestBody'
           required:
           - id
-          - name
-          - src
-          - mobile
-          - url
-          - email
-          - industry
-          - level
-          - note
-          - address
       responses:
         "200":
           description: OK response.
@@ -338,6 +340,16 @@ paths:
           * `role:user`
       operationId: Group#List
       parameters:
+      - name: cursor
+        in: query
+        description: cursor of page
+        required: false
+        type: integer
+      - name: limit
+        in: query
+        description: limit of items
+        required: false
+        type: integer
       - name: Authorization
         in: header
         description: JWT used for authentication
@@ -510,7 +522,6 @@ paths:
           $ref: '#/definitions/GroupUpdateRequestBody'
           required:
           - id
-          - name
       responses:
         "200":
           description: OK response.
@@ -540,6 +551,16 @@ paths:
           * `role:user`
       operationId: Inventory#List
       parameters:
+      - name: cursor
+        in: query
+        description: cursor of page
+        required: false
+        type: integer
+      - name: limit
+        in: query
+        description: limit of items
+        required: false
+        type: integer
       - name: Authorization
         in: header
         description: JWT used for authentication
@@ -721,15 +742,6 @@ paths:
           $ref: '#/definitions/InventoryUpdateRequestBody'
           required:
           - id
-          - product_id
-          - number
-          - code
-          - warehouse_id
-          - type
-          - inventory_date
-          - in_and_out
-          - note
-          - head_id
       responses:
         "200":
           description: OK response.
@@ -759,6 +771,16 @@ paths:
           * `role:user`
       operationId: Procurement#List
       parameters:
+      - name: cursor
+        in: query
+        description: cursor of page
+        required: false
+        type: integer
+      - name: limit
+        in: query
+        description: limit of items
+        required: false
+        type: integer
       - name: Authorization
         in: header
         description: JWT used for authentication
@@ -937,11 +959,6 @@ paths:
           $ref: '#/definitions/ProcurementUpdateRequestBody'
           required:
           - id
-          - code
-          - money
-          - is_sales_return
-          - note
-          - head_id
       responses:
         "200":
           description: OK response.
@@ -971,6 +988,16 @@ paths:
           * `role:user`
       operationId: Product#List
       parameters:
+      - name: cursor
+        in: query
+        description: cursor of page
+        required: false
+        type: integer
+      - name: limit
+        in: query
+        description: limit of items
+        required: false
+        type: integer
       - name: Authorization
         in: header
         description: JWT used for authentication
@@ -1153,15 +1180,6 @@ paths:
           $ref: '#/definitions/ProductUpdateRequestBody'
           required:
           - id
-          - name
-          - unit
-          - cost_price
-          - market_price
-          - note
-          - image
-          - size
-          - type
-          - is_shelves
       responses:
         "200":
           description: OK response.
@@ -1191,6 +1209,16 @@ paths:
           * `role:user`
       operationId: Sales#List
       parameters:
+      - name: cursor
+        in: query
+        description: cursor of page
+        required: false
+        type: integer
+      - name: limit
+        in: query
+        description: limit of items
+        required: false
+        type: integer
       - name: Authorization
         in: header
         description: JWT used for authentication
@@ -1371,12 +1399,6 @@ paths:
           $ref: '#/definitions/SalesUpdateRequestBody'
           required:
           - id
-          - name
-          - customer_id
-          - money
-          - is_sales_return
-          - note
-          - head_id
       responses:
         "200":
           description: OK response.
@@ -1406,6 +1428,16 @@ paths:
           * `role:user`
       operationId: Supplier#List
       parameters:
+      - name: cursor
+        in: query
+        description: cursor of page
+        required: false
+        type: integer
+      - name: limit
+        in: query
+        description: limit of items
+        required: false
+        type: integer
       - name: Authorization
         in: header
         description: JWT used for authentication
@@ -1585,13 +1617,6 @@ paths:
           $ref: '#/definitions/SupplierUpdateRequestBody'
           required:
           - id
-          - name
-          - level
-          - contact_name
-          - contact_phone
-          - contact_address
-          - note
-          - head_id
       responses:
         "200":
           description: OK response.
@@ -1621,6 +1646,16 @@ paths:
           * `role:user`
       operationId: User#List
       parameters:
+      - name: cursor
+        in: query
+        description: cursor of page
+        required: false
+        type: integer
+      - name: limit
+        in: query
+        description: limit of items
+        required: false
+        type: integer
       - name: Authorization
         in: header
         description: JWT used for authentication
@@ -1714,6 +1749,7 @@ paths:
           - mobile
           - email
           - jobs
+          - is_admin
           - superior_id
           - group_id
       responses:
@@ -1800,12 +1836,6 @@ paths:
           $ref: '#/definitions/UserUpdateRequestBody'
           required:
           - id
-          - name
-          - mobile
-          - email
-          - jobs
-          - superior_id
-          - group_id
       responses:
         "200":
           description: OK response.
@@ -1835,6 +1865,16 @@ paths:
           * `role:user`
       operationId: Warehouse#List
       parameters:
+      - name: cursor
+        in: query
+        description: cursor of page
+        required: false
+        type: integer
+      - name: limit
+        in: query
+        description: limit of items
+        required: false
+        type: integer
       - name: Authorization
         in: header
         description: JWT used for authentication
@@ -2011,10 +2051,6 @@ paths:
           $ref: '#/definitions/WarehouseUpdateRequestBody'
           required:
           - id
-          - name
-          - code
-          - address
-          - type
       responses:
         "200":
           description: OK response.
@@ -2396,10 +2432,13 @@ definitions:
     title: AuthUpdatePasswordRequestBody
     type: object
     properties:
+      id:
+        type: string
+        example: 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
       new_password:
         type: string
         example: abc123
-        minLength: 6
+        minLength: 8
         maxLength: 128
       old_password:
         type: string
@@ -2407,9 +2446,11 @@ definitions:
         minLength: 1
         maxLength: 128
     example:
+      id: 91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f
       new_password: abc123
       old_password: 123abc
     required:
+    - id
     - old_password
     - new_password
   AuthUpdatePasswordResponseBody:
@@ -3340,15 +3381,6 @@ definitions:
       url: http://www.baidu.com
     required:
     - id
-    - name
-    - src
-    - mobile
-    - url
-    - email
-    - industry
-    - level
-    - note
-    - address
   CustomerUpdateResponseBody:
     title: 'Mediatype identifier: customer; view=default'
     type: object
@@ -4046,7 +4078,6 @@ definitions:
       name: 管理员
     required:
     - id
-    - name
   GroupUpdateResponseBody:
     title: 'Mediatype identifier: group; view=default'
     type: object
@@ -5275,15 +5306,6 @@ definitions:
       warehouse_id: 519151ca-6250-4eec-8016-1e14a68dc448
     required:
     - id
-    - product_id
-    - number
-    - code
-    - warehouse_id
-    - type
-    - inventory_date
-    - in_and_out
-    - note
-    - head_id
   InventoryUpdateResponseBody:
     title: 'Mediatype identifier: inventory; view=default'
     type: object
@@ -6333,11 +6355,6 @@ definitions:
       note: 备注
     required:
     - id
-    - code
-    - money
-    - is_sales_return
-    - note
-    - head_id
   ProcurementUpdateResponseBody:
     title: 'Mediatype identifier: procurement; view=default'
     type: object
@@ -7438,15 +7455,6 @@ definitions:
       unit: 1
     required:
     - id
-    - name
-    - unit
-    - cost_price
-    - market_price
-    - note
-    - image
-    - size
-    - type
-    - is_shelves
   ProductUpdateResponseBody:
     title: 'Mediatype identifier: product; view=default'
     type: object
@@ -8601,12 +8609,6 @@ definitions:
       note: 备注
     required:
     - id
-    - name
-    - customer_id
-    - money
-    - is_sales_return
-    - note
-    - head_id
   SalesUpdateResponseBody:
     title: 'Mediatype identifier: sales; view=default'
     type: object
@@ -9622,13 +9624,6 @@ definitions:
       note: 备注
     required:
     - id
-    - name
-    - level
-    - contact_name
-    - contact_phone
-    - contact_address
-    - note
-    - head_id
   SupplierUpdateResponseBody:
     title: 'Mediatype identifier: supplier; view=default'
     type: object
@@ -9798,6 +9793,10 @@ definitions:
         type: string
         description: 所属组
         example: 519151ca-6250-4eec-8016-1e14a68dc448
+      is_admin:
+        type: boolean
+        description: 是否是管理员
+        example: false
       jobs:
         type: integer
         description: 1 - 推销员，2 - 经理，3 - 管理员
@@ -9834,6 +9833,7 @@ definitions:
     example:
       email: adb@adb.com
       group_id: 519151ca-6250-4eec-8016-1e14a68dc448
+      is_admin: false
       jobs: 1
       mobile: "1808001010"
       name: 张三
@@ -9847,6 +9847,7 @@ definitions:
     - mobile
     - email
     - jobs
+    - is_admin
     - superior_id
     - group_id
   UserCreateResponseBody:
@@ -10581,12 +10582,6 @@ definitions:
       superior_id: 519151ca-6250-4eec-8016-1e14a68dc448
     required:
     - id
-    - name
-    - mobile
-    - email
-    - jobs
-    - superior_id
-    - group_id
   UserUpdateResponseBody:
     title: 'Mediatype identifier: user; view=default'
     type: object
@@ -11434,10 +11429,6 @@ definitions:
       type: 1
     required:
     - id
-    - name
-    - code
-    - address
-    - type
   WarehouseUpdateResponseBody:
     title: 'Mediatype identifier: warehouse; view=default'
     type: object

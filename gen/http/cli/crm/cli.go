@@ -71,8 +71,10 @@ func ParseEndpoint(
 		customerGetIDFlag    = customerGetFlags.String("id", "REQUIRED", "")
 		customerGetTokenFlag = customerGetFlags.String("token", "REQUIRED", "")
 
-		customerListFlags     = flag.NewFlagSet("list", flag.ExitOnError)
-		customerListTokenFlag = customerListFlags.String("token", "REQUIRED", "")
+		customerListFlags      = flag.NewFlagSet("list", flag.ExitOnError)
+		customerListCursorFlag = customerListFlags.String("cursor", "", "")
+		customerListLimitFlag  = customerListFlags.String("limit", "", "")
+		customerListTokenFlag  = customerListFlags.String("token", "REQUIRED", "")
 
 		customerUpdateFlags     = flag.NewFlagSet("update", flag.ExitOnError)
 		customerUpdateBodyFlag  = customerUpdateFlags.String("body", "REQUIRED", "")
@@ -92,8 +94,10 @@ func ParseEndpoint(
 		groupGetIDFlag    = groupGetFlags.String("id", "REQUIRED", "")
 		groupGetTokenFlag = groupGetFlags.String("token", "REQUIRED", "")
 
-		groupListFlags     = flag.NewFlagSet("list", flag.ExitOnError)
-		groupListTokenFlag = groupListFlags.String("token", "REQUIRED", "")
+		groupListFlags      = flag.NewFlagSet("list", flag.ExitOnError)
+		groupListCursorFlag = groupListFlags.String("cursor", "", "")
+		groupListLimitFlag  = groupListFlags.String("limit", "", "")
+		groupListTokenFlag  = groupListFlags.String("token", "REQUIRED", "")
 
 		groupUpdateFlags     = flag.NewFlagSet("update", flag.ExitOnError)
 		groupUpdateBodyFlag  = groupUpdateFlags.String("body", "REQUIRED", "")
@@ -113,8 +117,10 @@ func ParseEndpoint(
 		productGetIDFlag    = productGetFlags.String("id", "REQUIRED", "")
 		productGetTokenFlag = productGetFlags.String("token", "REQUIRED", "")
 
-		productListFlags     = flag.NewFlagSet("list", flag.ExitOnError)
-		productListTokenFlag = productListFlags.String("token", "REQUIRED", "")
+		productListFlags      = flag.NewFlagSet("list", flag.ExitOnError)
+		productListCursorFlag = productListFlags.String("cursor", "", "")
+		productListLimitFlag  = productListFlags.String("limit", "", "")
+		productListTokenFlag  = productListFlags.String("token", "REQUIRED", "")
 
 		productUpdateFlags     = flag.NewFlagSet("update", flag.ExitOnError)
 		productUpdateBodyFlag  = productUpdateFlags.String("body", "REQUIRED", "")
@@ -134,8 +140,10 @@ func ParseEndpoint(
 		salesGetIDFlag    = salesGetFlags.String("id", "REQUIRED", "")
 		salesGetTokenFlag = salesGetFlags.String("token", "REQUIRED", "")
 
-		salesListFlags     = flag.NewFlagSet("list", flag.ExitOnError)
-		salesListTokenFlag = salesListFlags.String("token", "REQUIRED", "")
+		salesListFlags      = flag.NewFlagSet("list", flag.ExitOnError)
+		salesListCursorFlag = salesListFlags.String("cursor", "", "")
+		salesListLimitFlag  = salesListFlags.String("limit", "", "")
+		salesListTokenFlag  = salesListFlags.String("token", "REQUIRED", "")
 
 		salesUpdateFlags     = flag.NewFlagSet("update", flag.ExitOnError)
 		salesUpdateBodyFlag  = salesUpdateFlags.String("body", "REQUIRED", "")
@@ -155,8 +163,10 @@ func ParseEndpoint(
 		procurementGetIDFlag    = procurementGetFlags.String("id", "REQUIRED", "")
 		procurementGetTokenFlag = procurementGetFlags.String("token", "REQUIRED", "")
 
-		procurementListFlags     = flag.NewFlagSet("list", flag.ExitOnError)
-		procurementListTokenFlag = procurementListFlags.String("token", "REQUIRED", "")
+		procurementListFlags      = flag.NewFlagSet("list", flag.ExitOnError)
+		procurementListCursorFlag = procurementListFlags.String("cursor", "", "")
+		procurementListLimitFlag  = procurementListFlags.String("limit", "", "")
+		procurementListTokenFlag  = procurementListFlags.String("token", "REQUIRED", "")
 
 		procurementUpdateFlags     = flag.NewFlagSet("update", flag.ExitOnError)
 		procurementUpdateBodyFlag  = procurementUpdateFlags.String("body", "REQUIRED", "")
@@ -176,8 +186,10 @@ func ParseEndpoint(
 		supplierGetIDFlag    = supplierGetFlags.String("id", "REQUIRED", "")
 		supplierGetTokenFlag = supplierGetFlags.String("token", "REQUIRED", "")
 
-		supplierListFlags     = flag.NewFlagSet("list", flag.ExitOnError)
-		supplierListTokenFlag = supplierListFlags.String("token", "REQUIRED", "")
+		supplierListFlags      = flag.NewFlagSet("list", flag.ExitOnError)
+		supplierListCursorFlag = supplierListFlags.String("cursor", "", "")
+		supplierListLimitFlag  = supplierListFlags.String("limit", "", "")
+		supplierListTokenFlag  = supplierListFlags.String("token", "REQUIRED", "")
 
 		supplierUpdateFlags     = flag.NewFlagSet("update", flag.ExitOnError)
 		supplierUpdateBodyFlag  = supplierUpdateFlags.String("body", "REQUIRED", "")
@@ -197,8 +209,10 @@ func ParseEndpoint(
 		userGetIDFlag    = userGetFlags.String("id", "REQUIRED", "")
 		userGetTokenFlag = userGetFlags.String("token", "REQUIRED", "")
 
-		userListFlags     = flag.NewFlagSet("list", flag.ExitOnError)
-		userListTokenFlag = userListFlags.String("token", "REQUIRED", "")
+		userListFlags      = flag.NewFlagSet("list", flag.ExitOnError)
+		userListCursorFlag = userListFlags.String("cursor", "", "")
+		userListLimitFlag  = userListFlags.String("limit", "", "")
+		userListTokenFlag  = userListFlags.String("token", "REQUIRED", "")
 
 		userUpdateFlags     = flag.NewFlagSet("update", flag.ExitOnError)
 		userUpdateBodyFlag  = userUpdateFlags.String("body", "REQUIRED", "")
@@ -229,8 +243,10 @@ func ParseEndpoint(
 		inventoryGetIDFlag    = inventoryGetFlags.String("id", "REQUIRED", "")
 		inventoryGetTokenFlag = inventoryGetFlags.String("token", "REQUIRED", "")
 
-		inventoryListFlags     = flag.NewFlagSet("list", flag.ExitOnError)
-		inventoryListTokenFlag = inventoryListFlags.String("token", "REQUIRED", "")
+		inventoryListFlags      = flag.NewFlagSet("list", flag.ExitOnError)
+		inventoryListCursorFlag = inventoryListFlags.String("cursor", "", "")
+		inventoryListLimitFlag  = inventoryListFlags.String("limit", "", "")
+		inventoryListTokenFlag  = inventoryListFlags.String("token", "REQUIRED", "")
 
 		inventoryUpdateFlags     = flag.NewFlagSet("update", flag.ExitOnError)
 		inventoryUpdateBodyFlag  = inventoryUpdateFlags.String("body", "REQUIRED", "")
@@ -250,8 +266,10 @@ func ParseEndpoint(
 		warehouseGetIDFlag    = warehouseGetFlags.String("id", "REQUIRED", "")
 		warehouseGetTokenFlag = warehouseGetFlags.String("token", "REQUIRED", "")
 
-		warehouseListFlags     = flag.NewFlagSet("list", flag.ExitOnError)
-		warehouseListTokenFlag = warehouseListFlags.String("token", "REQUIRED", "")
+		warehouseListFlags      = flag.NewFlagSet("list", flag.ExitOnError)
+		warehouseListCursorFlag = warehouseListFlags.String("cursor", "", "")
+		warehouseListLimitFlag  = warehouseListFlags.String("limit", "", "")
+		warehouseListTokenFlag  = warehouseListFlags.String("token", "REQUIRED", "")
 
 		warehouseUpdateFlags     = flag.NewFlagSet("update", flag.ExitOnError)
 		warehouseUpdateBodyFlag  = warehouseUpdateFlags.String("body", "REQUIRED", "")
@@ -595,7 +613,7 @@ func ParseEndpoint(
 				data, err = customerc.BuildGetPayload(*customerGetIDFlag, *customerGetTokenFlag)
 			case "list":
 				endpoint = c.List()
-				data, err = customerc.BuildListPayload(*customerListTokenFlag)
+				data, err = customerc.BuildListPayload(*customerListCursorFlag, *customerListLimitFlag, *customerListTokenFlag)
 			case "update":
 				endpoint = c.Update()
 				data, err = customerc.BuildUpdatePayload(*customerUpdateBodyFlag, *customerUpdateTokenFlag)
@@ -614,7 +632,7 @@ func ParseEndpoint(
 				data, err = groupc.BuildGetPayload(*groupGetIDFlag, *groupGetTokenFlag)
 			case "list":
 				endpoint = c.List()
-				data, err = groupc.BuildListPayload(*groupListTokenFlag)
+				data, err = groupc.BuildListPayload(*groupListCursorFlag, *groupListLimitFlag, *groupListTokenFlag)
 			case "update":
 				endpoint = c.Update()
 				data, err = groupc.BuildUpdatePayload(*groupUpdateBodyFlag, *groupUpdateTokenFlag)
@@ -633,7 +651,7 @@ func ParseEndpoint(
 				data, err = productc.BuildGetPayload(*productGetIDFlag, *productGetTokenFlag)
 			case "list":
 				endpoint = c.List()
-				data, err = productc.BuildListPayload(*productListTokenFlag)
+				data, err = productc.BuildListPayload(*productListCursorFlag, *productListLimitFlag, *productListTokenFlag)
 			case "update":
 				endpoint = c.Update()
 				data, err = productc.BuildUpdatePayload(*productUpdateBodyFlag, *productUpdateTokenFlag)
@@ -652,7 +670,7 @@ func ParseEndpoint(
 				data, err = salesc.BuildGetPayload(*salesGetIDFlag, *salesGetTokenFlag)
 			case "list":
 				endpoint = c.List()
-				data, err = salesc.BuildListPayload(*salesListTokenFlag)
+				data, err = salesc.BuildListPayload(*salesListCursorFlag, *salesListLimitFlag, *salesListTokenFlag)
 			case "update":
 				endpoint = c.Update()
 				data, err = salesc.BuildUpdatePayload(*salesUpdateBodyFlag, *salesUpdateTokenFlag)
@@ -671,7 +689,7 @@ func ParseEndpoint(
 				data, err = procurementc.BuildGetPayload(*procurementGetIDFlag, *procurementGetTokenFlag)
 			case "list":
 				endpoint = c.List()
-				data, err = procurementc.BuildListPayload(*procurementListTokenFlag)
+				data, err = procurementc.BuildListPayload(*procurementListCursorFlag, *procurementListLimitFlag, *procurementListTokenFlag)
 			case "update":
 				endpoint = c.Update()
 				data, err = procurementc.BuildUpdatePayload(*procurementUpdateBodyFlag, *procurementUpdateTokenFlag)
@@ -690,7 +708,7 @@ func ParseEndpoint(
 				data, err = supplierc.BuildGetPayload(*supplierGetIDFlag, *supplierGetTokenFlag)
 			case "list":
 				endpoint = c.List()
-				data, err = supplierc.BuildListPayload(*supplierListTokenFlag)
+				data, err = supplierc.BuildListPayload(*supplierListCursorFlag, *supplierListLimitFlag, *supplierListTokenFlag)
 			case "update":
 				endpoint = c.Update()
 				data, err = supplierc.BuildUpdatePayload(*supplierUpdateBodyFlag, *supplierUpdateTokenFlag)
@@ -709,7 +727,7 @@ func ParseEndpoint(
 				data, err = userc.BuildGetPayload(*userGetIDFlag, *userGetTokenFlag)
 			case "list":
 				endpoint = c.List()
-				data, err = userc.BuildListPayload(*userListTokenFlag)
+				data, err = userc.BuildListPayload(*userListCursorFlag, *userListLimitFlag, *userListTokenFlag)
 			case "update":
 				endpoint = c.Update()
 				data, err = userc.BuildUpdatePayload(*userUpdateBodyFlag, *userUpdateTokenFlag)
@@ -741,7 +759,7 @@ func ParseEndpoint(
 				data, err = inventoryc.BuildGetPayload(*inventoryGetIDFlag, *inventoryGetTokenFlag)
 			case "list":
 				endpoint = c.List()
-				data, err = inventoryc.BuildListPayload(*inventoryListTokenFlag)
+				data, err = inventoryc.BuildListPayload(*inventoryListCursorFlag, *inventoryListLimitFlag, *inventoryListTokenFlag)
 			case "update":
 				endpoint = c.Update()
 				data, err = inventoryc.BuildUpdatePayload(*inventoryUpdateBodyFlag, *inventoryUpdateTokenFlag)
@@ -760,7 +778,7 @@ func ParseEndpoint(
 				data, err = warehousec.BuildGetPayload(*warehouseGetIDFlag, *warehouseGetTokenFlag)
 			case "list":
 				endpoint = c.List()
-				data, err = warehousec.BuildListPayload(*warehouseListTokenFlag)
+				data, err = warehousec.BuildListPayload(*warehouseListCursorFlag, *warehouseListLimitFlag, *warehouseListTokenFlag)
 			case "update":
 				endpoint = c.Update()
 				data, err = warehousec.BuildUpdatePayload(*warehouseUpdateBodyFlag, *warehouseUpdateTokenFlag)
@@ -810,13 +828,15 @@ Example:
 }
 
 func customerListUsage() {
-	fmt.Fprintf(os.Stderr, `%s [flags] customer list -token STRING
+	fmt.Fprintf(os.Stderr, `%s [flags] customer list -cursor INT -limit INT -token STRING
 
 获取客户列表
+    -cursor INT: 
+    -limit INT: 
     -token STRING: 
 
 Example:
-    `+os.Args[0]+` customer list --token "eyJhbGciOiJIUz..."
+    `+os.Args[0]+` customer list --cursor 0 --limit 20 --token "eyJhbGciOiJIUz..."
 `, os.Args[0])
 }
 
@@ -913,13 +933,15 @@ Example:
 }
 
 func groupListUsage() {
-	fmt.Fprintf(os.Stderr, `%s [flags] group list -token STRING
+	fmt.Fprintf(os.Stderr, `%s [flags] group list -cursor INT -limit INT -token STRING
 
 获取组列表
+    -cursor INT: 
+    -limit INT: 
     -token STRING: 
 
 Example:
-    `+os.Args[0]+` group list --token "eyJhbGciOiJIUz..."
+    `+os.Args[0]+` group list --cursor 0 --limit 20 --token "eyJhbGciOiJIUz..."
 `, os.Args[0])
 }
 
@@ -1000,13 +1022,15 @@ Example:
 }
 
 func productListUsage() {
-	fmt.Fprintf(os.Stderr, `%s [flags] product list -token STRING
+	fmt.Fprintf(os.Stderr, `%s [flags] product list -cursor INT -limit INT -token STRING
 
 获取产品列表
+    -cursor INT: 
+    -limit INT: 
     -token STRING: 
 
 Example:
-    `+os.Args[0]+` product list --token "eyJhbGciOiJIUz..."
+    `+os.Args[0]+` product list --cursor 0 --limit 20 --token "eyJhbGciOiJIUz..."
 `, os.Args[0])
 }
 
@@ -1105,13 +1129,15 @@ Example:
 }
 
 func salesListUsage() {
-	fmt.Fprintf(os.Stderr, `%s [flags] sales list -token STRING
+	fmt.Fprintf(os.Stderr, `%s [flags] sales list -cursor INT -limit INT -token STRING
 
 获取销售列表
+    -cursor INT: 
+    -limit INT: 
     -token STRING: 
 
 Example:
-    `+os.Args[0]+` sales list --token "eyJhbGciOiJIUz..."
+    `+os.Args[0]+` sales list --cursor 0 --limit 20 --token "eyJhbGciOiJIUz..."
 `, os.Args[0])
 }
 
@@ -1207,13 +1233,15 @@ Example:
 }
 
 func procurementListUsage() {
-	fmt.Fprintf(os.Stderr, `%s [flags] procurement list -token STRING
+	fmt.Fprintf(os.Stderr, `%s [flags] procurement list -cursor INT -limit INT -token STRING
 
 获取采购列表
+    -cursor INT: 
+    -limit INT: 
     -token STRING: 
 
 Example:
-    `+os.Args[0]+` procurement list --token "eyJhbGciOiJIUz..."
+    `+os.Args[0]+` procurement list --cursor 0 --limit 20 --token "eyJhbGciOiJIUz..."
 `, os.Args[0])
 }
 
@@ -1304,13 +1332,15 @@ Example:
 }
 
 func supplierListUsage() {
-	fmt.Fprintf(os.Stderr, `%s [flags] supplier list -token STRING
+	fmt.Fprintf(os.Stderr, `%s [flags] supplier list -cursor INT -limit INT -token STRING
 
 获取供应商列表
+    -cursor INT: 
+    -limit INT: 
     -token STRING: 
 
 Example:
-    `+os.Args[0]+` supplier list --token "eyJhbGciOiJIUz..."
+    `+os.Args[0]+` supplier list --cursor 0 --limit 20 --token "eyJhbGciOiJIUz..."
 `, os.Args[0])
 }
 
@@ -1404,13 +1434,15 @@ Example:
 }
 
 func userListUsage() {
-	fmt.Fprintf(os.Stderr, `%s [flags] user list -token STRING
+	fmt.Fprintf(os.Stderr, `%s [flags] user list -cursor INT -limit INT -token STRING
 
 获取用户列表
+    -cursor INT: 
+    -limit INT: 
     -token STRING: 
 
 Example:
-    `+os.Args[0]+` user list --token "eyJhbGciOiJIUz..."
+    `+os.Args[0]+` user list --cursor 0 --limit 20 --token "eyJhbGciOiJIUz..."
 `, os.Args[0])
 }
 
@@ -1445,6 +1477,7 @@ Example:
     `+os.Args[0]+` user create --body '{
       "email": "adb@adb.com",
       "group_id": "519151ca-6250-4eec-8016-1e14a68dc448",
+      "is_admin": false,
       "jobs": 1,
       "mobile": "1808001010",
       "name": "张三",
@@ -1513,6 +1546,7 @@ func authUpdatePasswordUsage() {
 
 Example:
     `+os.Args[0]+` auth update-password --body '{
+      "id": "91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f",
       "new_password": "abc123",
       "old_password": "123abc"
    }' --token "eyJhbGciOiJIUz..."
@@ -1560,13 +1594,15 @@ Example:
 }
 
 func inventoryListUsage() {
-	fmt.Fprintf(os.Stderr, `%s [flags] inventory list -token STRING
+	fmt.Fprintf(os.Stderr, `%s [flags] inventory list -cursor INT -limit INT -token STRING
 
 获取库存列表
+    -cursor INT: 
+    -limit INT: 
     -token STRING: 
 
 Example:
-    `+os.Args[0]+` inventory list --token "eyJhbGciOiJIUz..."
+    `+os.Args[0]+` inventory list --cursor 0 --limit 20 --token "eyJhbGciOiJIUz..."
 `, os.Args[0])
 }
 
@@ -1665,13 +1701,15 @@ Example:
 }
 
 func warehouseListUsage() {
-	fmt.Fprintf(os.Stderr, `%s [flags] warehouse list -token STRING
+	fmt.Fprintf(os.Stderr, `%s [flags] warehouse list -cursor INT -limit INT -token STRING
 
 获取仓库列表
+    -cursor INT: 
+    -limit INT: 
     -token STRING: 
 
 Example:
-    `+os.Args[0]+` warehouse list --token "eyJhbGciOiJIUz..."
+    `+os.Args[0]+` warehouse list --cursor 0 --limit 20 --token "eyJhbGciOiJIUz..."
 `, os.Args[0])
 }
 

@@ -59,6 +59,12 @@ var _ = Service("Group", func() {
 				Description("JWT used for authentication")
 				Example(ExampleJwt)
 			})
+			Attribute("cursor", Int, "cursor of page", func() {
+				Example(0)
+			})
+			Attribute("limit", Int, "limit of items", func() {
+				Example(20)
+			})
 
 			Required("token")
 		})
@@ -76,6 +82,10 @@ var _ = Service("Group", func() {
 
 		HTTP(func() {
 			GET("")
+			Params(func() {
+				Param("cursor")
+				Param("limit")
+			})
 			Response(StatusOK)
 		})
 	})
@@ -100,7 +110,7 @@ var _ = Service("Group", func() {
 				Example("管理员")
 			})
 
-			Required("token", "id", "name")
+			Required("token", "id")
 		})
 
 		Result(Group, func() {

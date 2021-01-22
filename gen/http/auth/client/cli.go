@@ -84,7 +84,7 @@ func BuildUpdatePasswordPayload(authUpdatePasswordBody string, authUpdatePasswor
 	{
 		err = json.Unmarshal([]byte(authUpdatePasswordBody), &body)
 		if err != nil {
-			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"new_password\": \"abc123\",\n      \"old_password\": \"123abc\"\n   }'")
+			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"id\": \"91cc3eb9-ddc0-4cf7-a62b-c85df1a9166f\",\n      \"new_password\": \"abc123\",\n      \"old_password\": \"123abc\"\n   }'")
 		}
 		if utf8.RuneCountInString(body.OldPassword) < 1 {
 			err = goa.MergeErrors(err, goa.InvalidLengthError("body.old_password", body.OldPassword, utf8.RuneCountInString(body.OldPassword), 1, true))
@@ -92,8 +92,8 @@ func BuildUpdatePasswordPayload(authUpdatePasswordBody string, authUpdatePasswor
 		if utf8.RuneCountInString(body.OldPassword) > 128 {
 			err = goa.MergeErrors(err, goa.InvalidLengthError("body.old_password", body.OldPassword, utf8.RuneCountInString(body.OldPassword), 128, false))
 		}
-		if utf8.RuneCountInString(body.NewPassword) < 6 {
-			err = goa.MergeErrors(err, goa.InvalidLengthError("body.new_password", body.NewPassword, utf8.RuneCountInString(body.NewPassword), 6, true))
+		if utf8.RuneCountInString(body.NewPassword) < 8 {
+			err = goa.MergeErrors(err, goa.InvalidLengthError("body.new_password", body.NewPassword, utf8.RuneCountInString(body.NewPassword), 8, true))
 		}
 		if utf8.RuneCountInString(body.NewPassword) > 128 {
 			err = goa.MergeErrors(err, goa.InvalidLengthError("body.new_password", body.NewPassword, utf8.RuneCountInString(body.NewPassword), 128, false))
@@ -107,6 +107,7 @@ func BuildUpdatePasswordPayload(authUpdatePasswordBody string, authUpdatePasswor
 		token = authUpdatePasswordToken
 	}
 	v := &auth.UpdatePasswordPayload{
+		ID:          body.ID,
 		OldPassword: body.OldPassword,
 		NewPassword: body.NewPassword,
 	}

@@ -11,6 +11,7 @@ import (
 	warehouse "crm/gen/warehouse"
 	"encoding/json"
 	"fmt"
+	"strconv"
 
 	goa "goa.design/goa/v3/pkg"
 )
@@ -35,12 +36,39 @@ func BuildGetPayload(warehouseGetID string, warehouseGetToken string) (*warehous
 
 // BuildListPayload builds the payload for the Warehouse List endpoint from CLI
 // flags.
-func BuildListPayload(warehouseListToken string) (*warehouse.ListPayload, error) {
+func BuildListPayload(warehouseListCursor string, warehouseListLimit string, warehouseListToken string) (*warehouse.ListPayload, error) {
+	var err error
+	var cursor *int
+	{
+		if warehouseListCursor != "" {
+			var v int64
+			v, err = strconv.ParseInt(warehouseListCursor, 10, 64)
+			val := int(v)
+			cursor = &val
+			if err != nil {
+				return nil, fmt.Errorf("invalid value for cursor, must be INT")
+			}
+		}
+	}
+	var limit *int
+	{
+		if warehouseListLimit != "" {
+			var v int64
+			v, err = strconv.ParseInt(warehouseListLimit, 10, 64)
+			val := int(v)
+			limit = &val
+			if err != nil {
+				return nil, fmt.Errorf("invalid value for limit, must be INT")
+			}
+		}
+	}
 	var token string
 	{
 		token = warehouseListToken
 	}
 	v := &warehouse.ListPayload{}
+	v.Cursor = cursor
+	v.Limit = limit
 	v.Token = token
 
 	return v, nil
@@ -56,8 +84,10 @@ func BuildUpdatePayload(warehouseUpdateBody string, warehouseUpdateToken string)
 		if err != nil {
 			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"address\": \"地址\",\n      \"code\": \"123awe12qwe\",\n      \"id\": \"519151ca-6250-4eec-8016-1e14a68dc448\",\n      \"name\": \"1号仓库\",\n      \"type\": 1\n   }'")
 		}
-		if !(body.Type == 1 || body.Type == 2 || body.Type == 3) {
-			err = goa.MergeErrors(err, goa.InvalidEnumValueError("body.type", body.Type, []interface{}{1, 2, 3}))
+		if body.Type != nil {
+			if !(*body.Type == 1 || *body.Type == 2 || *body.Type == 3) {
+				err = goa.MergeErrors(err, goa.InvalidEnumValueError("body.type", *body.Type, []interface{}{1, 2, 3}))
+			}
 		}
 		if err != nil {
 			return nil, err

@@ -20,19 +20,19 @@ type UpdateRequestBody struct {
 	// ID
 	ID string `form:"id" json:"id" xml:"id"`
 	// 供应商名
-	Name string `form:"name" json:"name" xml:"name"`
+	Name *string `form:"name,omitempty" json:"name,omitempty" xml:"name,omitempty"`
 	// 级别
-	Level int `form:"level" json:"level" xml:"level"`
+	Level *int `form:"level,omitempty" json:"level,omitempty" xml:"level,omitempty"`
 	// 联系人姓名
-	ContactName string `form:"contact_name" json:"contact_name" xml:"contact_name"`
+	ContactName *string `form:"contact_name,omitempty" json:"contact_name,omitempty" xml:"contact_name,omitempty"`
 	// 联系人手机
-	ContactPhone string `form:"contact_phone" json:"contact_phone" xml:"contact_phone"`
+	ContactPhone *string `form:"contact_phone,omitempty" json:"contact_phone,omitempty" xml:"contact_phone,omitempty"`
 	// 联系人地址
-	ContactAddress string `form:"contact_address" json:"contact_address" xml:"contact_address"`
+	ContactAddress *string `form:"contact_address,omitempty" json:"contact_address,omitempty" xml:"contact_address,omitempty"`
 	// 产品备注
-	Note string `form:"note" json:"note" xml:"note"`
+	Note *string `form:"note,omitempty" json:"note,omitempty" xml:"note,omitempty"`
 	// 负责人ID
-	HeadID string `form:"head_id" json:"head_id" xml:"head_id"`
+	HeadID *string `form:"head_id,omitempty" json:"head_id,omitempty" xml:"head_id,omitempty"`
 }
 
 // CreateRequestBody is the type of the "Supplier" service "Create" endpoint

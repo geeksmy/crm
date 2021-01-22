@@ -633,8 +633,10 @@ func NewGetPayload(id string, token string) *product.GetPayload {
 }
 
 // NewListPayload builds a Product service List endpoint payload.
-func NewListPayload(token string) *product.ListPayload {
+func NewListPayload(cursor *int, limit *int, token string) *product.ListPayload {
 	v := &product.ListPayload{}
+	v.Cursor = cursor
+	v.Limit = limit
 	v.Token = token
 
 	return v
@@ -644,15 +646,15 @@ func NewListPayload(token string) *product.ListPayload {
 func NewUpdatePayload(body *UpdateRequestBody, token string) *product.UpdatePayload {
 	v := &product.UpdatePayload{
 		ID:          *body.ID,
-		Name:        *body.Name,
-		Unit:        *body.Unit,
-		CostPrice:   *body.CostPrice,
-		MarketPrice: *body.MarketPrice,
-		Note:        *body.Note,
-		Image:       *body.Image,
-		Size:        *body.Size,
-		Type:        *body.Type,
-		IsShelves:   *body.IsShelves,
+		Name:        body.Name,
+		Unit:        body.Unit,
+		CostPrice:   body.CostPrice,
+		MarketPrice: body.MarketPrice,
+		Note:        body.Note,
+		Image:       body.Image,
+		Size:        body.Size,
+		Type:        body.Type,
+		IsShelves:   body.IsShelves,
 	}
 	v.Token = token
 
@@ -695,33 +697,6 @@ func NewDeletePayload(body *DeleteRequestBody, token string) *product.DeletePayl
 func ValidateUpdateRequestBody(body *UpdateRequestBody) (err error) {
 	if body.ID == nil {
 		err = goa.MergeErrors(err, goa.MissingFieldError("id", "body"))
-	}
-	if body.Name == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("name", "body"))
-	}
-	if body.Unit == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("unit", "body"))
-	}
-	if body.CostPrice == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("cost_price", "body"))
-	}
-	if body.MarketPrice == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("market_price", "body"))
-	}
-	if body.Note == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("note", "body"))
-	}
-	if body.Image == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("image", "body"))
-	}
-	if body.Size == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("size", "body"))
-	}
-	if body.Type == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("type", "body"))
-	}
-	if body.IsShelves == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("is_shelves", "body"))
 	}
 	if body.Unit != nil {
 		if !(*body.Unit == 1 || *body.Unit == 2 || *body.Unit == 3 || *body.Unit == 4 || *body.Unit == 5 || *body.Unit == 6 || *body.Unit == 7 || *body.Unit == 8) {

@@ -11,6 +11,7 @@ import (
 	customer "crm/gen/customer"
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"unicode/utf8"
 
 	goa "goa.design/goa/v3/pkg"
@@ -36,12 +37,39 @@ func BuildGetPayload(customerGetID string, customerGetToken string) (*customer.G
 
 // BuildListPayload builds the payload for the Customer List endpoint from CLI
 // flags.
-func BuildListPayload(customerListToken string) (*customer.ListPayload, error) {
+func BuildListPayload(customerListCursor string, customerListLimit string, customerListToken string) (*customer.ListPayload, error) {
+	var err error
+	var cursor *int
+	{
+		if customerListCursor != "" {
+			var v int64
+			v, err = strconv.ParseInt(customerListCursor, 10, 64)
+			val := int(v)
+			cursor = &val
+			if err != nil {
+				return nil, fmt.Errorf("invalid value for cursor, must be INT")
+			}
+		}
+	}
+	var limit *int
+	{
+		if customerListLimit != "" {
+			var v int64
+			v, err = strconv.ParseInt(customerListLimit, 10, 64)
+			val := int(v)
+			limit = &val
+			if err != nil {
+				return nil, fmt.Errorf("invalid value for limit, must be INT")
+			}
+		}
+	}
 	var token string
 	{
 		token = customerListToken
 	}
 	v := &customer.ListPayload{}
+	v.Cursor = cursor
+	v.Limit = limit
 	v.Token = token
 
 	return v, nil
@@ -57,19 +85,28 @@ func BuildUpdatePayload(customerUpdateBody string, customerUpdateToken string) (
 		if err != nil {
 			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"address\": \"咸阳\",\n      \"email\": \"adb@adb.com\",\n      \"id\": \"519151ca-6250-4eec-8016-1e14a68dc448\",\n      \"industry\": 1,\n      \"level\": 1,\n      \"mobile\": \"18000001234\",\n      \"name\": \"张三\",\n      \"note\": \"备注\",\n      \"src\": 1,\n      \"url\": \"http://www.baidu.com\"\n   }'")
 		}
-		err = goa.MergeErrors(err, goa.ValidateFormat("body.mobile", body.Mobile, goa.FormatRegexp))
-
-		err = goa.MergeErrors(err, goa.ValidatePattern("body.mobile", body.Mobile, "^1(?:3\\d|4[4-9]|5[0-35-9]|6[67]|7[013-8]|8\\d|9\\d)\\d{8}$"))
-		if utf8.RuneCountInString(body.Mobile) < 11 {
-			err = goa.MergeErrors(err, goa.InvalidLengthError("body.mobile", body.Mobile, utf8.RuneCountInString(body.Mobile), 11, true))
+		if body.Mobile != nil {
+			err = goa.MergeErrors(err, goa.ValidateFormat("body.mobile", *body.Mobile, goa.FormatRegexp))
 		}
-		if utf8.RuneCountInString(body.Mobile) > 11 {
-			err = goa.MergeErrors(err, goa.InvalidLengthError("body.mobile", body.Mobile, utf8.RuneCountInString(body.Mobile), 11, false))
+		if body.Mobile != nil {
+			err = goa.MergeErrors(err, goa.ValidatePattern("body.mobile", *body.Mobile, "^1(?:3\\d|4[4-9]|5[0-35-9]|6[67]|7[013-8]|8\\d|9\\d)\\d{8}$"))
 		}
-		err = goa.MergeErrors(err, goa.ValidateFormat("body.url", body.URL, goa.FormatURI))
-
-		err = goa.MergeErrors(err, goa.ValidateFormat("body.email", body.Email, goa.FormatEmail))
-
+		if body.Mobile != nil {
+			if utf8.RuneCountInString(*body.Mobile) < 11 {
+				err = goa.MergeErrors(err, goa.InvalidLengthError("body.mobile", *body.Mobile, utf8.RuneCountInString(*body.Mobile), 11, true))
+			}
+		}
+		if body.Mobile != nil {
+			if utf8.RuneCountInString(*body.Mobile) > 11 {
+				err = goa.MergeErrors(err, goa.InvalidLengthError("body.mobile", *body.Mobile, utf8.RuneCountInString(*body.Mobile), 11, false))
+			}
+		}
+		if body.URL != nil {
+			err = goa.MergeErrors(err, goa.ValidateFormat("body.url", *body.URL, goa.FormatURI))
+		}
+		if body.Email != nil {
+			err = goa.MergeErrors(err, goa.ValidateFormat("body.email", *body.Email, goa.FormatEmail))
+		}
 		if err != nil {
 			return nil, err
 		}

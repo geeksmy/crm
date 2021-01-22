@@ -20,7 +20,7 @@ type UpdateRequestBody struct {
 	// 用户ID
 	ID string `form:"id" json:"id" xml:"id"`
 	// 组名
-	Name string `form:"name" json:"name" xml:"name"`
+	Name *string `form:"name,omitempty" json:"name,omitempty" xml:"name,omitempty"`
 }
 
 // CreateRequestBody is the type of the "Group" service "Create" endpoint HTTP

@@ -11,6 +11,7 @@ import (
 	sales "crm/gen/sales"
 	"encoding/json"
 	"fmt"
+	"strconv"
 
 	goa "goa.design/goa/v3/pkg"
 )
@@ -34,12 +35,39 @@ func BuildGetPayload(salesGetID string, salesGetToken string) (*sales.GetPayload
 
 // BuildListPayload builds the payload for the Sales List endpoint from CLI
 // flags.
-func BuildListPayload(salesListToken string) (*sales.ListPayload, error) {
+func BuildListPayload(salesListCursor string, salesListLimit string, salesListToken string) (*sales.ListPayload, error) {
+	var err error
+	var cursor *int
+	{
+		if salesListCursor != "" {
+			var v int64
+			v, err = strconv.ParseInt(salesListCursor, 10, 64)
+			val := int(v)
+			cursor = &val
+			if err != nil {
+				return nil, fmt.Errorf("invalid value for cursor, must be INT")
+			}
+		}
+	}
+	var limit *int
+	{
+		if salesListLimit != "" {
+			var v int64
+			v, err = strconv.ParseInt(salesListLimit, 10, 64)
+			val := int(v)
+			limit = &val
+			if err != nil {
+				return nil, fmt.Errorf("invalid value for limit, must be INT")
+			}
+		}
+	}
 	var token string
 	{
 		token = salesListToken
 	}
 	v := &sales.ListPayload{}
+	v.Cursor = cursor
+	v.Limit = limit
 	v.Token = token
 
 	return v, nil
@@ -55,8 +83,10 @@ func BuildUpdatePayload(salesUpdateBody string, salesUpdateToken string) (*sales
 		if err != nil {
 			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"consignment_date\": \"2021-01-01\",\n      \"customer_id\": \"519151ca-6250-4eec-8016-1e14a68dc448\",\n      \"head_id\": \"519151ca-6250-4eec-8016-1e14a68dc448\",\n      \"id\": \"519151ca-6250-4eec-8016-1e14a68dc448\",\n      \"is_sales_return\": false,\n      \"money\": 123,\n      \"name\": \"xx销售\",\n      \"note\": \"备注\"\n   }'")
 		}
-		if !(body.IsSalesReturn == false || body.IsSalesReturn == true) {
-			err = goa.MergeErrors(err, goa.InvalidEnumValueError("body.is_sales_return", body.IsSalesReturn, []interface{}{false, true}))
+		if body.IsSalesReturn != nil {
+			if !(*body.IsSalesReturn == false || *body.IsSalesReturn == true) {
+				err = goa.MergeErrors(err, goa.InvalidEnumValueError("body.is_sales_return", *body.IsSalesReturn, []interface{}{false, true}))
+			}
 		}
 		if err != nil {
 			return nil, err

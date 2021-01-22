@@ -49,6 +49,8 @@ type CreateRequestBody struct {
 	Email *string `form:"email,omitempty" json:"email,omitempty" xml:"email,omitempty"`
 	// 1 - 推销员，2 - 经理，3 - 管理员
 	Jobs *int `form:"jobs,omitempty" json:"jobs,omitempty" xml:"jobs,omitempty"`
+	// 是否是管理员
+	IsAdmin *bool `form:"is_admin,omitempty" json:"is_admin,omitempty" xml:"is_admin,omitempty"`
 	// 直属上级ID
 	SuperiorID *string `form:"superior_id,omitempty" json:"superior_id,omitempty" xml:"superior_id,omitempty"`
 	// 所属组
@@ -603,8 +605,10 @@ func NewGetPayload(id string, token string) *user.GetPayload {
 }
 
 // NewListPayload builds a User service List endpoint payload.
-func NewListPayload(token string) *user.ListPayload {
+func NewListPayload(cursor *int, limit *int, token string) *user.ListPayload {
 	v := &user.ListPayload{}
+	v.Cursor = cursor
+	v.Limit = limit
 	v.Token = token
 
 	return v
@@ -614,12 +618,12 @@ func NewListPayload(token string) *user.ListPayload {
 func NewUpdatePayload(body *UpdateRequestBody, token string) *user.UpdatePayload {
 	v := &user.UpdatePayload{
 		ID:         *body.ID,
-		Name:       *body.Name,
-		Mobile:     *body.Mobile,
-		Email:      *body.Email,
-		Jobs:       *body.Jobs,
-		SuperiorID: *body.SuperiorID,
-		GroupID:    *body.GroupID,
+		Name:       body.Name,
+		Mobile:     body.Mobile,
+		Email:      body.Email,
+		Jobs:       body.Jobs,
+		SuperiorID: body.SuperiorID,
+		GroupID:    body.GroupID,
 	}
 	v.Token = token
 
@@ -635,6 +639,7 @@ func NewCreatePayload(body *CreateRequestBody, token string) *user.CreatePayload
 		Mobile:     *body.Mobile,
 		Email:      *body.Email,
 		Jobs:       *body.Jobs,
+		IsAdmin:    *body.IsAdmin,
 		SuperiorID: *body.SuperiorID,
 		GroupID:    *body.GroupID,
 	}
@@ -659,24 +664,6 @@ func NewDeletePayload(body *DeleteRequestBody, token string) *user.DeletePayload
 func ValidateUpdateRequestBody(body *UpdateRequestBody) (err error) {
 	if body.ID == nil {
 		err = goa.MergeErrors(err, goa.MissingFieldError("id", "body"))
-	}
-	if body.Name == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("name", "body"))
-	}
-	if body.Mobile == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("mobile", "body"))
-	}
-	if body.Email == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("email", "body"))
-	}
-	if body.Jobs == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("jobs", "body"))
-	}
-	if body.SuperiorID == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("superior_id", "body"))
-	}
-	if body.GroupID == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("group_id", "body"))
 	}
 	if body.Mobile != nil {
 		err = goa.MergeErrors(err, goa.ValidateFormat("body.mobile", *body.Mobile, goa.FormatRegexp))
@@ -724,6 +711,9 @@ func ValidateCreateRequestBody(body *CreateRequestBody) (err error) {
 	}
 	if body.Jobs == nil {
 		err = goa.MergeErrors(err, goa.MissingFieldError("jobs", "body"))
+	}
+	if body.IsAdmin == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("is_admin", "body"))
 	}
 	if body.SuperiorID == nil {
 		err = goa.MergeErrors(err, goa.MissingFieldError("superior_id", "body"))

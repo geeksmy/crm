@@ -78,6 +78,10 @@ type Supplier struct {
 type ListPayload struct {
 	// JWT used for authentication
 	Token string
+	// cursor of page
+	Cursor *int
+	// limit of items
+	Limit *int
 }
 
 // ListResult is the result type of the Supplier service List method.
@@ -96,19 +100,19 @@ type UpdatePayload struct {
 	// ID
 	ID string
 	// 供应商名
-	Name string
+	Name *string
 	// 级别
-	Level int
+	Level *int
 	// 联系人姓名
-	ContactName string
+	ContactName *string
 	// 联系人手机
-	ContactPhone string
+	ContactPhone *string
 	// 联系人地址
-	ContactAddress string
+	ContactAddress *string
 	// 产品备注
-	Note string
+	Note *string
 	// 负责人ID
-	HeadID string
+	HeadID *string
 }
 
 // CreatePayload is the payload type of the Supplier service Create method.

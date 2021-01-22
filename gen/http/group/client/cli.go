@@ -11,6 +11,7 @@ import (
 	group "crm/gen/group"
 	"encoding/json"
 	"fmt"
+	"strconv"
 
 	goa "goa.design/goa/v3/pkg"
 )
@@ -34,12 +35,39 @@ func BuildGetPayload(groupGetID string, groupGetToken string) (*group.GetPayload
 
 // BuildListPayload builds the payload for the Group List endpoint from CLI
 // flags.
-func BuildListPayload(groupListToken string) (*group.ListPayload, error) {
+func BuildListPayload(groupListCursor string, groupListLimit string, groupListToken string) (*group.ListPayload, error) {
+	var err error
+	var cursor *int
+	{
+		if groupListCursor != "" {
+			var v int64
+			v, err = strconv.ParseInt(groupListCursor, 10, 64)
+			val := int(v)
+			cursor = &val
+			if err != nil {
+				return nil, fmt.Errorf("invalid value for cursor, must be INT")
+			}
+		}
+	}
+	var limit *int
+	{
+		if groupListLimit != "" {
+			var v int64
+			v, err = strconv.ParseInt(groupListLimit, 10, 64)
+			val := int(v)
+			limit = &val
+			if err != nil {
+				return nil, fmt.Errorf("invalid value for limit, must be INT")
+			}
+		}
+	}
 	var token string
 	{
 		token = groupListToken
 	}
 	v := &group.ListPayload{}
+	v.Cursor = cursor
+	v.Limit = limit
 	v.Token = token
 
 	return v, nil

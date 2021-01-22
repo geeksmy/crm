@@ -31,6 +31,7 @@ type LoginRequestBody struct {
 // UpdatePasswordRequestBody is the type of the "Auth" service "UpdatePassword"
 // endpoint HTTP request body.
 type UpdatePasswordRequestBody struct {
+	ID          *string `form:"id,omitempty" json:"id,omitempty" xml:"id,omitempty"`
 	OldPassword *string `form:"old_password,omitempty" json:"old_password,omitempty" xml:"old_password,omitempty"`
 	NewPassword *string `form:"new_password,omitempty" json:"new_password,omitempty" xml:"new_password,omitempty"`
 }
@@ -356,6 +357,7 @@ func NewLoginPayload(body *LoginRequestBody) *auth.LoginPayload {
 // payload.
 func NewUpdatePasswordPayload(body *UpdatePasswordRequestBody, token string) *auth.UpdatePasswordPayload {
 	v := &auth.UpdatePasswordPayload{
+		ID:          *body.ID,
 		OldPassword: *body.OldPassword,
 		NewPassword: *body.NewPassword,
 	}
@@ -418,6 +420,9 @@ func ValidateLoginRequestBody(body *LoginRequestBody) (err error) {
 // ValidateUpdatePasswordRequestBody runs the validations defined on
 // UpdatePasswordRequestBody
 func ValidateUpdatePasswordRequestBody(body *UpdatePasswordRequestBody) (err error) {
+	if body.ID == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("id", "body"))
+	}
 	if body.OldPassword == nil {
 		err = goa.MergeErrors(err, goa.MissingFieldError("old_password", "body"))
 	}
@@ -435,8 +440,8 @@ func ValidateUpdatePasswordRequestBody(body *UpdatePasswordRequestBody) (err err
 		}
 	}
 	if body.NewPassword != nil {
-		if utf8.RuneCountInString(*body.NewPassword) < 6 {
-			err = goa.MergeErrors(err, goa.InvalidLengthError("body.new_password", *body.NewPassword, utf8.RuneCountInString(*body.NewPassword), 6, true))
+		if utf8.RuneCountInString(*body.NewPassword) < 8 {
+			err = goa.MergeErrors(err, goa.InvalidLengthError("body.new_password", *body.NewPassword, utf8.RuneCountInString(*body.NewPassword), 8, true))
 		}
 	}
 	if body.NewPassword != nil {

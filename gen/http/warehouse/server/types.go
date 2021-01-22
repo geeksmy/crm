@@ -545,8 +545,10 @@ func NewGetPayload(id string, token string) *warehouse.GetPayload {
 }
 
 // NewListPayload builds a Warehouse service List endpoint payload.
-func NewListPayload(token string) *warehouse.ListPayload {
+func NewListPayload(cursor *int, limit *int, token string) *warehouse.ListPayload {
 	v := &warehouse.ListPayload{}
+	v.Cursor = cursor
+	v.Limit = limit
 	v.Token = token
 
 	return v
@@ -556,10 +558,10 @@ func NewListPayload(token string) *warehouse.ListPayload {
 func NewUpdatePayload(body *UpdateRequestBody, token string) *warehouse.UpdatePayload {
 	v := &warehouse.UpdatePayload{
 		ID:      *body.ID,
-		Name:    *body.Name,
-		Code:    *body.Code,
-		Address: *body.Address,
-		Type:    *body.Type,
+		Name:    body.Name,
+		Code:    body.Code,
+		Address: body.Address,
+		Type:    body.Type,
 	}
 	v.Token = token
 
@@ -596,18 +598,6 @@ func NewDeletePayload(body *DeleteRequestBody, token string) *warehouse.DeletePa
 func ValidateUpdateRequestBody(body *UpdateRequestBody) (err error) {
 	if body.ID == nil {
 		err = goa.MergeErrors(err, goa.MissingFieldError("id", "body"))
-	}
-	if body.Name == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("name", "body"))
-	}
-	if body.Code == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("code", "body"))
-	}
-	if body.Address == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("address", "body"))
-	}
-	if body.Type == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("type", "body"))
 	}
 	if body.Type != nil {
 		if !(*body.Type == 1 || *body.Type == 2 || *body.Type == 3) {

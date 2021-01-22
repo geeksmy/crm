@@ -20,23 +20,23 @@ type UpdateRequestBody struct {
 	// ID
 	ID string `form:"id" json:"id" xml:"id"`
 	// 客户姓名
-	Name string `form:"name" json:"name" xml:"name"`
+	Name *string `form:"name,omitempty" json:"name,omitempty" xml:"name,omitempty"`
 	// 客户来源
-	Src int `form:"src" json:"src" xml:"src"`
+	Src *int `form:"src,omitempty" json:"src,omitempty" xml:"src,omitempty"`
 	// 客户手机
-	Mobile string `form:"mobile" json:"mobile" xml:"mobile"`
+	Mobile *string `form:"mobile,omitempty" json:"mobile,omitempty" xml:"mobile,omitempty"`
 	// 客户网址
-	URL string `form:"url" json:"url" xml:"url"`
+	URL *string `form:"url,omitempty" json:"url,omitempty" xml:"url,omitempty"`
 	// 客户邮箱
-	Email string `form:"email" json:"email" xml:"email"`
+	Email *string `form:"email,omitempty" json:"email,omitempty" xml:"email,omitempty"`
 	// 客户行业
-	Industry int `form:"industry" json:"industry" xml:"industry"`
+	Industry *int `form:"industry,omitempty" json:"industry,omitempty" xml:"industry,omitempty"`
 	// 客户等级
-	Level int `form:"level" json:"level" xml:"level"`
+	Level *int `form:"level,omitempty" json:"level,omitempty" xml:"level,omitempty"`
 	// 备注
-	Note string `form:"note" json:"note" xml:"note"`
+	Note *string `form:"note,omitempty" json:"note,omitempty" xml:"note,omitempty"`
 	// 客户地址
-	Address string `form:"address" json:"address" xml:"address"`
+	Address *string `form:"address,omitempty" json:"address,omitempty" xml:"address,omitempty"`
 }
 
 // CreateRequestBody is the type of the "Customer" service "Create" endpoint

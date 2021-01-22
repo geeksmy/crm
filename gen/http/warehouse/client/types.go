@@ -20,13 +20,13 @@ type UpdateRequestBody struct {
 	// ID
 	ID string `form:"id" json:"id" xml:"id"`
 	// 仓库名
-	Name string `form:"name" json:"name" xml:"name"`
+	Name *string `form:"name,omitempty" json:"name,omitempty" xml:"name,omitempty"`
 	// 仓库编码
-	Code string `form:"code" json:"code" xml:"code"`
+	Code *string `form:"code,omitempty" json:"code,omitempty" xml:"code,omitempty"`
 	// 仓库地址
-	Address string `form:"address" json:"address" xml:"address"`
+	Address *string `form:"address,omitempty" json:"address,omitempty" xml:"address,omitempty"`
 	// 仓库状态
-	Type int `form:"type" json:"type" xml:"type"`
+	Type *int `form:"type,omitempty" json:"type,omitempty" xml:"type,omitempty"`
 }
 
 // CreateRequestBody is the type of the "Warehouse" service "Create" endpoint

@@ -80,6 +80,10 @@ type Customer struct {
 type ListPayload struct {
 	// JWT used for authentication
 	Token string
+	// cursor of page
+	Cursor *int
+	// limit of items
+	Limit *int
 }
 
 // ListResult is the result type of the Customer service List method.
@@ -98,23 +102,23 @@ type UpdatePayload struct {
 	// ID
 	ID string
 	// 客户姓名
-	Name string
+	Name *string
 	// 客户来源
-	Src int
+	Src *int
 	// 客户手机
-	Mobile string
+	Mobile *string
 	// 客户网址
-	URL string
+	URL *string
 	// 客户邮箱
-	Email string
+	Email *string
 	// 客户行业
-	Industry int
+	Industry *int
 	// 客户等级
-	Level int
+	Level *int
 	// 备注
-	Note string
+	Note *string
 	// 客户地址
-	Address string
+	Address *string
 }
 
 // CreatePayload is the payload type of the Customer service Create method.

@@ -1,8 +1,10 @@
 package config
 
 import (
+	"fmt"
 	"os"
 
+	"github.com/geeksmy/go-libs/jwt"
 	"github.com/geeksmy/go-libs/redis"
 	"github.com/jinzhu/configor"
 	"go.uber.org/zap"
@@ -55,6 +57,17 @@ type LoggerConfig struct {
 	Format string `yaml:"format,omitempty" default:"json"`
 	// file
 	Output string `yaml:"output,omitempty" default:""`
+}
+
+func initJwt(secret string) {
+	jwt.C = jwt.Conf{
+		Secret: secret,
+	}
+	err := jwt.Init()
+
+	if err != nil {
+		panic(fmt.Errorf("初始化 jwt 失败 %w", err))
+	}
 }
 
 func InitLogger(debug bool, level, output string) {
@@ -110,6 +123,7 @@ func Init(cfgFile string) {
 	}
 
 	InitLogger(C.Debug, C.Logger.Level, C.Logger.Output)
+	initJwt(C.Jwt.Secret)
 
 	zap.L().Debug("[+]: 加载配置文件")
 }

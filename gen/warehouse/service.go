@@ -72,6 +72,10 @@ type Warehouse struct {
 type ListPayload struct {
 	// JWT used for authentication
 	Token string
+	// cursor of page
+	Cursor *int
+	// limit of items
+	Limit *int
 }
 
 // ListResult is the result type of the Warehouse service List method.
@@ -90,13 +94,13 @@ type UpdatePayload struct {
 	// ID
 	ID string
 	// 仓库名
-	Name string
+	Name *string
 	// 仓库编码
-	Code string
+	Code *string
 	// 仓库地址
-	Address string
+	Address *string
 	// 仓库状态
-	Type int
+	Type *int
 }
 
 // CreatePayload is the payload type of the Warehouse service Create method.

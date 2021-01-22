@@ -80,6 +80,10 @@ type Sales struct {
 type ListPayload struct {
 	// JWT used for authentication
 	Token string
+	// cursor of page
+	Cursor *int
+	// limit of items
+	Limit *int
 }
 
 // ListResult is the result type of the Sales service List method.
@@ -98,19 +102,19 @@ type UpdatePayload struct {
 	// 用户ID
 	ID string
 	// 销售单名
-	Name string
+	Name *string
 	// 客户ID
-	CustomerID string
+	CustomerID *string
 	// 销售金额
-	Money int
+	Money *int
 	// 销售日期
 	ConsignmentDate *string
 	// 销售还是退货
-	IsSalesReturn bool
+	IsSalesReturn *bool
 	// 备注
-	Note string
+	Note *string
 	// 负责人ID
-	HeadID string
+	HeadID *string
 }
 
 // CreatePayload is the payload type of the Sales service Create method.

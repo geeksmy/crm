@@ -82,6 +82,10 @@ type Inventory struct {
 type ListPayload struct {
 	// JWT used for authentication
 	Token string
+	// cursor of page
+	Cursor *int
+	// limit of items
+	Limit *int
 }
 
 // ListResult is the result type of the Inventory service List method.
@@ -100,23 +104,23 @@ type UpdatePayload struct {
 	// ID
 	ID string
 	// 产品ID
-	ProductID string
+	ProductID *string
 	// 产品数量
-	Number int
+	Number *int
 	// 库存单号
-	Code string
+	Code *string
 	// 仓库ID
-	WarehouseID string
+	WarehouseID *string
 	// 库存类型
-	Type int
+	Type *int
 	// 库存时间
-	InventoryDate string
+	InventoryDate *string
 	// 入库还是出库
-	InAndOut int
+	InAndOut *int
 	// 备注
-	Note string
+	Note *string
 	// 负责人ID
-	HeadID string
+	HeadID *string
 }
 
 // CreatePayload is the payload type of the Inventory service Create method.

@@ -20,23 +20,23 @@ type UpdateRequestBody struct {
 	// 用户ID
 	ID string `form:"id" json:"id" xml:"id"`
 	// 产品名
-	Name string `form:"name" json:"name" xml:"name"`
+	Name *string `form:"name,omitempty" json:"name,omitempty" xml:"name,omitempty"`
 	// 产品单位
-	Unit int `form:"unit" json:"unit" xml:"unit"`
+	Unit *int `form:"unit,omitempty" json:"unit,omitempty" xml:"unit,omitempty"`
 	// 成本价
-	CostPrice int `form:"cost_price" json:"cost_price" xml:"cost_price"`
+	CostPrice *int `form:"cost_price,omitempty" json:"cost_price,omitempty" xml:"cost_price,omitempty"`
 	// 市场价
-	MarketPrice int `form:"market_price" json:"market_price" xml:"market_price"`
+	MarketPrice *int `form:"market_price,omitempty" json:"market_price,omitempty" xml:"market_price,omitempty"`
 	// 产品备注
-	Note string `form:"note" json:"note" xml:"note"`
+	Note *string `form:"note,omitempty" json:"note,omitempty" xml:"note,omitempty"`
 	// 产品图片
-	Image string `form:"image" json:"image" xml:"image"`
+	Image *string `form:"image,omitempty" json:"image,omitempty" xml:"image,omitempty"`
 	// 产品规格
-	Size string `form:"size" json:"size" xml:"size"`
+	Size *string `form:"size,omitempty" json:"size,omitempty" xml:"size,omitempty"`
 	// 产品类型
-	Type int `form:"type" json:"type" xml:"type"`
+	Type *int `form:"type,omitempty" json:"type,omitempty" xml:"type,omitempty"`
 	// 是否上架
-	IsShelves bool `form:"is_shelves" json:"is_shelves" xml:"is_shelves"`
+	IsShelves *bool `form:"is_shelves,omitempty" json:"is_shelves,omitempty" xml:"is_shelves,omitempty"`
 }
 
 // CreateRequestBody is the type of the "Product" service "Create" endpoint

@@ -16,10 +16,8 @@ limitations under the License.
 package cmd
 
 import (
-	"crm/config"
-	"crm/internal/dao"
-
 	crmCmd "crm/cmd/crm"
+	"crm/config"
 
 	metricsMlwr "github.com/geeksmy/go-libs/goa-libs/middleware/metrics"
 	"github.com/spf13/cobra"
@@ -49,7 +47,7 @@ func runCmd() *cobra.Command {
 		},
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			config.Init(cmd.Flags().Lookup("config").Value.String())
-			dao.InitDB(config.C)
+			// dao.InitDB(config.C)
 			return nil
 		},
 	}

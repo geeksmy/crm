@@ -11,6 +11,7 @@ import (
 	user "crm/gen/user"
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"unicode/utf8"
 
 	goa "goa.design/goa/v3/pkg"
@@ -35,12 +36,39 @@ func BuildGetPayload(userGetID string, userGetToken string) (*user.GetPayload, e
 
 // BuildListPayload builds the payload for the User List endpoint from CLI
 // flags.
-func BuildListPayload(userListToken string) (*user.ListPayload, error) {
+func BuildListPayload(userListCursor string, userListLimit string, userListToken string) (*user.ListPayload, error) {
+	var err error
+	var cursor *int
+	{
+		if userListCursor != "" {
+			var v int64
+			v, err = strconv.ParseInt(userListCursor, 10, 64)
+			val := int(v)
+			cursor = &val
+			if err != nil {
+				return nil, fmt.Errorf("invalid value for cursor, must be INT")
+			}
+		}
+	}
+	var limit *int
+	{
+		if userListLimit != "" {
+			var v int64
+			v, err = strconv.ParseInt(userListLimit, 10, 64)
+			val := int(v)
+			limit = &val
+			if err != nil {
+				return nil, fmt.Errorf("invalid value for limit, must be INT")
+			}
+		}
+	}
 	var token string
 	{
 		token = userListToken
 	}
 	v := &user.ListPayload{}
+	v.Cursor = cursor
+	v.Limit = limit
 	v.Token = token
 
 	return v, nil
@@ -56,19 +84,29 @@ func BuildUpdatePayload(userUpdateBody string, userUpdateToken string) (*user.Up
 		if err != nil {
 			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"email\": \"adb@adb.com\",\n      \"group_id\": \"519151ca-6250-4eec-8016-1e14a68dc448\",\n      \"id\": \"519151ca-6250-4eec-8016-1e14a68dc448\",\n      \"jobs\": 1,\n      \"mobile\": \"1808001010\",\n      \"name\": \"张三\",\n      \"superior_id\": \"519151ca-6250-4eec-8016-1e14a68dc448\"\n   }'")
 		}
-		err = goa.MergeErrors(err, goa.ValidateFormat("body.mobile", body.Mobile, goa.FormatRegexp))
-
-		err = goa.MergeErrors(err, goa.ValidatePattern("body.mobile", body.Mobile, "^1(?:3\\d|4[4-9]|5[0-35-9]|6[67]|7[013-8]|8\\d|9\\d)\\d{8}$"))
-		if utf8.RuneCountInString(body.Mobile) < 11 {
-			err = goa.MergeErrors(err, goa.InvalidLengthError("body.mobile", body.Mobile, utf8.RuneCountInString(body.Mobile), 11, true))
+		if body.Mobile != nil {
+			err = goa.MergeErrors(err, goa.ValidateFormat("body.mobile", *body.Mobile, goa.FormatRegexp))
 		}
-		if utf8.RuneCountInString(body.Mobile) > 11 {
-			err = goa.MergeErrors(err, goa.InvalidLengthError("body.mobile", body.Mobile, utf8.RuneCountInString(body.Mobile), 11, false))
+		if body.Mobile != nil {
+			err = goa.MergeErrors(err, goa.ValidatePattern("body.mobile", *body.Mobile, "^1(?:3\\d|4[4-9]|5[0-35-9]|6[67]|7[013-8]|8\\d|9\\d)\\d{8}$"))
 		}
-		err = goa.MergeErrors(err, goa.ValidateFormat("body.email", body.Email, goa.FormatEmail))
-
-		if !(body.Jobs == 1 || body.Jobs == 2 || body.Jobs == 3) {
-			err = goa.MergeErrors(err, goa.InvalidEnumValueError("body.jobs", body.Jobs, []interface{}{1, 2, 3}))
+		if body.Mobile != nil {
+			if utf8.RuneCountInString(*body.Mobile) < 11 {
+				err = goa.MergeErrors(err, goa.InvalidLengthError("body.mobile", *body.Mobile, utf8.RuneCountInString(*body.Mobile), 11, true))
+			}
+		}
+		if body.Mobile != nil {
+			if utf8.RuneCountInString(*body.Mobile) > 11 {
+				err = goa.MergeErrors(err, goa.InvalidLengthError("body.mobile", *body.Mobile, utf8.RuneCountInString(*body.Mobile), 11, false))
+			}
+		}
+		if body.Email != nil {
+			err = goa.MergeErrors(err, goa.ValidateFormat("body.email", *body.Email, goa.FormatEmail))
+		}
+		if body.Jobs != nil {
+			if !(*body.Jobs == 1 || *body.Jobs == 2 || *body.Jobs == 3) {
+				err = goa.MergeErrors(err, goa.InvalidEnumValueError("body.jobs", *body.Jobs, []interface{}{1, 2, 3}))
+			}
 		}
 		if err != nil {
 			return nil, err
@@ -100,7 +138,7 @@ func BuildCreatePayload(userCreateBody string, userCreateToken string) (*user.Cr
 	{
 		err = json.Unmarshal([]byte(userCreateBody), &body)
 		if err != nil {
-			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"email\": \"adb@adb.com\",\n      \"group_id\": \"519151ca-6250-4eec-8016-1e14a68dc448\",\n      \"jobs\": 1,\n      \"mobile\": \"1808001010\",\n      \"name\": \"张三\",\n      \"password\": \"abc\",\n      \"superior_id\": \"519151ca-6250-4eec-8016-1e14a68dc448\",\n      \"username\": \"abc\"\n   }'")
+			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"email\": \"adb@adb.com\",\n      \"group_id\": \"519151ca-6250-4eec-8016-1e14a68dc448\",\n      \"is_admin\": false,\n      \"jobs\": 1,\n      \"mobile\": \"1808001010\",\n      \"name\": \"张三\",\n      \"password\": \"abc\",\n      \"superior_id\": \"519151ca-6250-4eec-8016-1e14a68dc448\",\n      \"username\": \"abc\"\n   }'")
 		}
 		err = goa.MergeErrors(err, goa.ValidatePattern("body.username", body.Username, "(\\d+.*[a-zA-Z]+)|([a-zA-Z]+.*\\d+)"))
 		err = goa.MergeErrors(err, goa.ValidateFormat("body.mobile", body.Mobile, goa.FormatRegexp))
@@ -132,6 +170,7 @@ func BuildCreatePayload(userCreateBody string, userCreateToken string) (*user.Cr
 		Mobile:     body.Mobile,
 		Email:      body.Email,
 		Jobs:       body.Jobs,
+		IsAdmin:    body.IsAdmin,
 		SuperiorID: body.SuperiorID,
 		GroupID:    body.GroupID,
 	}

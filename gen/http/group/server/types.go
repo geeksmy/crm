@@ -473,8 +473,10 @@ func NewGetPayload(id string, token string) *group.GetPayload {
 }
 
 // NewListPayload builds a Group service List endpoint payload.
-func NewListPayload(token string) *group.ListPayload {
+func NewListPayload(cursor *int, limit *int, token string) *group.ListPayload {
 	v := &group.ListPayload{}
+	v.Cursor = cursor
+	v.Limit = limit
 	v.Token = token
 
 	return v
@@ -484,7 +486,7 @@ func NewListPayload(token string) *group.ListPayload {
 func NewUpdatePayload(body *UpdateRequestBody, token string) *group.UpdatePayload {
 	v := &group.UpdatePayload{
 		ID:   *body.ID,
-		Name: *body.Name,
+		Name: body.Name,
 	}
 	v.Token = token
 
@@ -517,9 +519,6 @@ func NewDeletePayload(body *DeleteRequestBody, token string) *group.DeletePayloa
 func ValidateUpdateRequestBody(body *UpdateRequestBody) (err error) {
 	if body.ID == nil {
 		err = goa.MergeErrors(err, goa.MissingFieldError("id", "body"))
-	}
-	if body.Name == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("name", "body"))
 	}
 	return
 }

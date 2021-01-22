@@ -20,17 +20,17 @@ type UpdateRequestBody struct {
 	// 用户ID
 	ID string `form:"id" json:"id" xml:"id"`
 	// 姓名
-	Name string `form:"name" json:"name" xml:"name"`
+	Name *string `form:"name,omitempty" json:"name,omitempty" xml:"name,omitempty"`
 	// 手机号
-	Mobile string `form:"mobile" json:"mobile" xml:"mobile"`
+	Mobile *string `form:"mobile,omitempty" json:"mobile,omitempty" xml:"mobile,omitempty"`
 	// 邮箱
-	Email string `form:"email" json:"email" xml:"email"`
+	Email *string `form:"email,omitempty" json:"email,omitempty" xml:"email,omitempty"`
 	// 1 - 推销员，2 - 经理，3 - 管理员
-	Jobs int `form:"jobs" json:"jobs" xml:"jobs"`
+	Jobs *int `form:"jobs,omitempty" json:"jobs,omitempty" xml:"jobs,omitempty"`
 	// 直属上级ID
-	SuperiorID string `form:"superior_id" json:"superior_id" xml:"superior_id"`
+	SuperiorID *string `form:"superior_id,omitempty" json:"superior_id,omitempty" xml:"superior_id,omitempty"`
 	// 所属组
-	GroupID string `form:"group_id" json:"group_id" xml:"group_id"`
+	GroupID *string `form:"group_id,omitempty" json:"group_id,omitempty" xml:"group_id,omitempty"`
 }
 
 // CreateRequestBody is the type of the "User" service "Create" endpoint HTTP
@@ -48,6 +48,8 @@ type CreateRequestBody struct {
 	Email string `form:"email" json:"email" xml:"email"`
 	// 1 - 推销员，2 - 经理，3 - 管理员
 	Jobs int `form:"jobs" json:"jobs" xml:"jobs"`
+	// 是否是管理员
+	IsAdmin bool `form:"is_admin" json:"is_admin" xml:"is_admin"`
 	// 直属上级ID
 	SuperiorID string `form:"superior_id" json:"superior_id" xml:"superior_id"`
 	// 所属组
@@ -389,6 +391,7 @@ func NewCreateRequestBody(p *user.CreatePayload) *CreateRequestBody {
 		Mobile:     p.Mobile,
 		Email:      p.Email,
 		Jobs:       p.Jobs,
+		IsAdmin:    p.IsAdmin,
 		SuperiorID: p.SuperiorID,
 		GroupID:    p.GroupID,
 	}

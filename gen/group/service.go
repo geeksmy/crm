@@ -64,6 +64,10 @@ type Group struct {
 type ListPayload struct {
 	// JWT used for authentication
 	Token string
+	// cursor of page
+	Cursor *int
+	// limit of items
+	Limit *int
 }
 
 // ListResult is the result type of the Group service List method.
@@ -82,7 +86,7 @@ type UpdatePayload struct {
 	// 用户ID
 	ID string
 	// 组名
-	Name string
+	Name *string
 }
 
 // CreatePayload is the payload type of the Group service Create method.

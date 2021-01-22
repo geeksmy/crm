@@ -594,8 +594,10 @@ func NewGetPayload(id string, token string) *customer.GetPayload {
 }
 
 // NewListPayload builds a Customer service List endpoint payload.
-func NewListPayload(token string) *customer.ListPayload {
+func NewListPayload(cursor *int, limit *int, token string) *customer.ListPayload {
 	v := &customer.ListPayload{}
+	v.Cursor = cursor
+	v.Limit = limit
 	v.Token = token
 
 	return v
@@ -605,15 +607,15 @@ func NewListPayload(token string) *customer.ListPayload {
 func NewUpdatePayload(body *UpdateRequestBody, token string) *customer.UpdatePayload {
 	v := &customer.UpdatePayload{
 		ID:       *body.ID,
-		Name:     *body.Name,
-		Src:      *body.Src,
-		Mobile:   *body.Mobile,
-		URL:      *body.URL,
-		Email:    *body.Email,
-		Industry: *body.Industry,
-		Level:    *body.Level,
-		Note:     *body.Note,
-		Address:  *body.Address,
+		Name:     body.Name,
+		Src:      body.Src,
+		Mobile:   body.Mobile,
+		URL:      body.URL,
+		Email:    body.Email,
+		Industry: body.Industry,
+		Level:    body.Level,
+		Note:     body.Note,
+		Address:  body.Address,
 	}
 	v.Token = token
 
@@ -654,33 +656,6 @@ func NewDeletePayload(body *DeleteRequestBody, token string) *customer.DeletePay
 func ValidateUpdateRequestBody(body *UpdateRequestBody) (err error) {
 	if body.ID == nil {
 		err = goa.MergeErrors(err, goa.MissingFieldError("id", "body"))
-	}
-	if body.Name == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("name", "body"))
-	}
-	if body.Src == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("src", "body"))
-	}
-	if body.Mobile == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("mobile", "body"))
-	}
-	if body.URL == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("url", "body"))
-	}
-	if body.Email == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("email", "body"))
-	}
-	if body.Industry == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("industry", "body"))
-	}
-	if body.Level == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("level", "body"))
-	}
-	if body.Note == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("note", "body"))
-	}
-	if body.Address == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("address", "body"))
 	}
 	if body.Mobile != nil {
 		err = goa.MergeErrors(err, goa.ValidateFormat("body.mobile", *body.Mobile, goa.FormatRegexp))

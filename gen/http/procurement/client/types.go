@@ -20,15 +20,15 @@ type UpdateRequestBody struct {
 	// ID
 	ID string `form:"id" json:"id" xml:"id"`
 	// 采购编码
-	Code string `form:"code" json:"code" xml:"code"`
+	Code *string `form:"code,omitempty" json:"code,omitempty" xml:"code,omitempty"`
 	// 采购金额
-	Money int `form:"money" json:"money" xml:"money"`
+	Money *int `form:"money,omitempty" json:"money,omitempty" xml:"money,omitempty"`
 	// 采购还是退货
-	IsSalesReturn bool `form:"is_sales_return" json:"is_sales_return" xml:"is_sales_return"`
+	IsSalesReturn *bool `form:"is_sales_return,omitempty" json:"is_sales_return,omitempty" xml:"is_sales_return,omitempty"`
 	// 备注
-	Note string `form:"note" json:"note" xml:"note"`
+	Note *string `form:"note,omitempty" json:"note,omitempty" xml:"note,omitempty"`
 	// 负责人ID
-	HeadID string `form:"head_id" json:"head_id" xml:"head_id"`
+	HeadID *string `form:"head_id,omitempty" json:"head_id,omitempty" xml:"head_id,omitempty"`
 }
 
 // CreateRequestBody is the type of the "Procurement" service "Create" endpoint

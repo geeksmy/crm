@@ -65,17 +65,20 @@ var _ = Service("Auth", func() {
 				Description("JWT used for authentication")
 				Example(ExampleJwt)
 			})
+			Attribute("id", String, func() {
+				Example(ExampleUUID)
+			})
 			Attribute("old_password", String, func() {
 				MinLength(1)
 				Example("123abc")
 				MaxLength(128)
 			})
 			Attribute("new_password", String, func() {
-				MinLength(6)
+				MinLength(8)
 				Example("abc123")
 				MaxLength(128)
 			})
-			Required("token", "old_password", "new_password")
+			Required("token", "id", "old_password", "new_password")
 		})
 
 		Result(SuccessResult, func() {

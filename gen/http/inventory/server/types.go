@@ -690,8 +690,10 @@ func NewGetPayload(id string, token string) *inventory.GetPayload {
 }
 
 // NewListPayload builds a Inventory service List endpoint payload.
-func NewListPayload(token string) *inventory.ListPayload {
+func NewListPayload(cursor *int, limit *int, token string) *inventory.ListPayload {
 	v := &inventory.ListPayload{}
+	v.Cursor = cursor
+	v.Limit = limit
 	v.Token = token
 
 	return v
@@ -701,15 +703,15 @@ func NewListPayload(token string) *inventory.ListPayload {
 func NewUpdatePayload(body *UpdateRequestBody, token string) *inventory.UpdatePayload {
 	v := &inventory.UpdatePayload{
 		ID:            *body.ID,
-		ProductID:     *body.ProductID,
-		Number:        *body.Number,
-		Code:          *body.Code,
-		WarehouseID:   *body.WarehouseID,
-		Type:          *body.Type,
-		InventoryDate: *body.InventoryDate,
-		InAndOut:      *body.InAndOut,
-		Note:          *body.Note,
-		HeadID:        *body.HeadID,
+		ProductID:     body.ProductID,
+		Number:        body.Number,
+		Code:          body.Code,
+		WarehouseID:   body.WarehouseID,
+		Type:          body.Type,
+		InventoryDate: body.InventoryDate,
+		InAndOut:      body.InAndOut,
+		Note:          body.Note,
+		HeadID:        body.HeadID,
 	}
 	v.Token = token
 
@@ -751,33 +753,6 @@ func NewDeletePayload(body *DeleteRequestBody, token string) *inventory.DeletePa
 func ValidateUpdateRequestBody(body *UpdateRequestBody) (err error) {
 	if body.ID == nil {
 		err = goa.MergeErrors(err, goa.MissingFieldError("id", "body"))
-	}
-	if body.ProductID == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("product_id", "body"))
-	}
-	if body.Number == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("number", "body"))
-	}
-	if body.Code == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("code", "body"))
-	}
-	if body.WarehouseID == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("warehouse_id", "body"))
-	}
-	if body.Type == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("type", "body"))
-	}
-	if body.InventoryDate == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("inventory_date", "body"))
-	}
-	if body.InAndOut == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("in_and_out", "body"))
-	}
-	if body.Note == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("note", "body"))
-	}
-	if body.HeadID == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("head_id", "body"))
 	}
 	if body.Type != nil {
 		if !(*body.Type == 1 || *body.Type == 2 || *body.Type == 3) {

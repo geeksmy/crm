@@ -13,6 +13,7 @@ import (
 	customerviews "crm/gen/customer/views"
 	"io"
 	"net/http"
+	"strconv"
 	"strings"
 
 	goahttp "goa.design/goa/v3/http"
@@ -118,9 +119,33 @@ func EncodeListResponse(encoder func(context.Context, http.ResponseWriter) goaht
 func DecodeListRequest(mux goahttp.Muxer, decoder func(*http.Request) goahttp.Decoder) func(*http.Request) (interface{}, error) {
 	return func(r *http.Request) (interface{}, error) {
 		var (
-			token string
-			err   error
+			cursor *int
+			limit  *int
+			token  string
+			err    error
 		)
+		{
+			cursorRaw := r.URL.Query().Get("cursor")
+			if cursorRaw != "" {
+				v, err2 := strconv.ParseInt(cursorRaw, 10, strconv.IntSize)
+				if err2 != nil {
+					err = goa.MergeErrors(err, goa.InvalidFieldTypeError("cursor", cursorRaw, "integer"))
+				}
+				pv := int(v)
+				cursor = &pv
+			}
+		}
+		{
+			limitRaw := r.URL.Query().Get("limit")
+			if limitRaw != "" {
+				v, err2 := strconv.ParseInt(limitRaw, 10, strconv.IntSize)
+				if err2 != nil {
+					err = goa.MergeErrors(err, goa.InvalidFieldTypeError("limit", limitRaw, "integer"))
+				}
+				pv := int(v)
+				limit = &pv
+			}
+		}
 		token = r.Header.Get("Authorization")
 		if token == "" {
 			err = goa.MergeErrors(err, goa.MissingFieldError("Authorization", "header"))
@@ -128,7 +153,7 @@ func DecodeListRequest(mux goahttp.Muxer, decoder func(*http.Request) goahttp.De
 		if err != nil {
 			return nil, err
 		}
-		payload := NewListPayload(token)
+		payload := NewListPayload(cursor, limit, token)
 		if strings.Contains(payload.Token, " ") {
 			// Remove authorization scheme prefix (e.g. "Bearer")
 			cred := strings.SplitN(payload.Token, " ", 2)[1]

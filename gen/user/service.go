@@ -78,6 +78,10 @@ type User struct {
 type ListPayload struct {
 	// JWT used for authentication
 	Token string
+	// cursor of page
+	Cursor *int
+	// limit of items
+	Limit *int
 }
 
 // ListResult is the result type of the User service List method.
@@ -96,17 +100,17 @@ type UpdatePayload struct {
 	// 用户ID
 	ID string
 	// 姓名
-	Name string
+	Name *string
 	// 手机号
-	Mobile string
+	Mobile *string
 	// 邮箱
-	Email string
+	Email *string
 	// 1 - 推销员，2 - 经理，3 - 管理员
-	Jobs int
+	Jobs *int
 	// 直属上级ID
-	SuperiorID string
+	SuperiorID *string
 	// 所属组
-	GroupID string
+	GroupID *string
 }
 
 // CreatePayload is the payload type of the User service Create method.
@@ -125,6 +129,8 @@ type CreatePayload struct {
 	Email string
 	// 1 - 推销员，2 - 经理，3 - 管理员
 	Jobs int
+	// 是否是管理员
+	IsAdmin bool
 	// 直属上级ID
 	SuperiorID string
 	// 所属组

@@ -76,6 +76,10 @@ type Procurement struct {
 type ListPayload struct {
 	// JWT used for authentication
 	Token string
+	// cursor of page
+	Cursor *int
+	// limit of items
+	Limit *int
 }
 
 // ListResult is the result type of the Procurement service List method.
@@ -94,15 +98,15 @@ type UpdatePayload struct {
 	// ID
 	ID string
 	// 采购编码
-	Code string
+	Code *string
 	// 采购金额
-	Money int
+	Money *int
 	// 采购还是退货
-	IsSalesReturn bool
+	IsSalesReturn *bool
 	// 备注
-	Note string
+	Note *string
 	// 负责人ID
-	HeadID string
+	HeadID *string
 }
 
 // CreatePayload is the payload type of the Procurement service Create method.

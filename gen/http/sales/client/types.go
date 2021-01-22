@@ -20,19 +20,19 @@ type UpdateRequestBody struct {
 	// 用户ID
 	ID string `form:"id" json:"id" xml:"id"`
 	// 销售单名
-	Name string `form:"name" json:"name" xml:"name"`
+	Name *string `form:"name,omitempty" json:"name,omitempty" xml:"name,omitempty"`
 	// 客户ID
-	CustomerID string `form:"customer_id" json:"customer_id" xml:"customer_id"`
+	CustomerID *string `form:"customer_id,omitempty" json:"customer_id,omitempty" xml:"customer_id,omitempty"`
 	// 销售金额
-	Money int `form:"money" json:"money" xml:"money"`
+	Money *int `form:"money,omitempty" json:"money,omitempty" xml:"money,omitempty"`
 	// 销售日期
 	ConsignmentDate *string `form:"consignment_date,omitempty" json:"consignment_date,omitempty" xml:"consignment_date,omitempty"`
 	// 销售还是退货
-	IsSalesReturn bool `form:"is_sales_return" json:"is_sales_return" xml:"is_sales_return"`
+	IsSalesReturn *bool `form:"is_sales_return,omitempty" json:"is_sales_return,omitempty" xml:"is_sales_return,omitempty"`
 	// 备注
-	Note string `form:"note" json:"note" xml:"note"`
+	Note *string `form:"note,omitempty" json:"note,omitempty" xml:"note,omitempty"`
 	// 负责人ID
-	HeadID string `form:"head_id" json:"head_id" xml:"head_id"`
+	HeadID *string `form:"head_id,omitempty" json:"head_id,omitempty" xml:"head_id,omitempty"`
 }
 
 // CreateRequestBody is the type of the "Sales" service "Create" endpoint HTTP

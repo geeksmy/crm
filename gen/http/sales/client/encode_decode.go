@@ -12,6 +12,7 @@ import (
 	"context"
 	sales "crm/gen/sales"
 	salesviews "crm/gen/sales/views"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -170,6 +171,14 @@ func EncodeListRequest(encoder func(*http.Request) goahttp.Encoder) func(*http.R
 				req.Header.Set("Authorization", head)
 			}
 		}
+		values := req.URL.Query()
+		if p.Cursor != nil {
+			values.Add("cursor", fmt.Sprintf("%v", *p.Cursor))
+		}
+		if p.Limit != nil {
+			values.Add("limit", fmt.Sprintf("%v", *p.Limit))
+		}
+		req.URL.RawQuery = values.Encode()
 		return nil
 	}
 }

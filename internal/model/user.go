@@ -6,6 +6,11 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+type Superior struct {
+	ID   string
+	Name string
+}
+
 type User struct {
 	BaseUUIDModel
 	Username   string     `gorm:"type:varchar(36);not null;"`
@@ -20,7 +25,8 @@ type User struct {
 	LoginAt    *time.Time `sql:"index" msgpack:"-"`
 
 	// 返回使用
-	Group Group
+	Group    Group
+	Superior Superior
 }
 
 func (User) TableName() string {

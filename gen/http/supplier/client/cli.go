@@ -11,6 +11,7 @@ import (
 	supplier "crm/gen/supplier"
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"unicode/utf8"
 
 	goa "goa.design/goa/v3/pkg"
@@ -36,12 +37,39 @@ func BuildGetPayload(supplierGetID string, supplierGetToken string) (*supplier.G
 
 // BuildListPayload builds the payload for the Supplier List endpoint from CLI
 // flags.
-func BuildListPayload(supplierListToken string) (*supplier.ListPayload, error) {
+func BuildListPayload(supplierListCursor string, supplierListLimit string, supplierListToken string) (*supplier.ListPayload, error) {
+	var err error
+	var cursor *int
+	{
+		if supplierListCursor != "" {
+			var v int64
+			v, err = strconv.ParseInt(supplierListCursor, 10, 64)
+			val := int(v)
+			cursor = &val
+			if err != nil {
+				return nil, fmt.Errorf("invalid value for cursor, must be INT")
+			}
+		}
+	}
+	var limit *int
+	{
+		if supplierListLimit != "" {
+			var v int64
+			v, err = strconv.ParseInt(supplierListLimit, 10, 64)
+			val := int(v)
+			limit = &val
+			if err != nil {
+				return nil, fmt.Errorf("invalid value for limit, must be INT")
+			}
+		}
+	}
 	var token string
 	{
 		token = supplierListToken
 	}
 	v := &supplier.ListPayload{}
+	v.Cursor = cursor
+	v.Limit = limit
 	v.Token = token
 
 	return v, nil
@@ -57,17 +85,26 @@ func BuildUpdatePayload(supplierUpdateBody string, supplierUpdateToken string) (
 		if err != nil {
 			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"contact_address\": \"咸阳\",\n      \"contact_name\": \"张三\",\n      \"contact_phone\": \"1808001010\",\n      \"head_id\": \"519151ca-6250-4eec-8016-1e14a68dc448\",\n      \"id\": \"519151ca-6250-4eec-8016-1e14a68dc448\",\n      \"level\": 1,\n      \"name\": \"xx公司\",\n      \"note\": \"备注\"\n   }'")
 		}
-		if !(body.Level == 1 || body.Level == 2 || body.Level == 3 || body.Level == 4) {
-			err = goa.MergeErrors(err, goa.InvalidEnumValueError("body.level", body.Level, []interface{}{1, 2, 3, 4}))
+		if body.Level != nil {
+			if !(*body.Level == 1 || *body.Level == 2 || *body.Level == 3 || *body.Level == 4) {
+				err = goa.MergeErrors(err, goa.InvalidEnumValueError("body.level", *body.Level, []interface{}{1, 2, 3, 4}))
+			}
 		}
-		err = goa.MergeErrors(err, goa.ValidateFormat("body.contact_phone", body.ContactPhone, goa.FormatRegexp))
-
-		err = goa.MergeErrors(err, goa.ValidatePattern("body.contact_phone", body.ContactPhone, "^1(?:3\\d|4[4-9]|5[0-35-9]|6[67]|7[013-8]|8\\d|9\\d)\\d{8}$"))
-		if utf8.RuneCountInString(body.ContactPhone) < 11 {
-			err = goa.MergeErrors(err, goa.InvalidLengthError("body.contact_phone", body.ContactPhone, utf8.RuneCountInString(body.ContactPhone), 11, true))
+		if body.ContactPhone != nil {
+			err = goa.MergeErrors(err, goa.ValidateFormat("body.contact_phone", *body.ContactPhone, goa.FormatRegexp))
 		}
-		if utf8.RuneCountInString(body.ContactPhone) > 11 {
-			err = goa.MergeErrors(err, goa.InvalidLengthError("body.contact_phone", body.ContactPhone, utf8.RuneCountInString(body.ContactPhone), 11, false))
+		if body.ContactPhone != nil {
+			err = goa.MergeErrors(err, goa.ValidatePattern("body.contact_phone", *body.ContactPhone, "^1(?:3\\d|4[4-9]|5[0-35-9]|6[67]|7[013-8]|8\\d|9\\d)\\d{8}$"))
+		}
+		if body.ContactPhone != nil {
+			if utf8.RuneCountInString(*body.ContactPhone) < 11 {
+				err = goa.MergeErrors(err, goa.InvalidLengthError("body.contact_phone", *body.ContactPhone, utf8.RuneCountInString(*body.ContactPhone), 11, true))
+			}
+		}
+		if body.ContactPhone != nil {
+			if utf8.RuneCountInString(*body.ContactPhone) > 11 {
+				err = goa.MergeErrors(err, goa.InvalidLengthError("body.contact_phone", *body.ContactPhone, utf8.RuneCountInString(*body.ContactPhone), 11, false))
+			}
 		}
 		if err != nil {
 			return nil, err

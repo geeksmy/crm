@@ -84,6 +84,10 @@ type Product struct {
 type ListPayload struct {
 	// JWT used for authentication
 	Token string
+	// cursor of page
+	Cursor *int
+	// limit of items
+	Limit *int
 }
 
 // ListResult is the result type of the Product service List method.
@@ -102,23 +106,23 @@ type UpdatePayload struct {
 	// 用户ID
 	ID string
 	// 产品名
-	Name string
+	Name *string
 	// 产品单位
-	Unit int
+	Unit *int
 	// 成本价
-	CostPrice int
+	CostPrice *int
 	// 市场价
-	MarketPrice int
+	MarketPrice *int
 	// 产品备注
-	Note string
+	Note *string
 	// 产品图片
-	Image string
+	Image *string
 	// 产品规格
-	Size string
+	Size *string
 	// 产品类型
-	Type int
+	Type *int
 	// 是否上架
-	IsShelves bool
+	IsShelves *bool
 }
 
 // CreatePayload is the payload type of the Product service Create method.

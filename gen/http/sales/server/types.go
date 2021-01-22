@@ -647,8 +647,10 @@ func NewGetPayload(id string, token string) *sales.GetPayload {
 }
 
 // NewListPayload builds a Sales service List endpoint payload.
-func NewListPayload(token string) *sales.ListPayload {
+func NewListPayload(cursor *int, limit *int, token string) *sales.ListPayload {
 	v := &sales.ListPayload{}
+	v.Cursor = cursor
+	v.Limit = limit
 	v.Token = token
 
 	return v
@@ -658,13 +660,13 @@ func NewListPayload(token string) *sales.ListPayload {
 func NewUpdatePayload(body *UpdateRequestBody, token string) *sales.UpdatePayload {
 	v := &sales.UpdatePayload{
 		ID:              *body.ID,
-		Name:            *body.Name,
-		CustomerID:      *body.CustomerID,
-		Money:           *body.Money,
+		Name:            body.Name,
+		CustomerID:      body.CustomerID,
+		Money:           body.Money,
 		ConsignmentDate: body.ConsignmentDate,
-		IsSalesReturn:   *body.IsSalesReturn,
-		Note:            *body.Note,
-		HeadID:          *body.HeadID,
+		IsSalesReturn:   body.IsSalesReturn,
+		Note:            body.Note,
+		HeadID:          body.HeadID,
 	}
 	v.Token = token
 
@@ -705,24 +707,6 @@ func NewDeletePayload(body *DeleteRequestBody, token string) *sales.DeletePayloa
 func ValidateUpdateRequestBody(body *UpdateRequestBody) (err error) {
 	if body.ID == nil {
 		err = goa.MergeErrors(err, goa.MissingFieldError("id", "body"))
-	}
-	if body.Name == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("name", "body"))
-	}
-	if body.CustomerID == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("customer_id", "body"))
-	}
-	if body.Money == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("money", "body"))
-	}
-	if body.IsSalesReturn == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("is_sales_return", "body"))
-	}
-	if body.Note == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("note", "body"))
-	}
-	if body.HeadID == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("head_id", "body"))
 	}
 	if body.IsSalesReturn != nil {
 		if !(*body.IsSalesReturn == false || *body.IsSalesReturn == true) {

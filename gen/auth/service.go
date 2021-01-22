@@ -64,6 +64,7 @@ type Session struct {
 type UpdatePasswordPayload struct {
 	// JWT used for authentication
 	Token       string
+	ID          string
 	OldPassword string
 	NewPassword string
 }

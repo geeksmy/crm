@@ -20,23 +20,23 @@ type UpdateRequestBody struct {
 	// ID
 	ID string `form:"id" json:"id" xml:"id"`
 	// 产品ID
-	ProductID string `form:"product_id" json:"product_id" xml:"product_id"`
+	ProductID *string `form:"product_id,omitempty" json:"product_id,omitempty" xml:"product_id,omitempty"`
 	// 产品数量
-	Number int `form:"number" json:"number" xml:"number"`
+	Number *int `form:"number,omitempty" json:"number,omitempty" xml:"number,omitempty"`
 	// 库存单号
-	Code string `form:"code" json:"code" xml:"code"`
+	Code *string `form:"code,omitempty" json:"code,omitempty" xml:"code,omitempty"`
 	// 仓库ID
-	WarehouseID string `form:"warehouse_id" json:"warehouse_id" xml:"warehouse_id"`
+	WarehouseID *string `form:"warehouse_id,omitempty" json:"warehouse_id,omitempty" xml:"warehouse_id,omitempty"`
 	// 库存类型
-	Type int `form:"type" json:"type" xml:"type"`
+	Type *int `form:"type,omitempty" json:"type,omitempty" xml:"type,omitempty"`
 	// 库存时间
-	InventoryDate string `form:"inventory_date" json:"inventory_date" xml:"inventory_date"`
+	InventoryDate *string `form:"inventory_date,omitempty" json:"inventory_date,omitempty" xml:"inventory_date,omitempty"`
 	// 入库还是出库
-	InAndOut int `form:"in_and_out" json:"in_and_out" xml:"in_and_out"`
+	InAndOut *int `form:"in_and_out,omitempty" json:"in_and_out,omitempty" xml:"in_and_out,omitempty"`
 	// 备注
-	Note string `form:"note" json:"note" xml:"note"`
+	Note *string `form:"note,omitempty" json:"note,omitempty" xml:"note,omitempty"`
 	// 负责人ID
-	HeadID string `form:"head_id" json:"head_id" xml:"head_id"`
+	HeadID *string `form:"head_id,omitempty" json:"head_id,omitempty" xml:"head_id,omitempty"`
 }
 
 // CreateRequestBody is the type of the "Inventory" service "Create" endpoint

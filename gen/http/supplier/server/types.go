@@ -605,8 +605,10 @@ func NewGetPayload(id string, token string) *supplier.GetPayload {
 }
 
 // NewListPayload builds a Supplier service List endpoint payload.
-func NewListPayload(token string) *supplier.ListPayload {
+func NewListPayload(cursor *int, limit *int, token string) *supplier.ListPayload {
 	v := &supplier.ListPayload{}
+	v.Cursor = cursor
+	v.Limit = limit
 	v.Token = token
 
 	return v
@@ -616,13 +618,13 @@ func NewListPayload(token string) *supplier.ListPayload {
 func NewUpdatePayload(body *UpdateRequestBody, token string) *supplier.UpdatePayload {
 	v := &supplier.UpdatePayload{
 		ID:             *body.ID,
-		Name:           *body.Name,
-		Level:          *body.Level,
-		ContactName:    *body.ContactName,
-		ContactPhone:   *body.ContactPhone,
-		ContactAddress: *body.ContactAddress,
-		Note:           *body.Note,
-		HeadID:         *body.HeadID,
+		Name:           body.Name,
+		Level:          body.Level,
+		ContactName:    body.ContactName,
+		ContactPhone:   body.ContactPhone,
+		ContactAddress: body.ContactAddress,
+		Note:           body.Note,
+		HeadID:         body.HeadID,
 	}
 	v.Token = token
 
@@ -662,27 +664,6 @@ func NewDeletePayload(body *DeleteRequestBody, token string) *supplier.DeletePay
 func ValidateUpdateRequestBody(body *UpdateRequestBody) (err error) {
 	if body.ID == nil {
 		err = goa.MergeErrors(err, goa.MissingFieldError("id", "body"))
-	}
-	if body.Name == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("name", "body"))
-	}
-	if body.Level == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("level", "body"))
-	}
-	if body.ContactName == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("contact_name", "body"))
-	}
-	if body.ContactPhone == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("contact_phone", "body"))
-	}
-	if body.ContactAddress == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("contact_address", "body"))
-	}
-	if body.Note == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("note", "body"))
-	}
-	if body.HeadID == nil {
-		err = goa.MergeErrors(err, goa.MissingFieldError("head_id", "body"))
 	}
 	if body.Level != nil {
 		if !(*body.Level == 1 || *body.Level == 2 || *body.Level == 3 || *body.Level == 4) {

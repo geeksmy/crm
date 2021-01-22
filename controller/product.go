@@ -5,6 +5,11 @@ import (
 
 	"crm/gen/log"
 	"crm/gen/product"
+	"crm/internal/dao"
+	"crm/internal/serializer"
+	"crm/internal/service"
+
+	"go.uber.org/zap"
 )
 
 // Product service example implementation.
@@ -24,7 +29,17 @@ func (s *productsrvc) Get(ctx context.Context, p *product.GetPayload) (res *prod
 	res = &product.Product{}
 	logger := L(ctx, s.logger)
 	logger.Info("product.Get")
-	return
+
+	productService := service.NewProductService(ctx, dao.DB, logger)
+	productModel, errMsg := productService.Get(p.ID)
+
+	if errMsg != nil {
+		logger.Error("获取单个产品失败", zap.Error(errMsg))
+		return nil, service.ErrInternalError
+	}
+
+	res = serializer.ModelProduct2Product(productModel)
+	return res, nil
 }
 
 // 获取产品列表
@@ -32,7 +47,19 @@ func (s *productsrvc) List(ctx context.Context, p *product.ListPayload) (res *pr
 	res = &product.ListResult{}
 	logger := L(ctx, s.logger)
 	logger.Info("product.List")
-	return
+
+	productService := service.NewProductService(ctx, dao.DB, logger)
+	productsModel, page, errMsg := productService.List(*p.Limit, *p.Cursor)
+
+	if errMsg != nil {
+		logger.Error("获取产品列表失败", zap.Error(errMsg))
+		return nil, service.ErrInternalError
+	}
+
+	res.Items = serializer.ModelProducts2Products(productsModel)
+	res.Total = page.TotalRecord
+	res.NextCursor = page.NextCursor
+	return res, nil
 }
 
 // 更新产品
@@ -40,7 +67,17 @@ func (s *productsrvc) Update(ctx context.Context, p *product.UpdatePayload) (res
 	res = &product.Product{}
 	logger := L(ctx, s.logger)
 	logger.Info("product.Update")
-	return
+
+	productService := service.NewProductService(ctx, dao.DB, logger)
+	productModel, errMsg := productService.Update(p)
+
+	if errMsg != nil {
+		logger.Error("更新产品失败", zap.Error(errMsg))
+		return nil, service.ErrInternalError
+	}
+
+	res = serializer.ModelProduct2Product(productModel)
+	return res, nil
 }
 
 // 创建产品
@@ -48,7 +85,17 @@ func (s *productsrvc) Create(ctx context.Context, p *product.CreatePayload) (res
 	res = &product.Product{}
 	logger := L(ctx, s.logger)
 	logger.Info("product.Create")
-	return
+
+	productService := service.NewProductService(ctx, dao.DB, logger)
+	productModel, errMsg := productService.Create(p)
+
+	if errMsg != nil {
+		logger.Error("创建产品失败", zap.Error(errMsg))
+		return nil, service.ErrInternalError
+	}
+
+	res = serializer.ModelProduct2Product(productModel)
+	return res, nil
 }
 
 // 删除产品
@@ -56,5 +103,15 @@ func (s *productsrvc) Delete(ctx context.Context, p *product.DeletePayload) (res
 	res = &product.SuccessResult{}
 	logger := L(ctx, s.logger)
 	logger.Info("product.Delete")
-	return
+
+	productService := service.NewProductService(ctx, dao.DB, logger)
+	errMsg := productService.Delete(p.Ids)
+
+	if errMsg != nil {
+		logger.Error("更新产品失败", zap.Error(errMsg))
+		return nil, service.ErrInternalError
+	}
+
+	res.OK = true
+	return res, nil
 }

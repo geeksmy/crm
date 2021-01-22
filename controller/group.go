@@ -5,6 +5,11 @@ import (
 
 	"crm/gen/group"
 	"crm/gen/log"
+	"crm/internal/dao"
+	"crm/internal/serializer"
+	"crm/internal/service"
+
+	"go.uber.org/zap"
 )
 
 // Group service example implementation.
@@ -24,7 +29,18 @@ func (s *groupsrvc) Get(ctx context.Context, p *group.GetPayload) (res *group.Gr
 	res = &group.Group{}
 	logger := L(ctx, s.logger)
 	logger.Info("group.Get")
-	return
+
+	groupService := service.NewGroupService(ctx, dao.DB, logger)
+	groupModel, errMsg := groupService.Get(p.ID)
+
+	if errMsg != nil {
+		logger.Error("获取单个组失败", zap.Error(errMsg))
+		return nil, service.ErrInternalError
+	}
+
+	res = serializer.ModeGroup2Group(groupModel)
+
+	return res, nil
 }
 
 // 获取组列表
@@ -32,7 +48,19 @@ func (s *groupsrvc) List(ctx context.Context, p *group.ListPayload) (res *group.
 	res = &group.ListResult{}
 	logger := L(ctx, s.logger)
 	logger.Info("group.List")
-	return
+
+	groupService := service.NewGroupService(ctx, dao.DB, logger)
+	groupsModel, page, errMsg := groupService.List(*p.Limit, *p.Cursor)
+
+	if errMsg != nil {
+		logger.Error("获取组列表失败", zap.Error(errMsg))
+		return nil, service.ErrInternalError
+	}
+
+	res.Items = serializer.ModeGroups2Groups(groupsModel)
+	res.Total = page.TotalRecord
+	res.NextCursor = page.NextCursor
+	return res, nil
 }
 
 // 更新组
@@ -40,7 +68,18 @@ func (s *groupsrvc) Update(ctx context.Context, p *group.UpdatePayload) (res *gr
 	res = &group.Group{}
 	logger := L(ctx, s.logger)
 	logger.Info("group.Update")
-	return
+
+	groupService := service.NewGroupService(ctx, dao.DB, logger)
+
+	groupModel, errMsg := groupService.Update(p.ID, p.Name)
+
+	if errMsg != nil {
+		logger.Error("更新组失败", zap.Error(errMsg))
+		return nil, service.ErrInternalError
+	}
+
+	res = serializer.ModeGroup2Group(groupModel)
+	return res, nil
 }
 
 // 创建组
@@ -48,7 +87,18 @@ func (s *groupsrvc) Create(ctx context.Context, p *group.CreatePayload) (res *gr
 	res = &group.Group{}
 	logger := L(ctx, s.logger)
 	logger.Info("group.Create")
-	return
+
+	groupService := service.NewGroupService(ctx, dao.DB, logger)
+
+	groupModel, errMsg := groupService.Create(p.Name)
+
+	if errMsg != nil {
+		logger.Error("创建组失败", zap.Error(errMsg))
+		return nil, service.ErrInternalError
+	}
+
+	res = serializer.ModeGroup2Group(groupModel)
+	return res, nil
 }
 
 // 删除组
@@ -56,5 +106,16 @@ func (s *groupsrvc) Delete(ctx context.Context, p *group.DeletePayload) (res *gr
 	res = &group.SuccessResult{}
 	logger := L(ctx, s.logger)
 	logger.Info("group.Delete")
-	return
+
+	groupService := service.NewGroupService(ctx, dao.DB, logger)
+
+	errMsg := groupService.Delete(p.Ids)
+
+	if errMsg != nil {
+		logger.Error("删除组失败", zap.Error(errMsg))
+		return nil, service.ErrInternalError
+	}
+
+	res.OK = true
+	return res, nil
 }

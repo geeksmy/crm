@@ -59,6 +59,12 @@ var _ = Service("Supplier", func() {
 				Description("JWT used for authentication")
 				Example(ExampleJwt)
 			})
+			Attribute("cursor", Int, "cursor of page", func() {
+				Example(0)
+			})
+			Attribute("limit", Int, "limit of items", func() {
+				Example(20)
+			})
 
 			Required("token")
 		})
@@ -76,6 +82,10 @@ var _ = Service("Supplier", func() {
 
 		HTTP(func() {
 			GET("")
+			Params(func() {
+				Param("cursor")
+				Param("limit")
+			})
 			Response(StatusOK)
 		})
 	})
@@ -123,7 +133,7 @@ var _ = Service("Supplier", func() {
 				Example("519151ca-6250-4eec-8016-1e14a68dc448")
 			})
 
-			Required("token", "id", "name", "level", "contact_name", "contact_phone", "contact_address", "note", "head_id")
+			Required("token", "id")
 		})
 
 		Result(Supplier, func() {

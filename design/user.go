@@ -59,6 +59,12 @@ var _ = Service("User", func() {
 				Description("JWT used for authentication")
 				Example(ExampleJwt)
 			})
+			Attribute("cursor", Int, "cursor of page", func() {
+				Example(0)
+			})
+			Attribute("limit", Int, "limit of items", func() {
+				Example(20)
+			})
 
 			Required("token")
 		})
@@ -76,6 +82,10 @@ var _ = Service("User", func() {
 
 		HTTP(func() {
 			GET("")
+			Params(func() {
+				Param("cursor")
+				Param("limit")
+			})
 			Response(StatusOK)
 		})
 	})
@@ -122,7 +132,7 @@ var _ = Service("User", func() {
 				Example("519151ca-6250-4eec-8016-1e14a68dc448")
 			})
 
-			Required("token", "id", "name", "mobile", "email", "jobs", "superior_id", "group_id")
+			Required("token", "id")
 		})
 
 		Result(User, func() {
@@ -174,6 +184,9 @@ var _ = Service("User", func() {
 				Enum(1, 2, 3)
 				Description("1 - 推销员，2 - 经理，3 - 管理员")
 			})
+			Attribute("is_admin", Boolean, "是否是管理员", func() {
+				Example(false)
+			})
 			Attribute("superior_id", String, "直属上级ID", func() {
 				Example("519151ca-6250-4eec-8016-1e14a68dc448")
 			})
@@ -181,7 +194,7 @@ var _ = Service("User", func() {
 				Example("519151ca-6250-4eec-8016-1e14a68dc448")
 			})
 
-			Required("token", "username", "password", "name", "mobile", "email", "jobs", "superior_id", "group_id")
+			Required("token", "username", "password", "name", "mobile", "email", "jobs", "is_admin", "superior_id", "group_id")
 		})
 
 		Result(User, func() {

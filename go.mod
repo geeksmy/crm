@@ -8,6 +8,7 @@ require (
 	github.com/google/uuid v1.1.2
 	github.com/jinzhu/configor v1.2.1
 	github.com/jinzhu/gorm v1.9.16
+	github.com/lib/pq v1.8.0
 	github.com/magiconair/properties v1.8.4 // indirect
 	github.com/mitchellh/mapstructure v1.4.1 // indirect
 	github.com/pelletier/go-toml v1.8.1 // indirect

@@ -11,6 +11,7 @@ import (
 	product "crm/gen/product"
 	"encoding/json"
 	"fmt"
+	"strconv"
 
 	goa "goa.design/goa/v3/pkg"
 )
@@ -35,12 +36,39 @@ func BuildGetPayload(productGetID string, productGetToken string) (*product.GetP
 
 // BuildListPayload builds the payload for the Product List endpoint from CLI
 // flags.
-func BuildListPayload(productListToken string) (*product.ListPayload, error) {
+func BuildListPayload(productListCursor string, productListLimit string, productListToken string) (*product.ListPayload, error) {
+	var err error
+	var cursor *int
+	{
+		if productListCursor != "" {
+			var v int64
+			v, err = strconv.ParseInt(productListCursor, 10, 64)
+			val := int(v)
+			cursor = &val
+			if err != nil {
+				return nil, fmt.Errorf("invalid value for cursor, must be INT")
+			}
+		}
+	}
+	var limit *int
+	{
+		if productListLimit != "" {
+			var v int64
+			v, err = strconv.ParseInt(productListLimit, 10, 64)
+			val := int(v)
+			limit = &val
+			if err != nil {
+				return nil, fmt.Errorf("invalid value for limit, must be INT")
+			}
+		}
+	}
 	var token string
 	{
 		token = productListToken
 	}
 	v := &product.ListPayload{}
+	v.Cursor = cursor
+	v.Limit = limit
 	v.Token = token
 
 	return v, nil
@@ -56,11 +84,15 @@ func BuildUpdatePayload(productUpdateBody string, productUpdateToken string) (*p
 		if err != nil {
 			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"cost_price\": 123,\n      \"id\": \"519151ca-6250-4eec-8016-1e14a68dc448\",\n      \"image\": \"/images/123.jpg\",\n      \"is_shelves\": false,\n      \"market_price\": 123,\n      \"name\": \"灌装辣椒\",\n      \"note\": \"备注\",\n      \"size\": \"瓶\",\n      \"type\": 1,\n      \"unit\": 1\n   }'")
 		}
-		if !(body.Unit == 1 || body.Unit == 2 || body.Unit == 3 || body.Unit == 4 || body.Unit == 5 || body.Unit == 6 || body.Unit == 7 || body.Unit == 8) {
-			err = goa.MergeErrors(err, goa.InvalidEnumValueError("body.unit", body.Unit, []interface{}{1, 2, 3, 4, 5, 6, 7, 8}))
+		if body.Unit != nil {
+			if !(*body.Unit == 1 || *body.Unit == 2 || *body.Unit == 3 || *body.Unit == 4 || *body.Unit == 5 || *body.Unit == 6 || *body.Unit == 7 || *body.Unit == 8) {
+				err = goa.MergeErrors(err, goa.InvalidEnumValueError("body.unit", *body.Unit, []interface{}{1, 2, 3, 4, 5, 6, 7, 8}))
+			}
 		}
-		if !(body.Type == 1 || body.Type == 2 || body.Type == 3 || body.Type == 4 || body.Type == 5 || body.Type == 6 || body.Type == 7 || body.Type == 8) {
-			err = goa.MergeErrors(err, goa.InvalidEnumValueError("body.type", body.Type, []interface{}{1, 2, 3, 4, 5, 6, 7, 8}))
+		if body.Type != nil {
+			if !(*body.Type == 1 || *body.Type == 2 || *body.Type == 3 || *body.Type == 4 || *body.Type == 5 || *body.Type == 6 || *body.Type == 7 || *body.Type == 8) {
+				err = goa.MergeErrors(err, goa.InvalidEnumValueError("body.type", *body.Type, []interface{}{1, 2, 3, 4, 5, 6, 7, 8}))
+			}
 		}
 		if err != nil {
 			return nil, err
