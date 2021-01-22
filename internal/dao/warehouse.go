@@ -44,16 +44,16 @@ func (s WarehouseScope) WithPk(id string) WarehouseScope {
 }
 
 // 新增仓库
-func (d warehouseDao) Create(warehouse model.Warehouse) (model.Warehouse, error) {
+func (d warehouseDao) Create(warehouse model.Warehouse) (*model.Warehouse, error) {
 	warehouse.BaseUUIDModel = model.NewBaseUUIDModel()
 	err := d.db.Create(&warehouse).Error
 
-	return warehouse, err
+	return &warehouse, err
 }
 
 // 仓库列表
-func (d warehouseDao) List(limit, cursor int, scope WarehouseScope) ([]model.Warehouse, *libsgorm.Page, error) {
-	var res []model.Warehouse
+func (d warehouseDao) List(limit, cursor int, scope WarehouseScope) ([]*model.Warehouse, *libsgorm.Page, error) {
+	var res []*model.Warehouse
 
 	db := d.db.Scopes(scope.Scopes()...)
 	query := model.FilterDeleted(db)
@@ -63,8 +63,8 @@ func (d warehouseDao) List(limit, cursor int, scope WarehouseScope) ([]model.War
 }
 
 // 获取单个仓库
-func (d warehouseDao) Get(scope WarehouseScope) (model.Warehouse, error) {
-	var res model.Warehouse
+func (d warehouseDao) Get(scope WarehouseScope) (*model.Warehouse, error) {
+	var res *model.Warehouse
 
 	db := d.db.Scopes(scope.Scopes()...)
 	err := model.FilterDeleted(db).Find(&res).Error
@@ -72,9 +72,17 @@ func (d warehouseDao) Get(scope WarehouseScope) (model.Warehouse, error) {
 	return res, err
 }
 
+func (d warehouseDao) GetByID(pk string) (*model.Warehouse, error) {
+	var res *model.Warehouse
+
+	err := model.FilterDeleted(d.db).Where("id = ?", pk).Find(&res).Error
+
+	return res, err
+}
+
 // 更新仓库
-func (d warehouseDao) Update(scope WarehouseScope, fields map[string]interface{}) (model.Warehouse, error) {
-	var res model.Warehouse
+func (d warehouseDao) Update(scope WarehouseScope, fields map[string]interface{}) (*model.Warehouse, error) {
+	var res *model.Warehouse
 
 	db := d.db.Scopes(scope.Scopes()...)
 	err := model.FilterDeleted(db).Model(&model.Warehouse{}).Updates(fields).Scan(&res).Error

@@ -72,6 +72,14 @@ func (d productDao) Get(scope ProductScope) (*model.Product, error) {
 	return res, err
 }
 
+func (d productDao) GetByID(pk string) (*model.Product, error) {
+	var res *model.Product
+
+	err := model.FilterDeleted(d.db).Where("id = ?", pk).Find(&res).Error
+
+	return res, err
+}
+
 // 更新产品
 func (d productDao) Update(scope ProductScope, fields map[string]interface{}) (*model.Product, error) {
 	var res *model.Product

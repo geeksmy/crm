@@ -44,16 +44,16 @@ func (s SalesScope) WithPk(id string) SalesScope {
 }
 
 // 新增销售
-func (d salesDao) Create(sales model.Sales) (model.Sales, error) {
+func (d salesDao) Create(sales model.Sales) (*model.Sales, error) {
 	sales.BaseUUIDModel = model.NewBaseUUIDModel()
 	err := d.db.Create(&sales).Error
 
-	return sales, err
+	return &sales, err
 }
 
 // 销售列表
-func (d salesDao) List(limit, cursor int, scope SalesScope) ([]model.Sales, *libsgorm.Page, error) {
-	var res []model.Sales
+func (d salesDao) List(limit, cursor int, scope SalesScope) ([]*model.Sales, *libsgorm.Page, error) {
+	var res []*model.Sales
 
 	db := d.db.Scopes(scope.Scopes()...)
 	query := model.FilterDeleted(db)
@@ -63,8 +63,8 @@ func (d salesDao) List(limit, cursor int, scope SalesScope) ([]model.Sales, *lib
 }
 
 // 获取单个销售
-func (d salesDao) Get(scope SalesScope) (model.Sales, error) {
-	var res model.Sales
+func (d salesDao) Get(scope SalesScope) (*model.Sales, error) {
+	var res *model.Sales
 
 	db := d.db.Scopes(scope.Scopes()...)
 	err := model.FilterDeleted(db).Find(&res).Error
@@ -73,8 +73,8 @@ func (d salesDao) Get(scope SalesScope) (model.Sales, error) {
 }
 
 // 更新销售
-func (d salesDao) Update(scope SalesScope, fields map[string]interface{}) (model.Sales, error) {
-	var res model.Sales
+func (d salesDao) Update(scope SalesScope, fields map[string]interface{}) (*model.Sales, error) {
+	var res *model.Sales
 
 	db := d.db.Scopes(scope.Scopes()...)
 	err := model.FilterDeleted(db).Model(&model.Sales{}).Updates(fields).Scan(&res).Error

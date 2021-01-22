@@ -44,16 +44,16 @@ func (s CustomerScope) WithPk(id string) CustomerScope {
 }
 
 // 新增客户
-func (d customerDao) Create(customer model.Customer) (model.Customer, error) {
+func (d customerDao) Create(customer model.Customer) (*model.Customer, error) {
 	customer.BaseUUIDModel = model.NewBaseUUIDModel()
 	err := d.db.Create(&customer).Error
 
-	return customer, err
+	return &customer, err
 }
 
 // 客户列表
-func (d customerDao) List(limit, cursor int, scope CustomerScope) ([]model.Customer, *libsgorm.Page, error) {
-	var res []model.Customer
+func (d customerDao) List(limit, cursor int, scope CustomerScope) ([]*model.Customer, *libsgorm.Page, error) {
+	var res []*model.Customer
 
 	db := d.db.Scopes(scope.Scopes()...)
 	query := model.FilterDeleted(db)
@@ -63,8 +63,8 @@ func (d customerDao) List(limit, cursor int, scope CustomerScope) ([]model.Custo
 }
 
 // 获取单个客户
-func (d customerDao) Get(scope CustomerScope) (model.Customer, error) {
-	var res model.Customer
+func (d customerDao) Get(scope CustomerScope) (*model.Customer, error) {
+	var res *model.Customer
 
 	db := d.db.Scopes(scope.Scopes()...)
 	err := model.FilterDeleted(db).Find(&res).Error
@@ -72,9 +72,17 @@ func (d customerDao) Get(scope CustomerScope) (model.Customer, error) {
 	return res, err
 }
 
+func (d customerDao) GetByID(pk string) (*model.Customer, error) {
+	var res *model.Customer
+
+	err := model.FilterDeleted(d.db).Where("id = ?", pk).Find(&res).Error
+
+	return res, err
+}
+
 // 更新客户
-func (d customerDao) Update(scope CustomerScope, fields map[string]interface{}) (model.Customer, error) {
-	var res model.Customer
+func (d customerDao) Update(scope CustomerScope, fields map[string]interface{}) (*model.Customer, error) {
+	var res *model.Customer
 
 	db := d.db.Scopes(scope.Scopes()...)
 	err := model.FilterDeleted(db).Model(&model.Customer{}).Updates(fields).Scan(&res).Error

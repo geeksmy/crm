@@ -44,16 +44,16 @@ func (s InventoryScope) WithPk(id string) InventoryScope {
 }
 
 // 新增库存
-func (d inventoryDao) Create(inventory model.Inventory) (model.Inventory, error) {
+func (d inventoryDao) Create(inventory model.Inventory) (*model.Inventory, error) {
 	inventory.BaseUUIDModel = model.NewBaseUUIDModel()
 	err := d.db.Create(&inventory).Error
 
-	return inventory, err
+	return &inventory, err
 }
 
 // 库存列表
-func (d inventoryDao) List(limit, cursor int, scope InventoryScope) ([]model.Inventory, *libsgorm.Page, error) {
-	var res []model.Inventory
+func (d inventoryDao) List(limit, cursor int, scope InventoryScope) ([]*model.Inventory, *libsgorm.Page, error) {
+	var res []*model.Inventory
 
 	db := d.db.Scopes(scope.Scopes()...)
 	query := model.FilterDeleted(db)
@@ -63,8 +63,8 @@ func (d inventoryDao) List(limit, cursor int, scope InventoryScope) ([]model.Inv
 }
 
 // 获取单个库存
-func (d inventoryDao) Get(scope InventoryScope) (model.Inventory, error) {
-	var res model.Inventory
+func (d inventoryDao) Get(scope InventoryScope) (*model.Inventory, error) {
+	var res *model.Inventory
 
 	db := d.db.Scopes(scope.Scopes()...)
 	err := model.FilterDeleted(db).Find(&res).Error
@@ -73,8 +73,8 @@ func (d inventoryDao) Get(scope InventoryScope) (model.Inventory, error) {
 }
 
 // 更新库存
-func (d inventoryDao) Update(scope InventoryScope, fields map[string]interface{}) (model.Inventory, error) {
-	var res model.Inventory
+func (d inventoryDao) Update(scope InventoryScope, fields map[string]interface{}) (*model.Inventory, error) {
+	var res *model.Inventory
 
 	db := d.db.Scopes(scope.Scopes()...)
 	err := model.FilterDeleted(db).Model(&model.Inventory{}).Updates(fields).Scan(&res).Error

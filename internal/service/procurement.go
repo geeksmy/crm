@@ -165,8 +165,7 @@ func (srv ProcurementService) getByFounderAndHeadAndSupplier(procurementModel *m
 	procurementModel.Founder.Name = founder.Name
 	procurementModel.Head.ID = head.ID
 	procurementModel.Head.Name = head.Name
-	procurementModel.Supplier.ID = supplier.ID
-	procurementModel.Supplier.Name = supplier.Name
+	procurementModel.Supplier = *supplier
 
 	return procurementModel, nil
 }
