@@ -1,7 +1,7 @@
 # workdir info
 PACKAGE=crm
 PREFIX=$(shell pwd)
-CMD_PACKAGE=${PACKAGE}/cmd
+CMD_PACKAGE=${PACKAGE}
 OUTPUT_DIR=${PREFIX}/bin
 OUTPUT_FILE=${OUTPUT_DIR}/crm
 COMMIT_ID=$(shell git rev-parse --short HEAD)

@@ -26,7 +26,7 @@ func NewGroup(logger *log.Logger) group.Service {
 
 // 获取单个组
 func (s *groupsrvc) Get(ctx context.Context, p *group.GetPayload) (res *group.Group, err error) {
-	res = &group.Group{}
+	// res = &group.Group{}
 	logger := L(ctx, s.logger)
 	logger.Info("group.Get")
 
@@ -65,7 +65,7 @@ func (s *groupsrvc) List(ctx context.Context, p *group.ListPayload) (res *group.
 
 // 更新组
 func (s *groupsrvc) Update(ctx context.Context, p *group.UpdatePayload) (res *group.Group, err error) {
-	res = &group.Group{}
+	// res = &group.Group{}
 	logger := L(ctx, s.logger)
 	logger.Info("group.Update")
 
@@ -84,7 +84,7 @@ func (s *groupsrvc) Update(ctx context.Context, p *group.UpdatePayload) (res *gr
 
 // 创建组
 func (s *groupsrvc) Create(ctx context.Context, p *group.CreatePayload) (res *group.Group, err error) {
-	res = &group.Group{}
+	// res = &group.Group{}
 	logger := L(ctx, s.logger)
 	logger.Info("group.Create")
 

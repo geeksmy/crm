@@ -21,7 +21,7 @@ func NewCustomer(logger *log.Logger) customer.Service {
 
 // 获取单个客户
 func (s *customersrvc) Get(ctx context.Context, p *customer.GetPayload) (res *customer.Customer, err error) {
-	res = &customer.Customer{}
+	// res = &customer.Customer{}
 	logger := L(ctx, s.logger)
 	logger.Info("customer.Get")
 	return
@@ -37,7 +37,7 @@ func (s *customersrvc) List(ctx context.Context, p *customer.ListPayload) (res *
 
 // 更新客户
 func (s *customersrvc) Update(ctx context.Context, p *customer.UpdatePayload) (res *customer.Customer, err error) {
-	res = &customer.Customer{}
+	// res = &customer.Customer{}
 	logger := L(ctx, s.logger)
 	logger.Info("customer.Update")
 	return
@@ -45,7 +45,7 @@ func (s *customersrvc) Update(ctx context.Context, p *customer.UpdatePayload) (r
 
 // 创建客户
 func (s *customersrvc) Create(ctx context.Context, p *customer.CreatePayload) (res *customer.Customer, err error) {
-	res = &customer.Customer{}
+	// res = &customer.Customer{}
 	logger := L(ctx, s.logger)
 	logger.Info("customer.Create")
 	return

@@ -18,6 +18,7 @@ package cmd
 import (
 	crmCmd "crm/cmd/crm"
 	"crm/config"
+	"crm/internal/dao"
 
 	metricsMlwr "github.com/geeksmy/go-libs/goa-libs/middleware/metrics"
 	"github.com/spf13/cobra"
@@ -46,8 +47,8 @@ func runCmd() *cobra.Command {
 			return nil
 		},
 		PreRunE: func(cmd *cobra.Command, args []string) error {
-			config.Init(cmd.Flags().Lookup("config").Value.String())
-			// dao.InitDB(config.C)
+			config.Init(cfgFile)
+			dao.InitDB(config.C)
 			return nil
 		},
 	}

@@ -26,7 +26,7 @@ func NewSupplier(logger *log.Logger) supplier.Service {
 
 // 获取单个供应商
 func (s *suppliersrvc) Get(ctx context.Context, p *supplier.GetPayload) (res *supplier.Supplier, err error) {
-	res = &supplier.Supplier{}
+	// res = &supplier.Supplier{}
 	logger := L(ctx, s.logger)
 	logger.Info("supplier.Get")
 
@@ -64,7 +64,7 @@ func (s *suppliersrvc) List(ctx context.Context, p *supplier.ListPayload) (res *
 
 // 更新供应商
 func (s *suppliersrvc) Update(ctx context.Context, p *supplier.UpdatePayload) (res *supplier.Supplier, err error) {
-	res = &supplier.Supplier{}
+	// res = &supplier.Supplier{}
 	logger := L(ctx, s.logger)
 	logger.Info("supplier.Update")
 
@@ -82,7 +82,7 @@ func (s *suppliersrvc) Update(ctx context.Context, p *supplier.UpdatePayload) (r
 
 // 创建供应商
 func (s *suppliersrvc) Create(ctx context.Context, p *supplier.CreatePayload) (res *supplier.Supplier, err error) {
-	res = &supplier.Supplier{}
+	// res = &supplier.Supplier{}
 	logger := L(ctx, s.logger)
 	logger.Info("supplier.Create")
 

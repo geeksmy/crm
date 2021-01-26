@@ -19,6 +19,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var (
+	cfgFile string
+)
+
 // rootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
 	Use:   "crm",
@@ -29,7 +33,7 @@ var RootCmd = &cobra.Command{
 }
 
 func init() {
-	RootCmd.PersistentFlags().StringP("config", "c", "", "配置文件路径")
+	RootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "配置文件路径")
 
 	RootCmd.AddCommand(runCmd())
 }

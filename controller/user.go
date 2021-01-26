@@ -27,7 +27,7 @@ func NewUser(logger *log.Logger) user.Service {
 
 // 获取单个用户
 func (s *usersrvc) Get(ctx context.Context, p *user.GetPayload) (res *user.User, err error) {
-	res = &user.User{}
+	// res = &user.User{}
 	logger := L(ctx, s.logger)
 	logger.Info("user.Get")
 
@@ -68,7 +68,7 @@ func (s *usersrvc) List(ctx context.Context, p *user.ListPayload) (res *user.Lis
 
 // 更新用户
 func (s *usersrvc) Update(ctx context.Context, p *user.UpdatePayload) (res *user.User, err error) {
-	res = &user.User{}
+	// res = &user.User{}
 	logger := L(ctx, s.logger)
 	logger.Info("user.Update")
 
@@ -87,7 +87,7 @@ func (s *usersrvc) Update(ctx context.Context, p *user.UpdatePayload) (res *user
 
 // 创建用户
 func (s *usersrvc) Create(ctx context.Context, p *user.CreatePayload) (res *user.User, err error) {
-	res = &user.User{}
+	// res = &user.User{}
 	logger := L(ctx, s.logger)
 	logger.Info("user.Create")
 

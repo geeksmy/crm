@@ -118,4 +118,6 @@ Temporary Items
 .apdisk
 
 .idea
-
+bin
+bin/*
+config.yaml

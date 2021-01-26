@@ -26,7 +26,7 @@ func NewProduct(logger *log.Logger) product.Service {
 
 // 获取单个产品
 func (s *productsrvc) Get(ctx context.Context, p *product.GetPayload) (res *product.Product, err error) {
-	res = &product.Product{}
+	// res = &product.Product{}
 	logger := L(ctx, s.logger)
 	logger.Info("product.Get")
 
@@ -64,7 +64,7 @@ func (s *productsrvc) List(ctx context.Context, p *product.ListPayload) (res *pr
 
 // 更新产品
 func (s *productsrvc) Update(ctx context.Context, p *product.UpdatePayload) (res *product.Product, err error) {
-	res = &product.Product{}
+	// res = &product.Product{}
 	logger := L(ctx, s.logger)
 	logger.Info("product.Update")
 
@@ -82,7 +82,7 @@ func (s *productsrvc) Update(ctx context.Context, p *product.UpdatePayload) (res
 
 // 创建产品
 func (s *productsrvc) Create(ctx context.Context, p *product.CreatePayload) (res *product.Product, err error) {
-	res = &product.Product{}
+	// res = &product.Product{}
 	logger := L(ctx, s.logger)
 	logger.Info("product.Create")
 
