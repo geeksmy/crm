@@ -5,6 +5,11 @@ import (
 
 	"crm/gen/log"
 	"crm/gen/procurement"
+	"crm/internal/dao"
+	"crm/internal/serializer"
+	"crm/internal/service"
+
+	"go.uber.org/zap"
 )
 
 // Procurement service example implementation.
@@ -24,7 +29,17 @@ func (s *procurementsrvc) Get(ctx context.Context, p *procurement.GetPayload) (r
 	res = &procurement.Procurement{}
 	logger := L(ctx, s.logger)
 	logger.Info("procurement.Get")
-	return
+
+	procurementService := service.NewProcurementService(ctx, dao.DB, logger)
+	procurementModel, errMsg := procurementService.Get(p.ID)
+
+	if errMsg != nil {
+		logger.Error("删除单个采购失败", zap.Error(errMsg))
+		return nil, service.ErrInternalError
+	}
+
+	res = serializer.ModelProcurement2Procurement(procurementModel)
+	return res, nil
 }
 
 // 获取采购列表
@@ -32,7 +47,19 @@ func (s *procurementsrvc) List(ctx context.Context, p *procurement.ListPayload) 
 	res = &procurement.ListResult{}
 	logger := L(ctx, s.logger)
 	logger.Info("procurement.List")
-	return
+
+	procurementService := service.NewProcurementService(ctx, dao.DB, logger)
+	procurementsModel, page, errMsg := procurementService.List(*p.Limit, *p.Cursor)
+
+	if errMsg != nil {
+		logger.Error("删除单个采购失败", zap.Error(errMsg))
+		return nil, service.ErrInternalError
+	}
+
+	res.Items = serializer.ModelProcurements2Procurements(procurementsModel)
+	res.Total = page.TotalRecord
+	res.NextCursor = page.NextCursor
+	return res, nil
 }
 
 // 更新采购
@@ -40,7 +67,17 @@ func (s *procurementsrvc) Update(ctx context.Context, p *procurement.UpdatePaylo
 	res = &procurement.Procurement{}
 	logger := L(ctx, s.logger)
 	logger.Info("procurement.Update")
-	return
+
+	procurementService := service.NewProcurementService(ctx, dao.DB, logger)
+	procurementModel, errMsg := procurementService.Update(p)
+
+	if errMsg != nil {
+		logger.Error("更新采购失败", zap.Error(errMsg))
+		return nil, service.ErrInternalError
+	}
+
+	res = serializer.ModelProcurement2Procurement(procurementModel)
+	return res, nil
 }
 
 // 创建采购
@@ -48,7 +85,17 @@ func (s *procurementsrvc) Create(ctx context.Context, p *procurement.CreatePaylo
 	res = &procurement.Procurement{}
 	logger := L(ctx, s.logger)
 	logger.Info("procurement.Create")
-	return
+
+	procurementService := service.NewProcurementService(ctx, dao.DB, logger)
+	procurementModel, errMsg := procurementService.Create(p)
+
+	if errMsg != nil {
+		logger.Error("创建采购失败", zap.Error(errMsg))
+		return nil, service.ErrInternalError
+	}
+
+	res = serializer.ModelProcurement2Procurement(procurementModel)
+	return res, nil
 }
 
 // 删除采购
@@ -56,5 +103,15 @@ func (s *procurementsrvc) Delete(ctx context.Context, p *procurement.DeletePaylo
 	res = &procurement.SuccessResult{}
 	logger := L(ctx, s.logger)
 	logger.Info("procurement.Delete")
-	return
+
+	procurementService := service.NewProcurementService(ctx, dao.DB, logger)
+	errMsg := procurementService.Delete(p.Ids)
+
+	if errMsg != nil {
+		logger.Error("删除单个采购失败", zap.Error(errMsg))
+		return nil, service.ErrInternalError
+	}
+
+	res.OK = true
+	return res, nil
 }

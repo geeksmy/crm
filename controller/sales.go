@@ -5,6 +5,11 @@ import (
 
 	"crm/gen/log"
 	"crm/gen/sales"
+	"crm/internal/dao"
+	"crm/internal/serializer"
+	"crm/internal/service"
+
+	"go.uber.org/zap"
 )
 
 // Sales service example implementation.
@@ -24,7 +29,17 @@ func (s *salessrvc) Get(ctx context.Context, p *sales.GetPayload) (res *sales.Sa
 	res = &sales.Sales{}
 	logger := L(ctx, s.logger)
 	logger.Info("sales.Get")
-	return
+
+	salesService := service.NewSalesService(ctx, dao.DB, logger)
+	salesModel, errMsg := salesService.Get(p.ID)
+
+	if errMsg != nil {
+		logger.Error("获取单个销售失败", zap.Error(errMsg))
+		return nil, service.ErrInternalError
+	}
+
+	res = serializer.ModelSales2Sales(salesModel)
+	return res, nil
 }
 
 // 获取销售列表
@@ -32,7 +47,19 @@ func (s *salessrvc) List(ctx context.Context, p *sales.ListPayload) (res *sales.
 	res = &sales.ListResult{}
 	logger := L(ctx, s.logger)
 	logger.Info("sales.List")
-	return
+
+	salesService := service.NewSalesService(ctx, dao.DB, logger)
+	salessModel, page, errMsg := salesService.List(*p.Limit, *p.Cursor)
+
+	if errMsg != nil {
+		logger.Error("获取单个销售失败", zap.Error(errMsg))
+		return nil, service.ErrInternalError
+	}
+
+	res.Items = serializer.ModelSaless2Saless(salessModel)
+	res.Total = page.TotalRecord
+	res.NextCursor = page.NextCursor
+	return res, nil
 }
 
 // 更新销售
@@ -40,7 +67,17 @@ func (s *salessrvc) Update(ctx context.Context, p *sales.UpdatePayload) (res *sa
 	res = &sales.Sales{}
 	logger := L(ctx, s.logger)
 	logger.Info("sales.Update")
-	return
+
+	salesService := service.NewSalesService(ctx, dao.DB, logger)
+	salesModel, errMsg := salesService.Update(p)
+
+	if errMsg != nil {
+		logger.Error("更新销售失败", zap.Error(errMsg))
+		return nil, service.ErrInternalError
+	}
+
+	res = serializer.ModelSales2Sales(salesModel)
+	return res, nil
 }
 
 // 创建销售
@@ -48,7 +85,17 @@ func (s *salessrvc) Create(ctx context.Context, p *sales.CreatePayload) (res *sa
 	res = &sales.Sales{}
 	logger := L(ctx, s.logger)
 	logger.Info("sales.Create")
-	return
+
+	salesService := service.NewSalesService(ctx, dao.DB, logger)
+	salesModel, errMsg := salesService.Create(p)
+
+	if errMsg != nil {
+		logger.Error("创建销售失败", zap.Error(errMsg))
+		return nil, service.ErrInternalError
+	}
+
+	res = serializer.ModelSales2Sales(salesModel)
+	return res, nil
 }
 
 // 删除销售
@@ -56,5 +103,15 @@ func (s *salessrvc) Delete(ctx context.Context, p *sales.DeletePayload) (res *sa
 	res = &sales.SuccessResult{}
 	logger := L(ctx, s.logger)
 	logger.Info("sales.Delete")
-	return
+
+	salesService := service.NewSalesService(ctx, dao.DB, logger)
+	errMsg := salesService.Delete(p.Ids)
+
+	if errMsg != nil {
+		logger.Error("获取单个销售失败", zap.Error(errMsg))
+		return nil, service.ErrInternalError
+	}
+
+	res.OK = true
+	return res, nil
 }

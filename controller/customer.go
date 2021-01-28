@@ -5,6 +5,11 @@ import (
 
 	"crm/gen/customer"
 	"crm/gen/log"
+	"crm/internal/dao"
+	"crm/internal/serializer"
+	"crm/internal/service"
+
+	"go.uber.org/zap"
 )
 
 // Customer service example implementation.
@@ -24,7 +29,17 @@ func (s *customersrvc) Get(ctx context.Context, p *customer.GetPayload) (res *cu
 	// res = &customer.Customer{}
 	logger := L(ctx, s.logger)
 	logger.Info("customer.Get")
-	return
+
+	customerService := service.NewCustomerService(ctx, dao.DB, logger)
+	customerModel, errMsg := customerService.Get(p.ID)
+
+	if errMsg != nil {
+		logger.Error("获取单个客户失败", zap.Error(errMsg))
+		return nil, service.ErrInternalError
+	}
+
+	res = serializer.ModelCustomer2Customer(customerModel)
+	return res, nil
 }
 
 // 获取客户列表
@@ -32,7 +47,19 @@ func (s *customersrvc) List(ctx context.Context, p *customer.ListPayload) (res *
 	res = &customer.ListResult{}
 	logger := L(ctx, s.logger)
 	logger.Info("customer.List")
-	return
+
+	customerService := service.NewCustomerService(ctx, dao.DB, logger)
+	customersModel, page, errMsg := customerService.List(*p.Limit, *p.Cursor)
+
+	if errMsg != nil {
+		logger.Error("获取客户列表失败", zap.Error(errMsg))
+		return nil, service.ErrInternalError
+	}
+
+	res.Items = serializer.ModelCustomers2Customers(customersModel)
+	res.Total = page.TotalRecord
+	res.NextCursor = page.NextCursor
+	return res, nil
 }
 
 // 更新客户
@@ -40,7 +67,17 @@ func (s *customersrvc) Update(ctx context.Context, p *customer.UpdatePayload) (r
 	// res = &customer.Customer{}
 	logger := L(ctx, s.logger)
 	logger.Info("customer.Update")
-	return
+
+	customerService := service.NewCustomerService(ctx, dao.DB, logger)
+	customerModel, errMsg := customerService.Update(p)
+
+	if errMsg != nil {
+		logger.Error("更新客户失败", zap.Error(errMsg))
+		return nil, service.ErrInternalError
+	}
+
+	res = serializer.ModelCustomer2Customer(customerModel)
+	return res, nil
 }
 
 // 创建客户
@@ -48,7 +85,17 @@ func (s *customersrvc) Create(ctx context.Context, p *customer.CreatePayload) (r
 	// res = &customer.Customer{}
 	logger := L(ctx, s.logger)
 	logger.Info("customer.Create")
-	return
+
+	customerService := service.NewCustomerService(ctx, dao.DB, logger)
+	customerModel, errMsg := customerService.Create(p)
+
+	if errMsg != nil {
+		logger.Error("创建客户失败", zap.Error(errMsg))
+		return nil, service.ErrInternalError
+	}
+
+	res = serializer.ModelCustomer2Customer(customerModel)
+	return res, nil
 }
 
 // 删除客户
@@ -56,5 +103,15 @@ func (s *customersrvc) Delete(ctx context.Context, p *customer.DeletePayload) (r
 	res = &customer.SuccessResult{}
 	logger := L(ctx, s.logger)
 	logger.Info("customer.Delete")
-	return
+
+	customerService := service.NewCustomerService(ctx, dao.DB, logger)
+	errMsg := customerService.Delete(p.Ids)
+
+	if errMsg != nil {
+		logger.Error("删除客户失败", zap.Error(errMsg))
+		return nil, service.ErrInternalError
+	}
+
+	res.OK = true
+	return res, nil
 }
